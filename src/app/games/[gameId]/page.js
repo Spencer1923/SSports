@@ -25,8 +25,11 @@ export default function GamePage() {
         {teams.map((teamEntry) => (
           <div key={teamEntry.team.id} className="mb-4">
             <h2 className="font-semibold">{teamEntry.team.displayName}</h2>
-            {teamEntry.statistics.map((stat) => (
-              <p key={stat.name}>{stat.label}: {stat.displayValue}</p>
+            {teamEntry.statistics.map((stat, index) => (
+              //combine team id + stat name so keys stay unique across both teams
+              <p key={`${teamEntry.team.id}-${stat.name}-${index}`}>
+                {stat.label}: {stat.displayValue}
+              </p>
             ))}
           </div>
         ))}

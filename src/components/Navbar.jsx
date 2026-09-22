@@ -8,6 +8,8 @@ export default function Navbar() {
       <Link href="/standings">Standings</Link>
       <Link href="/injuries">Injuries</Link>
       <Link href="/blog">Blog</Link>
+      <Link href="/leaders">Leaders</Link>
+      <Link href="/news">News</Link>
     </nav>
   );
 }
