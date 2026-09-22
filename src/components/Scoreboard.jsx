@@ -1,5 +1,6 @@
 "use client";
 import useSWR from "swr";
+import Link from "next/link";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -14,7 +15,7 @@ export default function Scoreboard() {
   return (
     <div className="grid gap-3">
       {data.events.map((game) => (
-        <div key={game.id} className="border rounded p-3">
+        <Link key={game.id} href={`/games/${game.id}`} className="border rounded p-3 block hover:bg-gray-50">
           <p className="font-bold">{game.name}</p>
           <p>{game.status.type.detail}</p>
           {game.competitions[0].competitors.map((team) => (
@@ -22,7 +23,7 @@ export default function Scoreboard() {
               {team.team.displayName}: {team.score}
             </p>
           ))}
-        </div>
+        </Link>
       ))}
     </div>
   );

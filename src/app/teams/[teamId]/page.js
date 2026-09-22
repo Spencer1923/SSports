@@ -1,29 +1,41 @@
 "use client";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
-export default function TeamPage() {
-  // grab the dynamic [teamId] value from the current URL
-  const { teamId } = useParams();
+// helper: groups a flat list of players by their position
+function groupByPosition(players) {
+  const groups = {};
+  players.forEach((player) => {
+    const pos = player.position?.abbreviation || "Other";
+    if (!groups[pos]) groups[pos] = []; // create array if this position not seen yet
+    groups[pos].push(player);
+  });
+  return groups;
+}
 
-  // fetch this specific team's data from our API route
+export default function TeamPage() {
+  const { teamId } = useParams();
   const { data, error, isLoading } = useSWR(`/api/teams/${teamId}`, fetcher);
 
-  // handle loading/error states first
   if (error) return <p>Failed to load team.</p>;
   if (isLoading) return <p>Loading team...</p>;
 
-  const team = data.team;
-
-  // team colors come as hex codes without a leading #, so we add it
+  const { team, schedule, roster } = data;
   const teamColor = `#${team.color}`;
+
+  // roster comes grouped by position group (offense/defense/special teams)
+  const positionGroups = roster.athletes || [];
+
+  // schedule events list, each is one game
+  const games = schedule.events || [];
 
   return (
     <main className="p-6">
-      {/* header section with logo + name, styled using the team's own color */}
+      {/* header banner using team's own color */}
       <div
         className="flex items-center gap-4 p-4 rounded text-white"
         style={{ backgroundColor: teamColor }}
@@ -39,21 +51,36 @@ export default function TeamPage() {
         </div>
       </div>
 
-      {/* basic team info */}
-      <div className="mt-4">
-        <p><strong>Location:</strong> {team.location}</p>
-        <p><strong>Venue:</strong> {team.venue?.fullName}</p>
-      </div>
+      {/* schedule section */}
+      <section className="mt-6">
+        <h2 className="text-xl font-semibold mb-2">Schedule</h2>
+        {games.map((game) => (
+          <p key={game.id}>
+            {game.name} — {new Date(game.date).toLocaleDateString()}
+          </p>
+        ))}
+      </section>
 
-      {/* roster list, if ESPN includes it in this response */}
-      {team.athletes && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">Roster</h2>
-          {team.athletes.map((player) => (
-            <p key={player.id}>{player.displayName} — {player.position?.abbreviation}</p>
-          ))}
-        </div>
-      )}
+      {/* roster section, grouped by position */}
+      <section className="mt-6">
+        <h2 className="text-xl font-semibold mb-2">Roster</h2>
+        {(() => {
+          // flatten in case data is nested in groups already, then re-group by position
+          const allPlayers = positionGroups.flatMap((g) => g.items || [g]);
+          const grouped = groupByPosition(allPlayers);
+
+          return Object.entries(grouped).map(([position, players]) => (
+            <div key={position} className="mb-4">
+              <h3 className="font-semibold">{position}</h3>
+              {players.map((player) => (
+                <Link key={player.id} href={`/players/${player.id}`} className="block text-blue-600 hover:underline">
+                  #{player.jersey} {player.displayName}
+                </Link>
+              ))}
+            </div>
+          ));
+        })()}
+      </section>
     </main>
   );
 }

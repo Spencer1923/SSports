@@ -33,14 +33,18 @@ export default function StandingsPage() {
           {allTeams
             .filter((entry) => teamNames.includes(entry.team.displayName))
             .map((entry) => (
-              // clicking a team navigates to /teams/[teamId]
               <Link
                 key={entry.team.id}
                 href={`/teams/${entry.team.id}`}
-                className="block text-blue-600 hover:underline"
+                className="flex items-center gap-2 text-blue-600 hover:underline"
               >
+                {/* small team logo next to the name */}
+                <img
+                  src={entry.team.logos?.[0]?.href}
+                  alt={entry.team.displayName}
+                  className="w-6 h-6"
+                />
                 {entry.team.displayName} —{" "}
-                {/* find() pulls out just the "wins" stat from the stats array */}
                 {entry.stats.find((s) => s.name === "wins")?.displayValue}-
                 {entry.stats.find((s) => s.name === "losses")?.displayValue}
               </Link>
