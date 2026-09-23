@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -22,7 +23,7 @@ export default function TeamPage() {
   const { data, error, isLoading } = useSWR(`/api/teams/${teamId}`, fetcher);
 
   if (error) return <p>Failed to load team.</p>;
-  if (isLoading) return <p>Loading team...</p>;
+  if (isLoading) return <LoadingSpinner />;
 
   const { team, schedule, roster } = data;
   const teamColor = `#${team.color}`;
@@ -46,7 +47,7 @@ export default function TeamPage() {
           className="w-16 h-16"
         />
         <div>
-          <h1 className="text-2xl font-bold">{team.displayName}</h1>
+          <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">{team.displayName}</h1>
           <p>{team.record?.items?.[0]?.summary}</p>
         </div>
       </div>
@@ -73,7 +74,7 @@ export default function TeamPage() {
             <div key={position} className="mb-4">
               <h3 className="font-semibold">{position}</h3>
               {players.map((player) => (
-                <Link key={player.id} href={`/players/${player.id}`} className="block text-blue-600 hover:underline">
+                <Link key={player.id} href={`/players/${player.id}`} className="block text-gold hover:text-crimson hover:underline">
                   #{player.jersey} {player.displayName}
                 </Link>
               ))}

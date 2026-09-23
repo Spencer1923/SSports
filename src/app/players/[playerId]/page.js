@@ -1,6 +1,7 @@
 "use client";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -10,7 +11,7 @@ export default function PlayerPage() {
   const { data, error, isLoading } = useSWR(`/api/players/${playerId}`, fetcher);
 
   if (error) return <p>Failed to load player.</p>;
-  if (isLoading) return <p>Loading player...</p>;
+  if (isLoading) return <LoadingSpinner />;
 
   const player = data.athlete;
   // season stats are stored under statsSummary.statistics
@@ -22,7 +23,7 @@ export default function PlayerPage() {
       <div className="flex items-center gap-4">
         <img src={player.headshot?.href} alt={player.displayName} className="w-24 h-24 rounded object-cover" />
         <div>
-          <h1 className="text-2xl font-bold">{player.displayName}</h1>
+         <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">{player.displayName}</h1>
           <p>{player.position?.displayName} — #{player.jersey}</p>
           <p>{player.team?.displayName}</p>
         </div>

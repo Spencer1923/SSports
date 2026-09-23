@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import Link from "next/link"; // lets us make team names clickable, linking to their page
 import { DIVISIONS } from "@/lib/divisions"; // our manual division groupings
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -14,7 +15,7 @@ export default function StandingsPage() {
 
   // handle loading/error states before trying to use data
   if (error) return <p>Failed to load standings.</p>;
-  if (isLoading) return <p>Loading standings...</p>;
+  if (isLoading) return <LoadingSpinner />;
 
   // ESPN returns two big groups (AFC/NFC conferences), each full of teams
   // flatMap merges both into one single flat array of all 32 teams
@@ -22,7 +23,7 @@ export default function StandingsPage() {
 
   return (
     <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Standings</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">Standings</h1>
 
       {/* loop through each division name + its list of team names */}
       {Object.entries(DIVISIONS).map(([divisionName, teamNames]) => (
@@ -36,7 +37,7 @@ export default function StandingsPage() {
               <Link
                 key={entry.team.id}
                 href={`/teams/${entry.team.id}`}
-                className="flex items-center gap-2 text-blue-600 hover:underline"
+                className="flex items-center gap-2 text-gold hover:text-crimson hover:underline"
               >
                 {/* small team logo next to the name */}
                 <img

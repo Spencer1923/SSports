@@ -1,6 +1,7 @@
 "use client";
 import useSWR from "swr";
 import Link from "next/link";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -10,11 +11,11 @@ export default function LeadersPage() {
   });
 
   if (error) return <p>Failed to load leaders.</p>;
-  if (isLoading) return <p>Loading leaders...</p>;
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6">League Leaders</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">League Leaders</h1>
 
       {data.categories.map((category) => {
         const [first, ...rest] = category.leaders; // split #1 from #2-5
@@ -27,7 +28,8 @@ export default function LeadersPage() {
             {first && (
               <Link
                 href={`/players/${first.athleteId}`}
-                className="flex items-center gap-4 p-4 border rounded-lg mb-3 hover:bg-gray-50"
+                className="flex items-center gap-4 mb-3 border border-crimson rounded p-4 bg-neutral-900 hover:bg-neutral-800 hover:shadow-[0_0_10px_#8B0000]"
+                
               >
                 <img
                   src={first.headshot}

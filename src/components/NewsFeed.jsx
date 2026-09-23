@@ -1,5 +1,6 @@
 "use client";
 import useSWR from "swr";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -10,7 +11,7 @@ export default function NewsFeed({ limit }) {
   });
 
   if (error) return <p>Failed to load news.</p>;
-  if (isLoading) return <p>Loading news...</p>;
+  if (isLoading) return <LoadingSpinner />;
 
   // trim to `limit` articles if provided, otherwise show all
   const articles = limit ? data.articles.slice(0, limit) : data.articles;

@@ -25,7 +25,7 @@ export default function Home() {
 
   return (
     <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6">SSports</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">SSports</h1>
 
       {/* two-column hub layout: scores left, news + blog right */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -41,7 +41,7 @@ export default function Home() {
           <div className="mb-6">
             {latestPosts.map((post) => (
               <div key={post.slug} className="mb-3">
-                <Link href={`/blog/${post.slug}`} className="text-blue-600 hover:underline">
+                <Link href={`/blog/${post.slug}`} className="text-gold hover:text-crimson hover:underline">
                   {post.title}
                 </Link>
                 <p className="text-sm text-gray-500">{post.date}</p>

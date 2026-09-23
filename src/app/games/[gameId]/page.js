@@ -1,6 +1,7 @@
 "use client";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -9,7 +10,7 @@ export default function GamePage() {
   const { data, error, isLoading } = useSWR(`/api/games/${gameId}`, fetcher);
 
   if (error) return <p>Failed to load game.</p>;
-  if (isLoading) return <p>Loading game...</p>;
+  if (isLoading) return <LoadingSpinner />;
 
   // boxscore.teams holds team-level stats (yards, turnovers, etc.)
   const teams = data.boxscore?.teams || [];
@@ -18,7 +19,7 @@ export default function GamePage() {
 
   return (
     <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Box Score</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">Box Score</h1>
 
       {/* team totals side by side */}
       <section className="mb-6">
