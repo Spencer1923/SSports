@@ -23,35 +23,37 @@ export default function StandingsPage() {
 
   return (
     <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">Standings</h1>
+      <h1 className="text-2xl font-bold mb-4">Standings</h1>
 
-      {/* loop through each division name + its list of team names */}
-      {Object.entries(DIVISIONS).map(([divisionName, teamNames]) => (
-        <div key={divisionName} className="mb-6">
-          <h2 className="text-xl font-semibold">{divisionName}</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* loop through each division name + its list of team names */}
+        {Object.entries(DIVISIONS).map(([divisionName, teamNames]) => (
+          <div key={divisionName} className="mb-6">
+            <h2 className="text-xl font-semibold">{divisionName}</h2>
 
-          {/* keep only teams whose name matches this division's team list */}
-          {allTeams
-            .filter((entry) => teamNames.includes(entry.team.displayName))
-            .map((entry) => (
-              <Link
-                key={entry.team.id}
-                href={`/teams/${entry.team.id}`}
-                className="flex items-center gap-2 text-gold hover:text-crimson hover:underline"
-              >
-                {/* small team logo next to the name */}
-                <img
-                  src={entry.team.logos?.[0]?.href}
-                  alt={entry.team.displayName}
-                  className="w-6 h-6"
-                />
-                {entry.team.displayName} —{" "}
-                {entry.stats.find((s) => s.name === "wins")?.displayValue}-
-                {entry.stats.find((s) => s.name === "losses")?.displayValue}
-              </Link>
-            ))}
-        </div>
-      ))}
+            {/* keep only teams whose name matches this division's team list */}
+            {allTeams
+              .filter((entry) => teamNames.includes(entry.team.displayName))
+              .map((entry) => (
+                <Link
+                  key={entry.team.id}
+                  href={`/teams/${entry.team.id}`}
+                  className="flex items-center gap-2 text-gold hover:text-crimson hover:underline"
+                >
+                  {/* small team logo next to the name */}
+                  <img
+                    src={entry.team.logos?.[0]?.href}
+                    alt={entry.team.displayName}
+                    className="w-6 h-6"
+                  />
+                  {entry.team.displayName} —{" "}
+                  {entry.stats.find((s) => s.name === "wins")?.displayValue}-
+                  {entry.stats.find((s) => s.name === "losses")?.displayValue}
+                </Link>
+              ))}
+          </div>
+        ))}
+      </div>
     </main>
   );
 }
