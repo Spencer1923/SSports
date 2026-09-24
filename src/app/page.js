@@ -31,7 +31,7 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* left column: scores, takes up 2/3 width */}
         <div className="md:col-span-2">
-          <h2 className="text-xl font-semibold mb-3">Scores</h2>
+          <h2 className="text-xl text-gray-300 font-semibold mb-3">Scores</h2>
           <Scoreboard />
         </div>
 
@@ -41,7 +41,7 @@ export default function Home() {
           <div className="mb-6">
             {latestPosts.map((post) => (
               <div key={post.slug} className="mb-3">
-                <Link href={`/blog/${post.slug}`} className="text-gold hover:text-crimson hover:underline">
+                <Link href={`/blog/${post.slug}`} className="text-gray-300 hover:text-crimson hover:underline">
                   {post.title}
                 </Link>
                 <p className="text-sm text-gray-500">{post.date}</p>

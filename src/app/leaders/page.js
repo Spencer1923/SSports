@@ -28,7 +28,7 @@ export default function LeadersPage() {
             {first && (
               <Link
                 href={`/players/${first.athleteId}`}
-                className="flex items-center gap-4 mb-3 border border-crimson rounded p-4 bg-neutral-900 hover:bg-neutral-800 hover:shadow-[0_0_10px_#8B0000]"
+                className="flex items-center gap-4 mb-3 border border-crimson rounded p-4 bg-neutral-900 hover:bg-neutral-800 hover:shadow-[0_0_10px_#8B0000] text-gray-200"
                 
               >
                 <img
@@ -38,7 +38,7 @@ export default function LeadersPage() {
                 />
                 <div>
                   <p className="text-lg font-bold">{first.athleteName}</p>
-                  <p className="text-gray-600">{first.displayValue}</p>
+                  <p className="text-gray-400">{first.displayValue}</p>
                 </div>
               </Link>
             )}
@@ -49,12 +49,12 @@ export default function LeadersPage() {
                 <Link
                   key={leader.athleteId}
                   href={`/players/${leader.athleteId}`}
-                  className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded"
+                  className="flex items-center gap-3 p-2 hover:bg-gray-500 rounded text-gray-300"
                 >
                   <span className="text-gray-400 w-4">{index + 2}</span>
                   <img src={leader.teamLogo} alt="" className="w-6 h-6" />
                   <span>{leader.athleteName}</span>
-                  <span className="text-gray-500 ml-auto">{leader.displayValue}</span>
+                  <span className="text-gray-400 ml-auto">{leader.displayValue}</span>
                 </Link>
               ))}
             </div>

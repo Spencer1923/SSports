@@ -45,3 +45,7 @@ export const TEAM_LOGOS = {
   "San Francisco 49ers": "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png",
   "Seattle Seahawks": "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png",
 };
+
+// groups division names by conference, used to build side-by-side columns
+export const AFC_DIVISIONS = ["AFC East", "AFC North", "AFC South", "AFC West"];
+export const NFC_DIVISIONS = ["NFC East", "NFC North", "NFC South", "NFC West"];

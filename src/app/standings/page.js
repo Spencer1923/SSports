@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
-import Link from "next/link"; // lets us make team names clickable, linking to their page
-import { DIVISIONS } from "@/lib/divisions"; // our manual division groupings
+import Link from "next/link"; // lets make team names clickable, linking to their page
+import { DIVISIONS, AFC_DIVISIONS, NFC_DIVISIONS } from "@/lib/divisions"; // manual division groupings
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 // helper: fetches and parses JSON from a URL
@@ -23,36 +23,68 @@ export default function StandingsPage() {
 
   return (
     <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Standings</h1>
+      <h1 className="text-2xl font-bold mb-6 text-[#D4AF37] border-b-2 border-[#8B0000] pb-2">Standings</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* loop through each division name + its list of team names */}
-        {Object.entries(DIVISIONS).map(([divisionName, teamNames]) => (
-          <div key={divisionName} className="mb-6">
-            <h2 className="text-xl font-semibold">{divisionName}</h2>
+        {/* AFC column */}
+        <div>
+          <h2 className="text-2xl text-gray-300 font-bold mb-4"></h2>
+          {AFC_DIVISIONS.map((divisionName) => (
+            <div key={divisionName} className="mb-6">
+              <h3 className="text-xl font-semibold">{divisionName}</h3>
+              {allTeams
+                .filter((entry) =>
+                  DIVISIONS[divisionName].includes(entry.team.displayName),
+                )
+                .map((entry) => (
+                  <Link
+                    key={entry.team.id}
+                    href={`/teams/${entry.team.id}`}
+                    className="flex items-center gap-2 text-gray-400 hover:bg-gray-700 hover:text-gray-100 rounded px-2 py-1"
+                  >
+                    <img
+                      src={entry.team.logos?.[0]?.href}
+                      alt={entry.team.displayName}
+                      className="w-6 h-6"
+                    />
+                    {entry.team.displayName} —{" "}
+                    {entry.stats.find((s) => s.name === "wins")?.displayValue}-
+                    {entry.stats.find((s) => s.name === "losses")?.displayValue}
+                  </Link>
+                ))}
+            </div>
+          ))}
+        </div>
 
-            {/* keep only teams whose name matches this division's team list */}
-            {allTeams
-              .filter((entry) => teamNames.includes(entry.team.displayName))
-              .map((entry) => (
-                <Link
-                  key={entry.team.id}
-                  href={`/teams/${entry.team.id}`}
-                  className="flex items-center gap-2 text-gold hover:text-crimson hover:underline"
-                >
-                  {/* small team logo next to the name */}
-                  <img
-                    src={entry.team.logos?.[0]?.href}
-                    alt={entry.team.displayName}
-                    className="w-6 h-6"
-                  />
-                  {entry.team.displayName} —{" "}
-                  {entry.stats.find((s) => s.name === "wins")?.displayValue}-
-                  {entry.stats.find((s) => s.name === "losses")?.displayValue}
-                </Link>
-              ))}
-          </div>
-        ))}
+        {/* NFC column */}
+        <div>
+          <h2 className="text-2xl text-gray-300 font-bold mb-4"></h2>
+          {NFC_DIVISIONS.map((divisionName) => (
+            <div key={divisionName} className="mb-6">
+              <h3 className="text-xl font-semibold">{divisionName}</h3>
+              {allTeams
+                .filter((entry) =>
+                  DIVISIONS[divisionName].includes(entry.team.displayName),
+                )
+                .map((entry) => (
+                  <Link
+                    key={entry.team.id}
+                    href={`/teams/${entry.team.id}`}
+                    className="flex items-center gap-2 text-gray-400 hover:bg-gray-700 hover:text-gray-100 rounded px-2 py-1"
+                  >
+                    <img
+                      src={entry.team.logos?.[0]?.href}
+                      alt={entry.team.displayName}
+                      className="w-6 h-6"
+                    />
+                    {entry.team.displayName} —{" "}
+                    {entry.stats.find((s) => s.name === "wins")?.displayValue}-
+                    {entry.stats.find((s) => s.name === "losses")?.displayValue}
+                  </Link>
+                ))}
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   );

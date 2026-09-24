@@ -26,7 +26,7 @@ export default function NewsFeed({ limit }) {
           rel="noopener noreferrer"
           className="block border-b py-2"
         >
-          <p className="font-medium text-sm">{article.headline}</p>
+          <p className="font-medium text-sm hover:text-crimson hover:underline text-gray-300">{article.headline}</p>
         </a>
       ))}
     </div>

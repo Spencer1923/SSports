@@ -20,9 +20,9 @@ export default function InjuriesPage() {
       <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">Injury Report</h1>
       {teams.map((teamEntry) => (
         <div key={teamEntry.id} className="mb-4">
-          <h2 className="font-semibold">{teamEntry.displayName}</h2>
+          <h2 className="font-bold text-gray-200">{teamEntry.displayName}</h2>
           {teamEntry.injuries?.map((injury) => (
-            <p key={injury.id}>
+            <p className="text-sm text-gray-400" key={injury.id}>
               {injury.athlete?.displayName} — {injury.status} ({injury.details?.type})
             </p>
           ))}

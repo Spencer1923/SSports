@@ -21,7 +21,7 @@ export default function BlogPage() {
      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">Blog</h1>
       {posts.map((post) => (
         <div key={post.slug} className="mb-3">
-          <Link href={`/blog/${post.slug}`} className="text-gold hover:text-crimson underline">
+          <Link href={`/blog/${post.slug}`} className="text-gray-300 hover:text-crimson underline">
             {post.title}
           </Link>
           <p className="text-sm text-gray-500">{post.date}</p>
