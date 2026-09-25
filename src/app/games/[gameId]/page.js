@@ -124,7 +124,7 @@ export default function GamePage() {
               {teamEntry.statistics.map((category) => (
                 <div
                   key={category.name}
-                  className="mb-4 rounded-lg overflow-hidden border border-neutral-700"
+                  className="mb-4 rounded-lg overflow-hidden border border-neutral-700 overflow-x-auto"
                 >
                   <div className="bg-neutral-800 px-3 py-1">
                     <p className="text-gray-300 text-sm font-semibold capitalize">

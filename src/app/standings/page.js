@@ -49,7 +49,7 @@ export default function StandingsPage() {
             index % 2 === 0 ? "bg-neutral-900" : "bg-neutral-800"
           }`}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-32 sm:w-48 shrink-0">
             <img src={entry.team.logos?.[0]?.href} alt={entry.team.displayName} className="w-8 h-8" />
             <span className="text-gray-200 font-medium">{entry.team.displayName}</span>
           </div>
@@ -91,7 +91,7 @@ export default function StandingsPage() {
             index % 2 === 0 ? "bg-neutral-900" : "bg-neutral-800"
           }`}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-32 sm:w-48 shrink-0">
             <img src={entry.team.logos?.[0]?.href} alt={entry.team.displayName} className="w-8 h-8" />
             <span className="text-gray-200 font-medium">{entry.team.displayName}</span>
           </div>
