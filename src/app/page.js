@@ -41,7 +41,7 @@ export default function Home() {
           <div className="mb-6">
             {latestPosts.map((post) => (
               <div key={post.slug} className="mb-3">
-                <Link href={`/blog/${post.slug}`} className="text-gray-300 hover:text-crimson hover:underline">
+                <Link href={`/blog/${post.slug}`} className="text-gray-300 hover:text-crimson">
                   {post.title}
                 </Link>
                 <p className="text-sm text-gray-500">{post.date}</p>

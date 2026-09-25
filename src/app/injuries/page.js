@@ -22,7 +22,7 @@ export default function InjuriesPage() {
         Injury Report
       </h1>
       {teams.map((teamEntry) => (
-        <div key={teamEntry.id} className="mb-4">
+        <div key={teamEntry.id} className="mb-4 text-gray-200">
           <div className="flex items-center gap-2 mb-2">
             <img
               src={TEAM_LOGOS[teamEntry.displayName]}
