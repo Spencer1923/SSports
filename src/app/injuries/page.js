@@ -1,6 +1,7 @@
 "use client";
 import useSWR from "swr";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { TEAM_LOGOS } from "@/lib/divisions";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -17,13 +18,23 @@ export default function InjuriesPage() {
 
   return (
     <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">Injury Report</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">
+        Injury Report
+      </h1>
       {teams.map((teamEntry) => (
         <div key={teamEntry.id} className="mb-4">
-          <h2 className="font-bold text-gray-200">{teamEntry.displayName}</h2>
+          <div className="flex items-center gap-2 mb-2">
+            <img
+              src={TEAM_LOGOS[teamEntry.displayName]}
+              alt={teamEntry.displayName}
+              className="w-6 h-6"
+            />
+            <h2 className="font-semibold">{teamEntry.displayName}</h2>
+          </div>
           {teamEntry.injuries?.map((injury) => (
             <p className="text-sm text-gray-400" key={injury.id}>
-              {injury.athlete?.displayName} — {injury.status} ({injury.details?.type})
+              {injury.athlete?.displayName} — {injury.status} (
+              {injury.details?.type})
             </p>
           ))}
         </div>

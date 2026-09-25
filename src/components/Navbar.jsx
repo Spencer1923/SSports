@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Navbar() {
   return (
     <nav className="flex items-center gap-4 p-4 bg-jetblack border-b-2 border-gold text-gray-300">
-      <img src="/logo-header.png" alt="SSports" className="h-10" />
+      <img src="/logo-header.png" alt="SSports" className="h-20" />
       <Link href="/">Home</Link>
       <Link href="/standings">Standings</Link>
       <Link href="/injuries">Injuries</Link>

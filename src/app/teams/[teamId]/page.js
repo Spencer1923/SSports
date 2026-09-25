@@ -56,7 +56,7 @@ export default function TeamPage() {
       <section className="mt-6">
         <h2 className="text-xl font-semibold mb-2">Schedule</h2>
         {games.map((game) => (
-          <p key={game.id}>
+          <p className="text-gray-300" key={game.id}>
             {game.name} — {new Date(game.date).toLocaleDateString()}
           </p>
         ))}
@@ -74,7 +74,7 @@ export default function TeamPage() {
             <div key={position} className="mb-4">
               <h3 className="font-semibold">{position}</h3>
               {players.map((player) => (
-                <Link key={player.id} href={`/players/${player.id}`} className="block text-gold hover:text-crimson hover:underline">
+                <Link key={player.id} href={`/players/${player.id}`} className="block text-gray-300 hover:text-crimson hover:underline">
                   #{player.jersey} {player.displayName}
                 </Link>
               ))}

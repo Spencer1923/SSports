@@ -24,13 +24,13 @@ export default function PlayerPage() {
         <img src={player.headshot?.href} alt={player.displayName} className="w-24 h-24 rounded object-cover" />
         <div>
          <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">{player.displayName}</h1>
-          <p>{player.position?.displayName} — #{player.jersey}</p>
-          <p>{player.team?.displayName}</p>
+          <p className="text-gray-300">{player.position?.displayName} — #{player.jersey}</p>
+          <p className="text-gray-300">{player.team?.displayName}</p>
         </div>
       </div>
 
       {/* bio details */}
-      <div className="mt-4">
+      <div className="text-gray-300 mt-4">
         <p>Height: {player.displayHeight} | Weight: {player.displayWeight}</p>
         <p>Age: {player.age} | Experience: {player.displayExperience}</p>
         <p>Draft: {player.displayDraft}</p>
@@ -42,7 +42,7 @@ export default function PlayerPage() {
           {player.statsSummary?.displayName || "Season Stats"}
         </h2>
         {stats.map((stat) => (
-          <p key={stat.name}>
+          <p className="text-gray-300" key={stat.name}>
             {stat.displayName}: {stat.displayValue}
           </p>
         ))}

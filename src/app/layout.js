@@ -1,5 +1,9 @@
 import Navbar from "@/components/Navbar";
 import "./globals.css";
+import { Oswald, Inter } from "next/font/google";
+
+const oswald = Oswald({ subsets: ["latin"], variable: "--font-heading" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 
 export const metadata = {
   manifest: "ssports_site.webmanifest",
@@ -25,7 +29,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${oswald.variable} ${inter.variable}`}>
         <Navbar /> {/* shows on every page */}
         {children}
         <footer className="flex justify-center p-6 border-t-2 border-gold">
