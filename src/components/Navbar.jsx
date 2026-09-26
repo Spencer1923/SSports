@@ -19,7 +19,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-jetblack border-b-2 border-gold text-gray-300">
+    <nav className="bg-jetblack border-b-2 border-gold text-gray-200">
       <div className="flex items-center justify-between p-4">
         <Link href="/">
           <img src="/logo-header.png" alt="SSports" className="h-12 md:h-20" />
