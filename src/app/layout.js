@@ -7,6 +7,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 
 export const metadata = {
   manifest: "ssports_site.webmanifest",
+  title: {
+    default: "SSports — NFL Scores, Standings & Analysis",
+    template: "%s | SSports",
+  },
+  description:
+    "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
   icons: {
     icon: [
       { url: "ssports_favicon-16x16.png", sizes: "16x16", type: "image/png" },

@@ -21,24 +21,45 @@ export default function InjuriesPage() {
       <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">
         Injury Report
       </h1>
-      {teams.map((teamEntry) => (
-        <div key={teamEntry.id} className="mb-4 text-gray-200">
-          <div className="flex items-center gap-2 mb-2">
-            <img
-              src={TEAM_LOGOS[teamEntry.displayName]}
-              alt={teamEntry.displayName}
-              className="w-6 h-6"
-            />
-            <h2 className="font-semibold">{teamEntry.displayName}</h2>
-          </div>
-          {teamEntry.injuries?.map((injury) => (
-            <p className="text-sm text-gray-400" key={injury.id}>
-              {injury.athlete?.displayName} — {injury.status} (
-              {injury.details?.type})
-            </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {teams
+          .filter((teamEntry) => teamEntry.injuries?.length > 0) // skip teams with no injuries
+          .map((teamEntry) => (
+            <div
+              key={teamEntry.id}
+              className="rounded-lg border border-neutral-700 overflow-hidden"
+            >
+              <div className="flex items-center gap-2 bg-neutral-800 px-3 py-2">
+                <img
+                  src={TEAM_LOGOS[teamEntry.displayName]}
+                  alt={teamEntry.displayName}
+                  className="w-6 h-6"
+                />
+                <h2 className="font-semibold text-gray-200">
+                  {teamEntry.displayName}
+                </h2>
+                <span className="ml-auto text-xs text-gray-500">
+                  {teamEntry.injuries.length} listed
+                </span>
+              </div>
+              {teamEntry.injuries.map((injury, index) => (
+                <div
+                  key={injury.id}
+                  className={`flex justify-between px-3 py-2 text-sm ${
+                    index % 2 === 0 ? "bg-neutral-900" : "bg-neutral-800"
+                  }`}
+                >
+                  <span className="text-gray-200">
+                    {injury.athlete?.displayName}
+                  </span>
+                  <span className="text-gray-400">
+                    {injury.status} · {injury.details?.type}
+                  </span>
+                </div>
+              ))}
+            </div>
           ))}
-        </div>
-      ))}
+      </div>
     </main>
   );
 }
