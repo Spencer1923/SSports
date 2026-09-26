@@ -13,6 +13,13 @@ export const metadata = {
   },
   description:
     "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
+  openGraph: {
+    title: "SSports",
+    description:
+      "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
+    images: ["/logo-medium.png"],
+    type: "website",
+  },
   icons: {
     icon: [
       { url: "ssports_favicon-16x16.png", sizes: "16x16", type: "image/png" },

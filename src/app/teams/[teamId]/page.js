@@ -3,6 +3,8 @@ import useSWR from "swr";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import BackButton from "@/components/BackButton";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -47,6 +49,14 @@ export default function TeamPage() {
 
   return (
     <main className="p-6">
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Standings", href: "/standings" },
+          { label: team.displayName },
+        ]}
+      />
+      <BackButton />
       {/* header banner using team's own color */}
       <div
         className="flex items-center gap-4 p-4 rounded text-white"
@@ -98,7 +108,10 @@ export default function TeamPage() {
               <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
                 {game.week?.text}
               </p>
-              <div className="flex items-center justify-between px-3 py-2 text-sm rounded-lg border border-neutral-700 bg-neutral-900">
+              <div
+                className="flex items-center justify-between px-3 py-2 text-sm rounded-lg border bg-neutral-900"
+                style={{ borderColor: teamColor }}
+              >
                 <div className="flex items-center gap-2">
                   <img
                     src={team.logos?.[0]?.href}
@@ -157,7 +170,8 @@ export default function TeamPage() {
               {Object.entries(positionMap).map(([key, { name, athletes }]) => (
                 <div
                   key={key}
-                  className="rounded-lg border border-neutral-700 bg-neutral-900 p-3"
+                  className="rounded-lg border bg-neutral-900 p-3"
+                  style={{ borderColor: teamColor }}
                 >
                   <h3 className="font-bold text-gray-100 mb-2">{name}</h3>
                   <div className="flex flex-col gap-1">

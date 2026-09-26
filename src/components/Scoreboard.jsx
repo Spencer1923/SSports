@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import Link from "next/link";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useEffect, useRef, useState } from "react";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -9,6 +10,31 @@ export default function Scoreboard() {
   const { data, error, isLoading } = useSWR("/api/scores", fetcher, {
     refreshInterval: 30000, // refresh every 30s
   });
+  // track previous scores to detect changes and trigger a flash animation
+  const prevScores = useRef({});
+  const [flashIds, setFlashIds] = useState({});
+
+  useEffect(() => {
+    if (!data) return;
+    const newFlashIds = {};
+    data.events.forEach((game) => {
+      const competitors = game.competitions[0].competitors;
+      competitors.forEach((c) => {
+        const key = `${game.id}-${c.team.id}`;
+        if (
+          prevScores.current[key] !== undefined &&
+          prevScores.current[key] !== c.score
+        ) {
+          newFlashIds[key] = true;
+        }
+        prevScores.current[key] = c.score;
+      });
+    });
+    if (Object.keys(newFlashIds).length > 0) {
+      setFlashIds(newFlashIds);
+      setTimeout(() => setFlashIds({}), 1000); // clear flash after 1s
+    }
+  }, [data]);
 
   if (error) return <p>Failed to load scores.</p>;
   if (isLoading) return <LoadingSpinner />;
@@ -45,7 +71,13 @@ export default function Scoreboard() {
                 </span>
               </div>
               {game.status.type.state !== "pre" && (
-                <span className="font-bold text-gray-100 group-hover:text-gold">
+                <span
+                  className={`font-bold text-gray-100 group-hover:text-gold transition-colors ${
+                    flashIds[`${game.id}-${away.team.id}`]
+                      ? "text-gold scale-125"
+                      : ""
+                  } inline-block`}
+                >
                   {away.score}
                 </span>
               )}
@@ -64,8 +96,14 @@ export default function Scoreboard() {
                 </span>
               </div>
               {game.status.type.state !== "pre" && (
-                <span className="font-bold text-gray-100 group-hover:text-gold">
-                  {home.score}
+                <span
+                  className={`font-bold text-gray-100 group-hover:text-gold transition-colors ${
+                    flashIds[`${game.id}-${home.team.id}`]
+                      ? "text-gold scale-125"
+                      : ""
+                  } inline-block`}
+                >
+                  {away.score}
                 </span>
               )}
             </div>

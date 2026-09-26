@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import BackButton from "@/components/BackButton";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -23,6 +24,7 @@ export default function GamePage() {
 
   return (
     <main className="p-6">
+      <BackButton />
       <h1 className="text-2xl font-bold mb-6 text-[#D4AF37] border-b-2 border-[#8B0000] pb-2">
         Box Score
       </h1>

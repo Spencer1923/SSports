@@ -12,9 +12,10 @@ export default function Navbar() {
   const links = [
     { href: "/", label: "Home" },
     { href: "/standings", label: "Standings" },
+    { href: "/leaders", label: "Leaders" },
+    { href: "/team-stats", label: "Team Stats" },
     { href: "/injuries", label: "Injuries" },
     { href: "/blog", label: "Blog" },
-    { href: "/leaders", label: "Leaders" },
     { href: "/news", label: "News" },
   ];
 
