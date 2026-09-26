@@ -25,7 +25,7 @@ export default function Scoreboard() {
           <Link
             key={game.id}
             href={`/games/${game.id}`}
-            className="block border border-gray-700 rounded-lg p-3 bg-gray-950 hover:bg-gray-800 transition-colors"
+            className="group block border border-gray-700 rounded-lg p-3 bg-gray-950 hover:bg-gray-800 transition-colors hover:border-crimson"
           >
             {/* game status at top, small and subtle */}
             <p className="text-xs text-gray-400 mb-2">
@@ -40,12 +40,14 @@ export default function Scoreboard() {
                   alt={away.team.displayName}
                   className="w-6 h-6"
                 />
-                <span className="text-gray-200 text-sm">
+                <span className="text-gray-200 text-sm group-hover:text-gold">
                   {away.team.shortDisplayName}
                 </span>
               </div>
               {game.status.type.state !== "pre" && (
-                <span className="font-bold text-gray-100">{away.score}</span>
+                <span className="font-bold text-gray-100 group-hover:text-gold">
+                  {away.score}
+                </span>
               )}
             </div>
 
@@ -57,12 +59,14 @@ export default function Scoreboard() {
                   alt={home.team.displayName}
                   className="w-6 h-6"
                 />
-                <span className="text-gray-200 text-sm">
+                <span className="text-gray-200 text-sm group-hover:text-gold">
                   {home.team.shortDisplayName}
                 </span>
               </div>
               {game.status.type.state !== "pre" && (
-                <span className="font-bold text-gray-100">{home.score}</span>
+                <span className="font-bold text-gray-100 group-hover:text-gold">
+                  {home.score}
+                </span>
               )}
             </div>
           </Link>
