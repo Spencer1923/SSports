@@ -76,10 +76,10 @@ export default function GamePage() {
           const total = val1 + val2 || 1; // avoid divide-by-zero
 
           return (
-            <div key={stat.name} className="mb-3">
+            <div key={`${stat.name}-${i}`} className="mb-3">
               <div className="flex justify-between text-sm text-gray-400 mb-1">
                 <span>{stat.displayValue}</span>
-                <span className="text-gray-500">{stat.label}</span>
+                <span className="text-gray-400">{stat.label}</span>
                 <span>{otherStat?.displayValue}</span>
               </div>
               <div className="flex h-2 rounded-full overflow-hidden bg-neutral-800">
@@ -87,12 +87,14 @@ export default function GamePage() {
                   style={{
                     width: `${(val1 / total) * 100}%`,
                     backgroundColor: `#${teams[0]?.team.color || "8B0000"}`,
+                    border: "1px solid white",
                   }}
                 />
                 <div
                   style={{
                     width: `${(val2 / total) * 100}%`,
                     backgroundColor: `#${teams[1]?.team.color || "D4AF37"}`,
+                    border: "1px solid white",
                   }}
                 />
               </div>

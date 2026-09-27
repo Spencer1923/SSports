@@ -54,7 +54,7 @@ export default function Scoreboard() {
             className="group block border border-gray-700 rounded-lg p-3 bg-gray-950 hover:bg-gray-800 transition-colors hover:border-crimson"
           >
             {/* game status at top, small and subtle */}
-            <p className="text-xs text-gray-400 mb-2">
+            <p className="text-xs text-gray-400 mb-2 group-hover:text-gray-100">
               {game.status.type.detail}
             </p>
 
