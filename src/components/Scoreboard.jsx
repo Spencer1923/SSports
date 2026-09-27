@@ -103,7 +103,7 @@ export default function Scoreboard() {
                       : ""
                   } inline-block`}
                 >
-                  {away.score}
+                  {home.score}
                 </span>
               )}
             </div>
