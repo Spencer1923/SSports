@@ -66,13 +66,13 @@ export default function Scoreboard() {
                   alt={away.team.displayName}
                   className="w-6 h-6"
                 />
-                <span className="text-gray-200 text-sm group-hover:text-gold">
+                <span className="text-gray-200 text-sm group-hover:text-white">
                   {away.team.shortDisplayName}
                 </span>
               </div>
               {game.status.type.state !== "pre" && (
                 <span
-                  className={`font-bold text-gray-100 group-hover:text-gold transition-colors ${
+                  className={`font-bold text-gray-100 group-hover:text-white transition-colors ${
                     flashIds[`${game.id}-${away.team.id}`]
                       ? "text-gold scale-125"
                       : ""
@@ -91,13 +91,13 @@ export default function Scoreboard() {
                   alt={home.team.displayName}
                   className="w-6 h-6"
                 />
-                <span className="text-gray-200 text-sm group-hover:text-gold">
+                <span className="text-gray-200 text-sm group-hover:text-white">
                   {home.team.shortDisplayName}
                 </span>
               </div>
               {game.status.type.state !== "pre" && (
                 <span
-                  className={`font-bold text-gray-100 group-hover:text-gold transition-colors ${
+                  className={`font-bold text-gray-100 group-hover:text-white transition-colors ${
                     flashIds[`${game.id}-${home.team.id}`]
                       ? "text-gold scale-125"
                       : ""
