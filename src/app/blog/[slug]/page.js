@@ -36,7 +36,7 @@ export default async function PostPage({ params }) {
                       className="w-6 h-6"
                     />
                   )}
-                  <span className="font-semibold">{item.team}</span>
+                  <span className="font-semibold text-gray-300">{item.team}</span>
                 </div>
                 <p className="text-sm text-gray-500 ml-7">{item.reason}</p>
               </li>
@@ -57,7 +57,7 @@ export default async function PostPage({ params }) {
                   alt={item.player}
                   className="w-10 h-10 rounded-full object-cover"
                 />
-                <span className="font-semibold">{item.player}</span>
+                <span className="font-semibold text-gray-300">{item.player}</span>
               </div>
               <p className="text-sm text-gray-500 ml-12">{item.reason}</p>
             </li>
