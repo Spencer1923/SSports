@@ -18,7 +18,6 @@ SSports is a Next.js app that consumes ESPN's public API to deliver a real-time 
 
 ## Screenshots
 
-<!-- Add screenshots here, e.g.: -->
 ![Homepage](./screenshots/home.jpg)
 ![Standings](./screenshots/standings.jpg)
 ![Team Page](./screenshots/team.jpg)
