@@ -22,7 +22,7 @@ function Leaderboard({ title, list, statKey, unit }) {
               <span className="text-gray-200">{team.teamName}</span>
             </div>
             <span className="text-gray-100 font-bold">
-              {Math.round(team.stats?.[statKey] || 0) / 10} {unit}
+              {Math.round(team.stats?.[statKey] || 0)} {unit}
             </span>
           </Link>
         ))}
