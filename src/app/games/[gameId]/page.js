@@ -62,7 +62,7 @@ export default function GamePage() {
                 <span className="text-gray-400">{stat.label}</span>
                 <span>{otherStat?.displayValue}</span>
               </div>
-              <div className="flex h-5 rounded-full overflow-hidden bg-neutral-800">
+              <div className="flex h-4 rounded-full overflow-hidden bg-neutral-800">
                 <div
                   style={{
                     width: `${(val1 / total) * 100}%`,
