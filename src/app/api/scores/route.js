@@ -1,11 +1,12 @@
 //javascript function to get ESPN API
-export async function GET() {
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const week = searchParams.get("week");
+
   try {
-    // fetch NFL scoreboard from ESPN's public API
-    const res = await fetch(
-      "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
-      { headers: { "User-Agent": "Mozilla/5.0" } } // avoid ESPN blocking bare requests
-    );
+    const url = week ? `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2` : "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
+
+    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
 
     if (!res.ok) {
       // bubble up a clear error instead of silent failure
