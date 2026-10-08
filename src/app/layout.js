@@ -11,6 +11,7 @@ export const metadata = {
     default: "SSports — NFL Scores, Standings & Analysis",
     template: "%s | SSports",
   },
+  metadataBase: new URL("https://s-sports.netlify.app/"),
   description:
     "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
   openGraph: {

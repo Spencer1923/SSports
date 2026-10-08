@@ -4,6 +4,8 @@ import matter from "gray-matter"; // reads title/date from each blog post file
 import Link from "next/link";
 import Scoreboard from "@/components/Scoreboard";
 import NewsFeed from "@/components/NewsFeed";
+import { Suspense } from "react";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 // runs on the server — reads the latest blog posts from disk
 function getLatestPosts() {
@@ -32,7 +34,10 @@ export default function Home() {
         {/* left column: scores, takes up 2/3 width */}
         <div className="md:col-span-2">
           <h2 className="text-xl text-gray-300 font-semibold mb-3">Scores</h2>
-          <Scoreboard />
+          {/* Suspense is required because Scoreboard reads the URL's ?week= param */}
+          <Suspense fallback={<LoadingSpinner />}>
+            <Scoreboard />
+          </Suspense>
         </div>
 
         {/* right column: news + latest articles, takes up 1/3 width */}
