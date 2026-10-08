@@ -22,7 +22,7 @@ export default function PlayerPage() {
   const stats = player.statsSummary?.statistics || [];
 
   return (
-    <main className="p-6">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <BackButton />
       {/* headshot + basic info */}
       <div className="flex items-center gap-4">
@@ -32,7 +32,7 @@ export default function PlayerPage() {
           className="w-24 h-24 rounded object-cover"
         />
         <div>
-          <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">
+          <h1 className="page-title">
             {player.displayName}
           </h1>
           <p className="text-gray-300">

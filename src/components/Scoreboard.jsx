@@ -70,11 +70,15 @@ export default function Scoreboard() {
     <div>
       {/* week navigation */}
       <div className="flex items-center justify-between mb-4">
-        <button onClick={() => router.push(`/?week=${Math.max(1, currentWeek - 1)}`)} className="text-gray-300 hover:text-white px-3 py-1 border border-gray-700 rounded cursor-pointer hover:border-crimson">
+        <button
+          onClick={() => router.push(`/?week=${Math.max(1, currentWeek - 1)}`)}
+          className="text-sm text-gray-300 rounded-full border border-white/15 px-4 py-1.5 cursor-pointer transition hover:bg-gold hover:text-black">
           ← Prev
         </button>
         <span className="text-gray-200 font-semibold">Week {currentWeek}</span>
-        <button onClick={() => router.push(`/?week=${Math.min(18, currentWeek + 1)}`)} className="text-gray-300 hover:text-white px-3 py-1 border border-gray-700 rounded cursor-pointer hover:border-crimson">
+        <button
+          onClick={() => router.push(`/?week=${Math.min(18, currentWeek + 1)}`)}
+          className="text-sm text-gray-300 rounded-full border border-white/15 px-4 py-1.5 cursor-pointer transition hover:bg-gold hover:text-black">
           Next →
         </button>
       </div>
@@ -87,9 +91,13 @@ export default function Scoreboard() {
           const away = competitors.find((c) => c.homeAway === "away");
 
           return (
-            <Link key={game.id} href={`/games/${game.id}`} className="group block border border-gray-700 rounded-lg p-3 bg-gray-950 hover:bg-gray-800 transition-colors hover:border-crimson">
+            <Link key={game.id} href={`/games/${game.id}`} className="card card-hover group block p-3">
               {/* game status at top, small and subtle */}
-              <p className="text-xs text-gray-400 mb-2 group-hover:text-gray-100">{game.status.type.state === "pre" ? formatGameDate(game.date) : game.status.type.detail}</p>
+              <p className="flex items-center gap-2 text-xs text-gray-400 mb-2 group-hover:text-gray-100">
+                {/* pulsing red dot for live games */}
+                {game.status.type.state === "in" && <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />}
+                {game.status.type.state === "pre" ? formatGameDate(game.date) : game.status.type.detail}
+              </p>
 
               {/* away team row */}
               <div className="flex items-center justify-between mb-1">
@@ -98,7 +106,7 @@ export default function Scoreboard() {
                   <span className="text-gray-300 text-sm group-hover:text-white">{away.team.shortDisplayName}</span>
                 </div>
                 {game.status.type.state !== "pre" && (
-                  <span className={`font-bold text-gray-300 group-hover:text-white transition-colors ${flashIds[`${game.id}-${away.team.id}`] ? "text-gold scale-125" : ""} inline-block`}>
+                  <span className={`font-bold text-lg tabular-nums text-gray-300 group-hover:text-white transition-colors ${flashIds[`${game.id}-${away.team.id}`] ? "text-gold scale-125" : ""} inline-block`}>
                     {away.score}
                   </span>
                 )}
@@ -111,7 +119,7 @@ export default function Scoreboard() {
                   <span className="text-gray-300 text-sm group-hover:text-white">{home.team.shortDisplayName}</span>
                 </div>
                 {game.status.type.state !== "pre" && (
-                  <span className={`font-bold text-gray-300 group-hover:text-white transition-colors ${flashIds[`${game.id}-${home.team.id}`] ? "text-gold scale-125" : ""} inline-block`}>
+                  <span className={`font-bold text-lg tabular-nums text-gray-300 group-hover:text-white transition-colors ${flashIds[`${game.id}-${home.team.id}`] ? "text-gold scale-125" : ""} inline-block`}>
                     {home.score}
                   </span>
                 )}

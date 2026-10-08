@@ -9,20 +9,17 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 function Leaderboard({ title, list, statKey, unit }) {
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-3 text-gray-200">{title}</h2>
-      <div className="rounded-lg border border-neutral-700 overflow-hidden">
+      <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">{title}</h2>
+      <div className="card overflow-hidden divide-y divide-white/5">
         {list.map((team, index) => (
-          <Link
-            key={team.teamId}
-            href={`/teams/${team.teamId}`}
-            className={`flex items-center justify-between px-3 py-2 text-sm hover:bg-neutral-700 ${index % 2 === 0 ? "bg-neutral-900" : "bg-neutral-800"}`}>
+          <Link key={team.teamId} href={`/teams/${team.teamId}`} className="flex items-center justify-between px-3 py-2 text-sm transition-colors hover:bg-white/5">
             <div className="flex items-center gap-2">
-              <span className="text-gray-500 w-5">{index + 1}</span>
+              <span className={`w-5 tabular-nums ${index < 3 ? "text-gold font-bold" : "text-gray-500"}`}>{index + 1}</span>
               <img src={team.logo} alt={team.teamName} className="w-6 h-6" />
               <span className="text-gray-200">{team.teamName}</span>
             </div>
-            <span className="text-gray-100 font-bold">
-             {Math.round(team.stats?.[statKey] || 0)} {unit}
+            <span className="text-gray-100 font-bold tabular-nums">
+              {Math.round(team.stats?.[statKey] || 0)} {unit}
             </span>
           </Link>
         ))}
@@ -54,8 +51,8 @@ export default function TeamStatsPage() {
   const byFumbleRecoveries = sortBy("fumblesRecovered");
 
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-[#D4AF37] border-b-2 border-[#8B0000] pb-2">Team Stats</h1>
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <h1 className="page-title">Team Stats</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Leaderboard title="Points Per Game" list={byPointsPerGame} statKey="totalPointsPerGame" unit="pts" />
         <Leaderboard title="Passing Yards Per Game" list={byPassingYardsPerGame} statKey="passingYardsPerGame" unit="yds" />

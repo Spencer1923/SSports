@@ -13,8 +13,8 @@ export default async function PostPage({ params }) {
   const { content, data } = matter(source); // split frontmatter from body text
 
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <h1 className="page-title">
         {data.title}
       </h1>
       <p className="text-sm text-gray-500 mb-4">{data.date}</p>

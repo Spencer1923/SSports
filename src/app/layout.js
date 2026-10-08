@@ -12,12 +12,10 @@ export const metadata = {
     template: "%s | SSports",
   },
   metadataBase: new URL("https://s-sports.netlify.app/"),
-  description:
-    "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
+  description: "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
   openGraph: {
     title: "SSports",
-    description:
-      "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
+    description: "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
     images: ["/logo-medium.png"],
     type: "website",
   },
@@ -46,8 +44,9 @@ export default function RootLayout({ children }) {
       <body className={`${oswald.variable} ${inter.variable}`}>
         <Navbar /> {/* shows on every page */}
         {children}
-        <footer className="flex justify-center p-6 border-t-2 border-gold">
+        <footer className="flex flex-col items-center gap-2 p-8 mt-12 border-t border-gold/30 text-xs text-gray-500">
           <img src="/logo-medium.png" alt="SSports" className="w-16 h-16" />
+          <p>Data: ESPN</p>
         </footer>
       </body>
     </html>

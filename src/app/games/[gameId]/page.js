@@ -22,10 +22,13 @@ export default function GamePage() {
   const awayScore = competitors.find((c) => c.homeAway === "away")?.score;
   const homeScore = competitors.find((c) => c.homeAway === "home")?.score;
 
+  // every category name across both teams (passing, rushing, defensive...), in order
+  const categoryNames = [...new Set(playerStats.flatMap((t) => t.statistics.map((c) => c.name)))];
+
   return (
-    <main className="p-6">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <BackButton />
-      <h1 className="text-2xl font-bold mb-6 text-[#D4AF37] border-b-2 border-[#8B0000] pb-2">Box Score</h1>
+      <h1 className="page-title">Box Score</h1>
 
       {/* team stat comparison — side by side bars for each stat */}
       <section className="mb-8">
@@ -36,7 +39,7 @@ export default function GamePage() {
             <span className="text-gray-200 font-semibold">{teams[0]?.team.abbreviation}</span>
           </div>
 
-          <span className="text-xl font-bold text-gray-100">
+          <span className="text-3xl font-extrabold tabular-nums text-white">
             {awayScore} - {homeScore}
           </span>
 
@@ -56,26 +59,23 @@ export default function GamePage() {
           const total = val1 + val2 || 1; // avoid divide-by-zero
 
           return (
-            <div key={`${stat.name}-${i}`} className="mb-3">
-              <div className="flex justify-between text-sm text-gray-400 mb-1">
-                <span>{stat.displayValue}</span>
-                <span className="text-gray-400">{stat.label}</span>
-                <span>{otherStat?.displayValue}</span>
+            <div key={`${stat.name}-${i}`} className="mb-4">
+              {/* the leading team's number is bright, the trailing one is dim */}
+              <div className="flex justify-between items-baseline mb-1">
+                <span className={`text-lg font-bold tabular-nums ${val1 >= val2 ? "text-white" : "text-gray-500"}`}>{stat.displayValue}</span>
+                <span className="text-xs uppercase tracking-widest text-gray-400">{stat.label}</span>
+                <span className={`text-lg font-bold tabular-nums ${val2 >= val1 ? "text-white" : "text-gray-500"}`}>{otherStat?.displayValue}</span>
               </div>
-              <div className="flex h-4 rounded-full overflow-hidden bg-neutral-800">
+
+              {/* two rounded segments with a gap, a glossy top highlight, and a thin ring (replaces the white border) */}
+              <div className="flex h-3 gap-1">
                 <div
-                  style={{
-                    width: `${(val1 / total) * 100}%`,
-                    backgroundColor: `#${teams[0]?.team.color || "8B0000"}`,
-                    border: "1px solid white",
-                  }}
+                  className="rounded-l-full ring-1 ring-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all duration-700"
+                  style={{ width: `${(val1 / total) * 100}%`, backgroundColor: `#${teams[0]?.team.color || "8B0000"}` }}
                 />
                 <div
-                  style={{
-                    width: `${(val2 / total) * 100}%`,
-                    backgroundColor: `#${teams[1]?.team.color || "D4AF37"}`,
-                    border: "1px solid white",
-                  }}
+                  className="rounded-r-full ring-1 ring-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all duration-700"
+                  style={{ width: `${(val2 / total) * 100}%`, backgroundColor: `#${teams[1]?.team.color || "D4AF37"}` }}
                 />
               </div>
             </div>
@@ -83,50 +83,57 @@ export default function GamePage() {
         })}
       </section>
 
-      {/* player stats — grouped by team, tabular layout per category */}
+      {/* player stats: one grid row per category, so both teams' tables start together */}
       <section>
-        {/*<h2 className="text-xl font-semibold mb-4 text-[#D4AF37]">
-          Player Stats
-        </h2>*/}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* team headers, desktop only (on mobile the abbreviation shows inside each category) */}
+        <div className="hidden md:grid md:grid-cols-2 gap-8 mb-4">
           {playerStats.map((teamEntry, teamIndex) => (
-            <div key={teamEntry.team.id}>
-              <div className={`flex items-center gap-2 mb-3 ${teamIndex === 1 ? "flex-row-reverse" : ""}`}>
-                <img src={teamEntry.team.logo} alt={teamEntry.team.displayName} className="w-6 h-6" />
-                <h3 className="font-semibold text-gray-200">{teamEntry.team.displayName}</h3>
-              </div>
+            <div key={teamEntry.team.id} className={`flex items-center gap-2 ${teamIndex === 1 ? "flex-row-reverse" : ""}`}>
+              <img src={teamEntry.team.logo} alt={teamEntry.team.displayName} className="w-6 h-6" />
+              <h3 className="font-semibold text-gray-200">{teamEntry.team.displayName}</h3>
+            </div>
+          ))}
+        </div>
 
-              {teamEntry.statistics.map((category) => (
-                <div key={category.name} className="mb-4 rounded-lg overflow-hidden border border-neutral-700 overflow-x-auto">
-                  <div className="bg-neutral-800 px-3 py-1">
-                    <p className="text-gray-300 text-sm font-semibold capitalize">{category.name}</p>
+        {categoryNames.map((name) => (
+          <div key={name} className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4 items-start">
+            {playerStats.map((teamEntry) => {
+              const category = teamEntry.statistics.find((c) => c.name === name);
+              if (!category) return <div key={teamEntry.team.id} />; // this team has no stats in this category
+
+              return (
+                <div key={teamEntry.team.id} className="card overflow-hidden overflow-x-auto divide-y divide-white/5">
+                  <div className="bg-white/5 px-3 py-1">
+                    <p className="text-gray-300 text-sm font-semibold capitalize">
+                      {category.name}
+                      <span className="md:hidden text-gray-500 text-xs"> · {teamEntry.team.abbreviation}</span>
+                    </p>
                   </div>
                   {category.labels && (
                     <div className="flex gap-3 px-3 py-1 text-xs text-gray-500">
                       <span className="flex-1" />
-                      {category.labels.map((label) => (
-                        <span key={label} className="w-12 text-center">
+                      {category.labels.map((label, li) => (
+                        <span key={li} className="w-12 text-center">
                           {label}
                         </span>
                       ))}
                     </div>
                   )}
-                  {category.athletes.map((entry, index) => (
-                    <div key={entry.athlete.id} className={`flex gap-3 px-3 py-2 text-sm ${index % 2 === 0 ? "bg-neutral-900" : "bg-neutral-800"}`}>
+                  {category.athletes.map((entry) => (
+                    <div key={entry.athlete.id} className="flex gap-3 px-3 py-2 text-sm hover:bg-white/5 transition-colors">
                       <span className="text-gray-200 flex-1">{entry.athlete.displayName}</span>
                       {entry.stats.map((stat, i) => (
-                        <span key={i} className="text-gray-400 w-12 text-center">
+                        <span key={i} className="text-gray-400 w-12 text-center tabular-nums">
                           {stat}
                         </span>
                       ))}
                     </div>
                   ))}
                 </div>
-              ))}
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        ))}
       </section>
     </main>
   );

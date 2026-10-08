@@ -26,14 +26,14 @@ export default function Home() {
   const latestPosts = getLatestPosts();
 
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">SSports</h1>
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <h1 className="page-title">SSports</h1>
 
       {/* two-column hub layout: scores left, news + blog right */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* left column: scores, takes up 2/3 width */}
         <div className="md:col-span-2">
-          <h2 className="text-xl text-gray-300 font-semibold mb-3">Scores</h2>
+          <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Scores</h2>
           {/* Suspense is required because Scoreboard reads the URL's ?week= param */}
           <Suspense fallback={<LoadingSpinner />}>
             <Scoreboard />
@@ -42,7 +42,7 @@ export default function Home() {
 
         {/* right column: news + latest articles, takes up 1/3 width */}
         <div className="md:col-span-1">
-          <h2 className="text-xl font-semibold mb-3">Latest Articles</h2>
+          <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Latest Articles</h2>
           <div className="mb-6">
             {latestPosts.map((post) => (
               <div key={post.slug} className="mb-3">
@@ -54,7 +54,7 @@ export default function Home() {
             ))}
           </div>
 
-          <h2 className="text-xl font-semibold mb-3">News</h2>
+          <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">News</h2>
           <NewsFeed limit={5} />
         </div>
       </div>

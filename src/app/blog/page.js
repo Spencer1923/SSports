@@ -19,8 +19,8 @@ export default function BlogPage() {
     .sort((a, b) => new Date(b.date) - new Date(a.date)); // newest first
 
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gold border-b-2 border-crimson pb-2">Blog</h1>
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <h1 className="page-title">Blog</h1>
       {posts.map((post) => (
         <div key={post.slug} className="mb-3">
           <Link href={`/blog/${post.slug}`} className="text-gray-300 hover:text-crimson">

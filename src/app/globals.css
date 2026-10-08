@@ -7,12 +7,46 @@
 }
 
 body {
-  background-color: #0A0A0A;
-  color: #D4AF37;
+  background: radial-gradient(ellipse at top, #1a1a1a, #0A0A0A 60%) fixed;
+  color: #e5e5e5; /* was gold, which is why everything looked too gold */
   font-family: var(--font-body), sans-serif;
 }
 
 h1, h2, h3 {
   font-family: var(--font-heading), sans-serif;
   letter-spacing: 0.02em;
+}
+
+html { scroll-behavior: smooth; }
+::selection { background: #8B0000; color: #fff; }
+
+/* metallic gold page titles */
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(to bottom, #F5E08A, #D4AF37, #8A6D1D);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+/* glass-style card with soft shadow */
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s;
+}
+
+/* lift + gold glow on hover */
+.card-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
 }
