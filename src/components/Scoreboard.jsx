@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
-// formats a date like "Thu, Oct 8" with a superscript ordinal, plus local time (no timezone label)
+// formats a date like Thu, Oct 8 with a superscript, and has local time
 function formatGameDate(dateString) {
   const d = new Date(dateString);
   const weekday = d.toLocaleDateString("en-US", { weekday: "short" });
@@ -15,7 +15,7 @@ function formatGameDate(dateString) {
   const day = d.getDate();
   const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 
-  // ordinal suffix: 1st, 2nd, 3rd, 4th...
+  // ordinal suffix: 1st, 2nd, 3rd, 4th.....
   const suffix = day > 3 && day < 21 ? "th" : { 1: "st", 2: "nd", 3: "rd" }[day % 10] || "th";
 
   return (
@@ -29,7 +29,7 @@ function formatGameDate(dateString) {
 export default function Scoreboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // read week from the URL's ?week= param — null means "current week" (ESPN default)
+  // read week from the URL's ?week= param — null means current week
   const week = searchParams.get("week") ? Number(searchParams.get("week")) : null;
 
   const url = week ? `/api/scores?week=${week}` : "/api/scores";
