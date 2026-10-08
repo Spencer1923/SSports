@@ -49,7 +49,7 @@ export default function LeadersPage() {
                 <Link
                   key={leader.athleteId}
                   href={`/players/${leader.athleteId}`}
-                  className="flex items-center gap-3 p-2 hover:bg-gray-500 rounded text-gray-300"
+                  className="flex items-center gap-3 p-2 hover:bg-gray-700 rounded text-gray-300"
                 >
                   <span className="text-gray-400 w-4">{index + 2}</span>
                   <img src={leader.teamLogo} alt="" className="w-6 h-6" />
