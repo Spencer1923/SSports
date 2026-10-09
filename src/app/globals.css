@@ -6,9 +6,13 @@
   --color-jetblack: #0A0A0A;
 }
 
+:root{
+  background-color: #0A0A0A;
+}
+
 body {
   background: radial-gradient(ellipse at top, #1a1a1a, #0A0A0A 60%) fixed;
-  color: #e5e5e5; /* was gold, which is why everything looked too gold */
+  color: #e5e5e5; /* text color */
   font-family: var(--font-body), sans-serif;
 }
 
