@@ -15,13 +15,13 @@ function formatGameDate(dateString) {
   const day = d.getDate();
   const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 
-  // ordinal suffix: 1st, 2nd, 3rd, 4th.....
+  /* ordinal suffix: 1st, 2nd, 3rd, 4th.....
   const suffix = day > 3 && day < 21 ? "th" : { 1: "st", 2: "nd", 3: "rd" }[day % 10] || "th";
+  */
 
   return (
     <>
-      {weekday}, {month} {day}
-      <sup>{suffix}</sup> {time}
+      {weekday}, {month} {day} {time}
     </>
   );
 }
@@ -106,7 +106,8 @@ export default function Scoreboard() {
                   <span className="text-gray-300 text-sm group-hover:text-white">{away.team.shortDisplayName}</span>
                 </div>
                 {game.status.type.state !== "pre" && (
-                  <span className={`font-bold text-lg tabular-nums text-gray-300 group-hover:text-white transition-colors ${flashIds[`${game.id}-${away.team.id}`] ? "text-gold scale-125" : ""} inline-block`}>
+                  <span
+                    className={`font-bold text-lg tabular-nums text-gray-300 group-hover:text-white transition-colors ${flashIds[`${game.id}-${away.team.id}`] ? "text-gold scale-125" : ""} inline-block`}>
                     {away.score}
                   </span>
                 )}
@@ -119,7 +120,8 @@ export default function Scoreboard() {
                   <span className="text-gray-300 text-sm group-hover:text-white">{home.team.shortDisplayName}</span>
                 </div>
                 {game.status.type.state !== "pre" && (
-                  <span className={`font-bold text-lg tabular-nums text-gray-300 group-hover:text-white transition-colors ${flashIds[`${game.id}-${home.team.id}`] ? "text-gold scale-125" : ""} inline-block`}>
+                  <span
+                    className={`font-bold text-lg tabular-nums text-gray-300 group-hover:text-white transition-colors ${flashIds[`${game.id}-${home.team.id}`] ? "text-gold scale-125" : ""} inline-block`}>
                     {home.score}
                   </span>
                 )}
