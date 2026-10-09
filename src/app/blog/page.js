@@ -21,14 +21,14 @@ export default function BlogPage() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <h1 className="page-title">Blog</h1>
-      {posts.map((post) => (
-        <div key={post.slug} className="mb-3">
-          <Link href={`/blog/${post.slug}`} className="text-gray-300 hover:text-crimson">
-            {post.title}
+      <div className="grid gap-4 md:grid-cols-2">
+        {posts.map((post) => (
+          <Link key={post.slug} href={`/blog/${post.slug}`} className="card card-hover block p-5">
+            <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-2">{post.date}</p>
+            <h2 className="text-xl font-bold text-gray-100">{post.title}</h2>
           </Link>
-          <p className="text-sm text-gray-500">{post.date}</p>
-        </div>
-      ))}
+        ))}
+      </div>
     </main>
   );
 }

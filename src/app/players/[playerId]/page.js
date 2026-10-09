@@ -9,10 +9,7 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function PlayerPage() {
   const { playerId } = useParams();
-  const { data, error, isLoading } = useSWR(
-    `/api/players/${playerId}`,
-    fetcher,
-  );
+  const { data, error, isLoading } = useSWR(`/api/players/${playerId}`, fetcher);
 
   if (error) return <p>Failed to load player.</p>;
   if (isLoading) return <LoadingSpinner />;
@@ -26,15 +23,9 @@ export default function PlayerPage() {
       <BackButton />
       {/* headshot + basic info */}
       <div className="flex items-center gap-4">
-        <img
-          src={player.headshot?.href}
-          alt={player.displayName}
-          className="w-24 h-24 rounded object-cover"
-        />
+        <img src={player.headshot?.href} alt={player.displayName} className="w-28 h-28 rounded-full object-cover object-top ring-2 ring-gold/60 bg-white/5" />
         <div>
-          <h1 className="page-title">
-            {player.displayName}
-          </h1>
+          <h1 className="text-3xl font-extrabold uppercase tracking-wide text-white mb-1">{player.displayName}</h1>
           <p className="text-gray-300">
             {player.position?.displayName} — #{player.jersey}
           </p>
@@ -43,26 +34,34 @@ export default function PlayerPage() {
       </div>
 
       {/* bio details */}
-      <div className="text-gray-300 mt-4">
-        <p>
-          Height: {player.displayHeight} | Weight: {player.displayWeight}
-        </p>
-        <p>
-          Age: {player.age} | Experience: {player.displayExperience}
-        </p>
-        <p>Draft: {player.displayDraft}</p>
+      <div className="card grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 p-4 mt-6 text-sm">
+        {[
+          ["Height", player.displayHeight],
+          ["Weight", player.displayWeight],
+          ["Age", player.age],
+          ["Experience", player.displayExperience],
+          ["Draft", player.displayDraft],
+        ].map(([label, value]) => (
+          <div key={label}>
+            <p className="text-[11px] uppercase tracking-widest text-gray-500">{label}</p>
+            <p className="text-gray-100">{value}</p>
+          </div>
+        ))}
       </div>
 
       {/* season stats table */}
-      <section className="mt-6">
-        <h2 className="text-xl font-semibold mb-2">
-          {player.statsSummary?.displayName || "Season Stats"}
-        </h2>
-        {stats.map((stat) => (
-          <p className="text-gray-300" key={stat.name}>
-            {stat.displayName}: {stat.displayValue}
-          </p>
-        ))}
+      <section className="mt-8">
+        <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">{player.statsSummary?.displayName || "Season Stats"}</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {stats.map((stat) => (
+            <div key={stat.name} className="card p-4 text-center">
+              <p className="text-3xl font-extrabold tabular-nums text-white">{stat.displayValue}</p>
+              <p className="text-[11px] uppercase tracking-widest text-gray-400 mt-1">{stat.displayName}</p>
+              {/* league rank, e.g. "4th" */}
+              {stat.rankDisplayValue && <p className="text-xs text-gold mt-1">{stat.rankDisplayValue}</p>}
+            </div>
+          ))}
+        </div>
       </section>
     </main>
   );

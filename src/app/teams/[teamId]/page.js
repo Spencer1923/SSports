@@ -52,17 +52,17 @@ export default function TeamPage() {
       <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Standings", href: "/standings" }, { label: team.displayName }]} />
       <BackButton />
       {/* header banner using team's own color */}
-      <div className="flex items-center gap-4 p-4 rounded text-white" style={{ backgroundColor: teamColor }}>
-        <img src={team.logos?.[0]?.href} alt={team.displayName} className="w-16 h-16" />
+      <div className="flex items-center gap-4 p-5 rounded-xl text-white shadow-lg shadow-black/40 ring-1 ring-white/10" style={{ background: `linear-gradient(135deg, ${teamColor}, #0A0A0A 140%)` }}>
+        <img src={team.logos?.[0]?.href} alt={team.displayName} className="w-20 h-20 drop-shadow-lg" />
         <div>
-          <h1 className="page-title">{team.displayName}</h1>
+          <h1 className="text-3xl font-extrabold uppercase tracking-wide">{team.displayName}</h1>
           <p>{team.record?.items?.[0]?.summary}</p>
         </div>
       </div>
 
       {/* schedule section, grouped by week */}
       <section className="mt-6">
-        <h2 className="text-xl font-semibold mb-2 text-gray-200">Schedule</h2>
+        <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Schedule</h2>
 
         {games.map((game) => {
           const competitors = game.competitions?.[0]?.competitors || [];
@@ -71,8 +71,7 @@ export default function TeamPage() {
           const isHome = self?.homeAway === "home";
 
           // fallback: some ESPN responses use "logo" (string), others "logos" (array)
-          const opponentLogo = opponent?.team.logo || opponent?.team.logos?.[0]?.href;
-          console.log("upcoming opponent:", opponent?.team.displayName, opponent?.record);
+          const opponentLogo = opponent?.team.logo || opponent?.team.logos?.[0]?.href;          
 
           const formattedDate = new Date(game.date).toLocaleDateString("en-US", {
             weekday: "long",
@@ -83,7 +82,7 @@ export default function TeamPage() {
           return (
             <div key={game.id} className="mb-4">
               <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">{game.week?.text}</p>
-              <div className="flex items-center justify-between px-3 py-2 text-sm rounded-lg border bg-neutral-900" style={{ borderColor: teamColor }}>
+              <div className="card flex items-center justify-between px-3 py-2 text-sm" style={{ borderLeftColor: teamColor, borderLeftWidth: "4px" }}>
                 <div className="flex items-center gap-2">
                   <img src={team.logos?.[0]?.href} alt={team.displayName} className="w-6 h-6" />
                   <span className="text-gray-200">{isHome ? "vs" : "@"}</span>
@@ -101,7 +100,7 @@ export default function TeamPage() {
       {/* roster section, grouped by position */}
       {/* roster section, ordered by depth chart position (starters first) */}
       <section className="mt-6">
-        <h2 className="text-xl font-semibold mb-2 text-gray-200">Roster</h2>
+        <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Roster</h2>
         {(() => {
           const allPlayers = positionGroups.flatMap((g) => g.items || [g]);
           const playersById = {};
@@ -126,15 +125,15 @@ export default function TeamPage() {
           return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {Object.entries(positionMap).map(([key, { name, athletes }]) => (
-                <div key={key} className="rounded-lg border bg-neutral-900 p-3" style={{ borderColor: teamColor }}>
-                  <h3 className="font-bold text-gray-100 mb-2">{name}</h3>
+                <div key={key} className="card p-3" style={{ borderTop: `3px solid ${teamColor}` }}>
+                  <h3 className="text-[11px] uppercase tracking-widest text-gray-400 mb-2">{name}</h3>
                   <div className="flex flex-col gap-1">
                     {athletes.map((athleteRef, depthIndex) => {
                       const player = playersById[athleteRef.id];
                       if (!player) return null;
 
                       return (
-                        <Link key={player.id} href={`/players/${player.id}`} className="flex items-center gap-1 text-sm text-gray-300 hover:text-[#8B0000]">
+                        <Link key={player.id} href={`/players/${player.id}`} className="flex items-center gap-1 text-sm text-gray-300 hover:text-gold transition-colors">
                           <span className="text-gray-500 text-xs w-3">{depthIndex + 1}</span>
                           <span className="truncate">{player.displayName}</span>
                         </Link>
