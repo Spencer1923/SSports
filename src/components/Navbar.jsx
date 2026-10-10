@@ -18,6 +18,7 @@ export default function Navbar() {
     { href: "/injuries", label: "Injuries" },
     { href: "/blog", label: "Blog" },
     { href: "/news", label: "News" },
+    { href: "/transactions", label: "Transactions" },
   ];
 
   return (

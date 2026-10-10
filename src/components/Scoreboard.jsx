@@ -89,6 +89,7 @@ export default function Scoreboard() {
           const competitors = game.competitions[0].competitors;
           const home = competitors.find((c) => c.homeAway === "home");
           const away = competitors.find((c) => c.homeAway === "away");
+          const odds = game.competitions[0].odds?.[0]; // betting line from ESPN
 
           return (
             <Link key={game.id} href={`/games/${game.id}`} className="card card-hover group block p-3">
@@ -98,6 +99,12 @@ export default function Scoreboard() {
                 {game.status.type.state === "in" && <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />}
                 {game.status.type.state === "pre" ? formatGameDate(game.date) : game.status.type.detail}
               </p>
+
+              {game.status.type.state === "pre" && odds?.details && (
+                <p className="inline-block rounded-full border border-white/10 bg-white/5 px-2 py-0.5 mb-2 text-[11px] tabular-nums text-gray-300">
+                  {odds.details}                 
+                </p>
+              )}
 
               {/* away team row */}
               <div className="flex items-center justify-between mb-1">

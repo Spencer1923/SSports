@@ -3,6 +3,11 @@ import useSWR from "swr";
 import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import BackButton from "@/components/BackButton";
+import LiveDriveBanner from "@/components/LiveDriveBanner";
+import BettingLines from "@/components/BettingLines";
+import WinProbability from "@/components/WinProbability";
+import ScoringSummary from "@/components/ScoringSummary";
+import DriveList from "@/components/DriveList";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -22,6 +27,11 @@ export default function GamePage() {
   const awayScore = competitors.find((c) => c.homeAway === "away")?.score;
   const homeScore = competitors.find((c) => c.homeAway === "home")?.score;
 
+  // figure out which boxscore team is home/away (used by odds and win probability)
+  const homeId = competitors.find((c) => c.homeAway === "home")?.id || competitors.find((c) => c.homeAway === "home")?.team?.id;
+  const homeTeam = teams.find((t) => t.team.id === homeId)?.team;
+  const awayTeam = teams.find((t) => t.team.id !== homeId)?.team;
+
   // every category name across both teams (passing, rushing, defensive...), in order
   const categoryNames = [...new Set(playerStats.flatMap((t) => t.statistics.map((c) => c.name)))];
 
@@ -29,6 +39,7 @@ export default function GamePage() {
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <BackButton />
       <h1 className="page-title">Box Score</h1>
+      <LiveDriveBanner data={data} />
 
       {/* team stat comparison — side by side bars for each stat */}
       <section className="mb-8">
@@ -82,6 +93,15 @@ export default function GamePage() {
           );
         })}
       </section>
+
+      {/* betting lines + win probability side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+        <BettingLines pickcenter={data.pickcenter} home={homeTeam} away={awayTeam} />
+        <WinProbability plays={data.winprobability} home={homeTeam} away={awayTeam} />
+      </div>
+
+      <ScoringSummary plays={data.scoringPlays} teams={teams} />
+      <DriveList drives={data.drives} />
 
       {/* player stats: one grid row per category, so both teams' tables start together */}
       <section>
