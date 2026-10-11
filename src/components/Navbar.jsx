@@ -22,7 +22,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-black/70 backdrop-blur-md border-b border-gold/40 text-gray-200">
+    <nav className="sticky top-0 z-50 bg-black/70 backdrop-blur-md border-b border-gold/40 shadow-[0_4px_24px_rgba(139,0,0,0.35)] text-gray-200">
       <div className="flex items-center justify-between p-4">
         <Link href="/">
           <img src="/logo-header.png" alt="SSports" className="h-12 md:h-20" />

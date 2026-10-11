@@ -72,13 +72,13 @@ export default function Scoreboard() {
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => router.push(`/?week=${Math.max(1, currentWeek - 1)}`)}
-          className="text-sm text-gray-300 rounded-full border border-white/15 px-4 py-1.5 cursor-pointer transition hover:bg-gold hover:text-black">
+          className="text-sm text-gray-300 rounded-full border border-white/15 px-4 py-1.5 cursor-pointer transition hover:border-crimson hover:text-white hover:shadow-[0_0_14px_rgba(139,0,0,0.5)]">
           ← Prev
         </button>
         <span className="text-gray-200 font-semibold">Week {currentWeek}</span>
         <button
           onClick={() => router.push(`/?week=${Math.min(18, currentWeek + 1)}`)}
-          className="text-sm text-gray-300 rounded-full border border-white/15 px-4 py-1.5 cursor-pointer transition hover:bg-gold hover:text-black">
+          className="text-sm text-gray-300 rounded-full border border-white/15 px-4 py-1.5 cursor-pointer transition hover:border-crimson hover:text-white hover:shadow-[0_0_14px_rgba(139,0,0,0.5)]">
           Next →
         </button>
       </div>
@@ -102,7 +102,9 @@ export default function Scoreboard() {
 
               {game.status.type.state === "pre" && odds?.details && (
                 <p className="inline-block rounded-full border border-white/10 bg-white/5 px-2 py-0.5 mb-2 text-[11px] tabular-nums text-gray-300">
-                  {odds.details}                 
+                  {odds.details}
+                  
+                                   
                 </p>
               )}
 

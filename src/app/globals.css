@@ -2,28 +2,37 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-gold: #D4AF37;
-  --color-crimson: #8B0000;
-  --color-jetblack: #0A0A0A;
+  --color-gold: #d4af37;
+  --color-crimson: #8b0000;
+  --color-jetblack: #0a0a0a;
 }
 
-:root{
-  background-color: #0A0A0A;
+:root {
+  background-color: #0a0a0a;
 }
 
 body {
-  background: radial-gradient(ellipse at top, #1a1a1a, #0A0A0A 60%) fixed;
+  background: radial-gradient(ellipse at top, #1a1a1a, #0a0a0a 60%) fixed;
   color: #e5e5e5; /* text color */
   font-family: var(--font-body), sans-serif;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-heading), sans-serif;
   letter-spacing: 0.02em;
 }
 
-html { scroll-behavior: smooth; }
-::selection { background: #8B0000; color: #fff; }
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+::selection {
+  background: #8b0000;
+  color: #fff;
+}
 
 /* metallic gold page titles */
 .page-title {
@@ -31,13 +40,14 @@ html { scroll-behavior: smooth; }
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: linear-gradient(to bottom, #F5E08A, #D4AF37, #8A6D1D);
+  background: linear-gradient(to bottom, #f5e08a, #d4af37, #8a6d1d);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(to right, #d4af37, #8b0000 60%, transparent) 1;
 }
 
 /* glass-style card with soft shadow */
@@ -53,5 +63,9 @@ html { scroll-behavior: smooth; }
 .card-hover:hover {
   transform: translateY(-2px);
   border-color: rgba(212, 175, 55, 0.5);
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  box-shadow: 0 0 22px rgba(139, 0, 0, 0.45);
 }
+
+
+/* keyboard focus ring */
+:focus-visible { outline: 2px solid #D4AF37; outline-offset: 2px; }
