@@ -47,7 +47,6 @@ export default function RootLayout({ children }) {
         <footer className="relative flex flex-col items-center gap-2 p-8 mt-12 text-xs text-gray-500">
   <span className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-crimson to-transparent" />
           <img src="/logo-medium.png" alt="SSports" className="w-16 h-16" />
-          <p>Data: ESPN</p>
         </footer>
       </body>
     </html>
