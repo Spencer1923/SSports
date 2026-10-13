@@ -11,6 +11,9 @@ import DriveList from "@/components/DriveList";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
+// stats where a LOWER number is better (matched against the stat's name + label)
+const LOWER_IS_BETTER = ["interception", "fumbleslost", "turnover", "penalt", "sacksyardslost", "allowed", "giveaway"];
+
 export default function GamePage() {
   const { gameId } = useParams();
   const { data, error, isLoading } = useSWR(`/api/games/${gameId}`, fetcher);
@@ -68,14 +71,19 @@ export default function GamePage() {
           const val1 = parseFloat(stat.displayValue) || 0;
           const val2 = parseFloat(otherStat?.displayValue) || 0;
           const total = val1 + val2 || 1; // avoid divide-by-zero
+          // flip the highlight for stats where lower is better
+          const key = `${stat.name}${stat.label}`.toLowerCase().replace(/[\s-]/g, "");
+          const lowerBetter = LOWER_IS_BETTER.some((k) => key.includes(k));
+          const team1Better = lowerBetter ? val1 <= val2 : val1 >= val2;
+          const team2Better = lowerBetter ? val2 <= val1 : val2 >= val1;
 
           return (
             <div key={`${stat.name}-${i}`} className="mb-4">
               {/* the leading team's number is bright, the trailing one is dim */}
               <div className="flex justify-between items-baseline mb-1">
-                <span className={`text-lg font-bold tabular-nums ${val1 >= val2 ? "text-white" : "text-gray-500"}`}>{stat.displayValue}</span>
+                <span className={`text-lg font-bold tabular-nums ${team1Better ? "text-white" : "text-gray-500"}`}>{stat.displayValue}</span>
                 <span className="text-xs uppercase tracking-widest text-gray-400">{stat.label}</span>
-                <span className={`text-lg font-bold tabular-nums ${val2 >= val1 ? "text-white" : "text-gray-500"}`}>{otherStat?.displayValue}</span>
+                <span className={`text-lg font-bold tabular-nums ${team2Better ? "text-white" : "text-gray-500"}`}>{otherStat?.displayValue}</span>
               </div>
 
               {/* two rounded segments with a gap, a glossy top highlight, and a thin ring (replaces the white border) */}
