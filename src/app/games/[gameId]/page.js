@@ -89,6 +89,15 @@ function cleanCategories(statistics = []) {
     .filter((c) => c.athletes.length > 0);
 }
 
+// turns a stat value into a number: efficiency stats like "2-5" become 2/5 = 0.4, everything else uses the leading number
+function toNumber(value, isRatio) {
+  if (isRatio) {
+    const [made, att] = String(value).split(/[-/]/).map(Number);
+    return att ? made / att : 0; // 0 attempts counts as 0
+  }
+  return parseFloat(value) || 0;
+}
+
 export default function GamePage() {
   const { gameId } = useParams();
   const { data, error, isLoading } = useSWR(`/api/games/${gameId}`, fetcher);
@@ -148,12 +157,14 @@ export default function GamePage() {
           .filter(({ stat }) => !HIDDEN_TEAM_STATS.includes(norm(stat.label)))
           .map(({ stat, otherStat }, i) => {
             // parse displayValue as a number where possible, for bar width comparison
-            const val1 = parseFloat(stat.displayValue) || 0;
-            const val2 = parseFloat(otherStat?.displayValue) || 0;
-            const total = val1 + val2 || 1; // avoid divide-by-zero
             // flip the highlight for stats where lower is better
             const key = `${stat.name}${stat.label}`.toLowerCase().replace(/[\s-]/g, "");
             const lowerBetter = LOWER_IS_BETTER.some((k) => key.includes(k));
+            // efficiency stats ("2-5") are compared as a ratio: 2/5 = 0.4
+            const isRatio = key.includes("efficiency") || key.includes("redzone");
+            const val1 = toNumber(stat.displayValue, isRatio);
+            const val2 = toNumber(otherStat?.displayValue, isRatio);
+            const total = val1 + val2 || 1; // avoid divide-by-zero
             const team1Better = lowerBetter ? val1 <= val2 : val1 >= val2;
             const team2Better = lowerBetter ? val2 <= val1 : val2 >= val1;
 
