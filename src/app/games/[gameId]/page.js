@@ -14,6 +14,81 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 // stats where a LOWER number is better (matched against the stat's name + label)
 const LOWER_IS_BETTER = ["interception", "fumbleslost", "turnover", "penalt", "sacksyardslost", "allowed", "giveaway"];
 
+// normalizes a label so "Passing 1st downs" and "passing first downs" compare equal
+const norm = (s = "") =>
+  s
+    .toLowerCase()
+    .replace(/1st/g, "first")
+    .replace(/[^a-z]/g, "");
+
+// team stats removed from the comparison list (matched after norm)
+const HIDDEN_TEAM_STATS = [
+  "passingfirstdowns",
+  "rushingfirstdowns",
+  "firstdownsfrompenalties",
+  "yardsperplay",
+  "totaldrives",
+  "passing",
+  "compatt",
+  "yardsperpass",
+  "interceptionsthrown",
+  "sacksyardslost",
+  "rushing",
+  "rushingattempts",
+  "fumbleslost",
+  "defensivespecialteamstds",
+  "rddownefficiency",
+];
+
+// whole player-stat categories removed
+const HIDDEN_CATEGORIES = ["fumbles", "interceptions", "kickreturns", "puntreturns", "kicking", "punting"];
+
+// cleans one team's player categories
+function cleanCategories(statistics = []) {
+  // athlete id -> interception count (the interceptions category's first column is INT)
+  const intCat = statistics.find((c) => (c.name || "").toLowerCase() === "interceptions");
+  const intsById = {};
+  intCat?.athletes?.forEach((a) => {
+    intsById[a.athlete.id] = a.stats[0];
+  });
+
+  return statistics
+    .filter((c) => !HIDDEN_CATEGORIES.includes((c.name || "").toLowerCase()))
+    .map((c) => {
+      const name = (c.name || "").toLowerCase();
+      let labels = c.labels || [];
+      let athletes = c.athletes || [];
+
+      if (name === "defensive") {
+        const tdIdx = labels.indexOf("TD"); // the TD column gets dropped
+        // anyone who only appears in the interceptions list still gets a defensive row
+        const ids = new Set(athletes.map((a) => a.athlete.id));
+        const extra = (intCat?.athletes || []).filter((a) => !ids.has(a.athlete.id)).map((a) => ({ athlete: a.athlete, stats: labels.map(() => "--") }));
+
+        // drop TD, then add INT as the last column
+        athletes = [...athletes, ...extra].map((a) => ({
+          ...a,
+          stats: [...a.stats.filter((_, i) => i !== tdIdx), intsById[a.athlete.id] ?? "0"],
+        }));
+        labels = [...labels.filter((_, i) => i !== tdIdx), "INT"];
+        // hide players whose whole line is 1 total tackle and zeros everywhere else
+        const totIdx = labels.indexOf("TOT");
+        if (totIdx !== -1) {
+          athletes = athletes.filter((a) => !(Number(a.stats[totIdx]) === 1 && a.stats.every((v, i) => i === totIdx || Number(v) === 0)));
+        }
+      }
+
+      if (name === "receiving") {
+        // hide receivers with 0 receptions
+        const recIdx = labels.indexOf("REC");
+        if (recIdx !== -1) athletes = athletes.filter((a) => Number(a.stats[recIdx]) > 0);
+      }
+
+      return { ...c, labels, athletes };
+    })
+    .filter((c) => c.athletes.length > 0);
+}
+
 export default function GamePage() {
   const { gameId } = useParams();
   const { data, error, isLoading } = useSWR(`/api/games/${gameId}`, fetcher);
@@ -24,7 +99,10 @@ export default function GamePage() {
   // boxscore.teams holds team-level stats (yards, turnovers, etc.)
   const teams = data.boxscore?.teams || [];
   // boxscore.players holds player-level stats grouped by team/category
-  const playerStats = data.boxscore?.players || [];
+  const playerStats = (data.boxscore?.players || []).map((t) => ({
+    ...t,
+    statistics: cleanCategories(t.statistics),
+  }));
   // header.competitions[0].competitors holds live scores; boxscore.teams doesn't include score
   const competitors = data.header?.competitions?.[0]?.competitors || [];
   const awayScore = competitors.find((c) => c.homeAway === "away")?.score;
@@ -65,41 +143,43 @@ export default function GamePage() {
         </div>
 
         {/* build one comparison row per stat, matching stat names across both teams */}
-        {teams[0]?.statistics.map((stat, i) => {
-          const otherStat = teams[1]?.statistics[i];
-          // parse displayValue as a number where possible, for bar width comparison
-          const val1 = parseFloat(stat.displayValue) || 0;
-          const val2 = parseFloat(otherStat?.displayValue) || 0;
-          const total = val1 + val2 || 1; // avoid divide-by-zero
-          // flip the highlight for stats where lower is better
-          const key = `${stat.name}${stat.label}`.toLowerCase().replace(/[\s-]/g, "");
-          const lowerBetter = LOWER_IS_BETTER.some((k) => key.includes(k));
-          const team1Better = lowerBetter ? val1 <= val2 : val1 >= val2;
-          const team2Better = lowerBetter ? val2 <= val1 : val2 >= val1;
+        {teams[0]?.statistics
+          .map((stat, i) => ({ stat, otherStat: teams[1]?.statistics[i] })) // pair the two teams first
+          .filter(({ stat }) => !HIDDEN_TEAM_STATS.includes(norm(stat.label)))
+          .map(({ stat, otherStat }, i) => {
+            // parse displayValue as a number where possible, for bar width comparison
+            const val1 = parseFloat(stat.displayValue) || 0;
+            const val2 = parseFloat(otherStat?.displayValue) || 0;
+            const total = val1 + val2 || 1; // avoid divide-by-zero
+            // flip the highlight for stats where lower is better
+            const key = `${stat.name}${stat.label}`.toLowerCase().replace(/[\s-]/g, "");
+            const lowerBetter = LOWER_IS_BETTER.some((k) => key.includes(k));
+            const team1Better = lowerBetter ? val1 <= val2 : val1 >= val2;
+            const team2Better = lowerBetter ? val2 <= val1 : val2 >= val1;
 
-          return (
-            <div key={`${stat.name}-${i}`} className="mb-4">
-              {/* the leading team's number is bright, the trailing one is dim */}
-              <div className="flex justify-between items-baseline mb-1">
-                <span className={`text-lg font-bold tabular-nums ${team1Better ? "text-white" : "text-gray-500"}`}>{stat.displayValue}</span>
-                <span className="text-xs uppercase tracking-widest text-gray-400">{stat.label}</span>
-                <span className={`text-lg font-bold tabular-nums ${team2Better ? "text-white" : "text-gray-500"}`}>{otherStat?.displayValue}</span>
-              </div>
+            return (
+              <div key={`${stat.name}-${i}`} className="mb-4">
+                {/* the leading team's number is bright, the trailing one is dim */}
+                <div className="flex justify-between items-baseline mb-1">
+                  <span className={`text-lg font-bold tabular-nums ${team1Better ? "text-white" : "text-gray-500"}`}>{stat.displayValue}</span>
+                  <span className="text-xs uppercase tracking-widest text-gray-400">{stat.label}</span>
+                  <span className={`text-lg font-bold tabular-nums ${team2Better ? "text-white" : "text-gray-500"}`}>{otherStat?.displayValue}</span>
+                </div>
 
-              {/* two rounded segments with a gap, a glossy top highlight, and a thin ring (replaces the white border) */}
-              <div className="flex h-3 gap-1">
-                <div
-                  className="rounded-l-full ring-1 ring-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all duration-700"
-                  style={{ width: `${(val1 / total) * 100}%`, backgroundColor: `#${teams[0]?.team.color || "8B0000"}` }}
-                />
-                <div
-                  className="rounded-r-full ring-1 ring-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all duration-700"
-                  style={{ width: `${(val2 / total) * 100}%`, backgroundColor: `#${teams[1]?.team.color || "D4AF37"}` }}
-                />
+                {/* two rounded segments with a gap, a glossy top highlight, and a thin ring (replaces the white border) */}
+                <div className="flex h-3 gap-1">
+                  <div
+                    className="rounded-l-full ring-1 ring-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all duration-700"
+                    style={{ width: `${(val1 / total) * 100}%`, backgroundColor: `#${teams[0]?.team.color || "8B0000"}` }}
+                  />
+                  <div
+                    className="rounded-r-full ring-1 ring-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all duration-700"
+                    style={{ width: `${(val2 / total) * 100}%`, backgroundColor: `#${teams[1]?.team.color || "D4AF37"}` }}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </section>
 
       {/* betting lines + win probability side by side */}
