@@ -89,12 +89,12 @@ function cleanCategories(statistics = []) {
     .filter((c) => c.athletes.length > 0);
 }
 
-// turns a stat value into a number: efficiency stats like "2-5" become 2/5 = 0.4, everything else uses the leading number
-function toNumber(value, isRatio) {
-  if (isRatio) {
-    const [made, att] = String(value).split(/[-/]/).map(Number);
-    return att ? made / att : 0; // 0 attempts counts as 0
-  }
+// turns a stat value into a number:
+// ratio stats ("2-5") become 2/5 = 0.4, count-yards stats ("7-40") use the yards, everything else uses the leading number
+function toNumber(value, isRatio, useSecond) {
+  const [first, second] = String(value).split(/[-/]/).map(Number);
+  if (isRatio) return second ? first / second : 0; // 0 attempts counts as 0
+  if (useSecond) return second || 0;
   return parseFloat(value) || 0;
 }
 
@@ -162,8 +162,9 @@ export default function GamePage() {
             const lowerBetter = LOWER_IS_BETTER.some((k) => key.includes(k));
             // efficiency stats ("2-5") are compared as a ratio: 2/5 = 0.4
             const isRatio = key.includes("efficiency") || key.includes("redzone");
-            const val1 = toNumber(stat.displayValue, isRatio);
-            const val2 = toNumber(otherStat?.displayValue, isRatio);
+            const isCountYards = key.includes("penalt"); // "7-40" = 7 penalties for 40 yards, compare the yards
+            const val1 = toNumber(stat.displayValue, isRatio, isCountYards);
+            const val2 = toNumber(otherStat?.displayValue, isRatio, isCountYards);
             const total = val1 + val2 || 1; // avoid divide-by-zero
             const team1Better = lowerBetter ? val1 <= val2 : val1 >= val2;
             const team2Better = lowerBetter ? val2 <= val1 : val2 >= val1;
