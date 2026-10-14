@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { TEAM_LOGOS } from "@/lib/divisions";
+import { useState } from "react";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -18,37 +19,69 @@ export default function InjuriesPage() {
   const { data, error, isLoading } = useSWR("/api/injuries", fetcher, {
     refreshInterval: 3600000, // injuries update slowly, refresh hourly
   });
-
+  const [query, setQuery] = useState(""); // search text
+  const [selected, setSelected] = useState(null); // team picked from the logo strip
   if (error) return <p>Failed to load injuries.</p>;
   if (isLoading) return <LoadingSpinner />;
 
   // data.injuries is a list, one entry per team
   const teams = data.injuries || [];
+  const withInjuries = teams.filter((t) => t.injuries?.length > 0);
+  const q = query.trim().toLowerCase();
+
+  // apply the logo pick and the search text (matches team name or any injured player's name)
+  const shown = withInjuries.filter((t) => {
+    if (selected && t.id !== selected) return false;
+    if (!q) return true;
+    return t.displayName.toLowerCase().includes(q) || t.injuries.some((i) => i.athlete?.displayName?.toLowerCase().includes(q));
+  });
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <h1 className="page-title">Injury Report</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {teams
-          .filter((teamEntry) => teamEntry.injuries?.length > 0) // skip teams with no injuries
-          .map((teamEntry) => (
-            <div key={teamEntry.id} className="card overflow-hidden divide-y divide-white/5">
-              <div className="flex items-center gap-2 bg-white/5 px-3 py-2">
-                <img src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} className="w-6 h-6" />
-                <h2 className="font-semibold text-gray-200">{teamEntry.displayName}</h2>
-                <span className="ml-auto text-xs text-gray-500">{teamEntry.injuries.length} listed</span>
-              </div>
-              {teamEntry.injuries.map((injury) => (
-                <div key={injury.id} className="flex justify-between items-center px-3 py-2 text-sm hover:bg-white/5 transition-colors">
-                  <span className="text-gray-200">{injury.athlete?.displayName}</span>
-                  <span className="flex items-center gap-2">
-                    <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${statusColor(injury.status)}`}>{injury.status}</span>
-                    <span className="text-gray-400">{injury.details?.type}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
+      {/* search + one logo per team: click a logo to show only that team, click again to show all */}
+      <div className="mb-6 space-y-3">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search a team or player..."
+          className="w-full sm:w-80 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:border-gold/60"
+        />
+        <div className="flex flex-wrap gap-2">
+          {withInjuries.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setSelected(selected === t.id ? null : t.id)}
+              title={t.displayName}
+              className={`rounded-lg border p-1.5 cursor-pointer transition ${
+                selected === t.id ? "border-gold bg-gold/10" : selected ? "border-white/10 opacity-40 hover:opacity-100" : "border-white/10 hover:border-white/30"
+              }`}>
+              <img src={TEAM_LOGOS[t.displayName]} alt={t.displayName} className="w-7 h-7" />
+            </button>
           ))}
+        </div>
+      </div>
+
+      {shown.length === 0 && <p className="text-sm text-gray-500">No injuries match your search.</p>}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {shown.map((teamEntry) => (
+          <div key={teamEntry.id} className="card overflow-hidden divide-y divide-white/5">
+            <div className="flex items-center gap-2 bg-white/5 px-3 py-2">
+              <img src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} className="w-6 h-6" />
+              <h2 className="font-semibold text-gray-200">{teamEntry.displayName}</h2>
+              <span className="ml-auto text-xs text-gray-500">{teamEntry.injuries.length} listed</span>
+            </div>
+            {teamEntry.injuries.map((injury) => (
+              <div key={injury.id} className="flex justify-between items-center px-3 py-2 text-sm hover:bg-white/5 transition-colors">
+                <span className="text-gray-200">{injury.athlete?.displayName}</span>
+                <span className="flex items-center gap-2">
+                  <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${statusColor(injury.status)}`}>{injury.status}</span>
+                  <span className="text-gray-400">{injury.details?.type}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </main>
   );

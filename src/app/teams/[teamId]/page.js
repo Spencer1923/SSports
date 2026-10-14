@@ -1,24 +1,14 @@
 "use client";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BackButton from "@/components/BackButton";
+import TeamSchedule from "@/components/TeamSchedule";
+import TeamRoster from "@/components/TeamRoster";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());
-
-// helper: groups a flat list of players by their position
-function groupByPosition(players) {
-  const groups = {};
-  players.forEach((player) => {
-    const pos = player.position?.abbreviation || "Other";
-    if (!groups[pos]) groups[pos] = []; // create array if this position not seen yet
-    groups[pos].push(player);
-  });
-  return groups;
-}
 
 export default function TeamPage() {
   const { teamId } = useParams();
@@ -60,92 +50,8 @@ export default function TeamPage() {
         </div>
       </div>
 
-      {/* schedule section, grouped by week */}
-      <section className="mt-6">
-        <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Schedule</h2>
-
-        {games.map((game) => {
-          const competitors = game.competitions?.[0]?.competitors || [];
-          const self = competitors.find((c) => c.team.id === teamId);
-          const opponent = competitors.find((c) => c.team.id !== teamId);
-          const isHome = self?.homeAway === "home";
-
-          // fallback: some ESPN responses use "logo" (string), others "logos" (array)
-          const opponentLogo = opponent?.team.logo || opponent?.team.logos?.[0]?.href;          
-
-          const formattedDate = new Date(game.date).toLocaleDateString("en-US", {
-            weekday: "long",
-            month: "short",
-            day: "numeric",
-          });
-
-          return (
-            <div key={game.id} className="mb-4">
-              <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">{game.week?.text}</p>
-              <div className="card flex items-center justify-between px-3 py-2 text-sm" style={{ borderLeftColor: teamColor, borderLeftWidth: "4px" }}>
-                <div className="flex items-center gap-2">
-                  <img src={team.logos?.[0]?.href} alt={team.displayName} className="w-6 h-6" />
-                  <span className="text-gray-200">{isHome ? "vs" : "@"}</span>
-                  <img src={opponentLogo} alt={opponent?.team.displayName} className="w-6 h-6" />
-                  <span className="text-gray-200">{opponent?.team.displayName}</span>
-                  <span className="text-gray-500 text-xs">({recordsById[opponent?.team.id] || "—"})</span>
-                </div>
-                <span className="text-gray-400">{formattedDate}</span>
-              </div>
-            </div>
-          );
-        })}
-      </section>
-
-      {/* roster section, grouped by position */}
-      {/* roster section, ordered by depth chart position (starters first) */}
-      <section className="mt-6">
-        <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Roster</h2>
-        {(() => {
-          const allPlayers = positionGroups.flatMap((g) => g.items || [g]);
-          const playersById = {};
-          allPlayers.forEach((p) => {
-            playersById[p.id] = p;
-          });
-
-          // merge all formations' positions into one map, keyed by the position map's own key
-          // (e.g. "wr1", "wr2", "lt") so distinct slots at the same position aren't overwritten
-          const positionMap = {};
-          depth.depthchart?.forEach((formation) => {
-            Object.entries(formation.positions || {}).forEach(([key, posEntry]) => {
-              if (!positionMap[key]) {
-                positionMap[key] = {
-                  name: posEntry.position?.displayName,
-                  athletes: posEntry.athletes,
-                };
-              }
-            });
-          });
-
-          return (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {Object.entries(positionMap).map(([key, { name, athletes }]) => (
-                <div key={key} className="card p-3" style={{ borderTop: `3px solid ${teamColor}` }}>
-                  <h3 className="text-[11px] uppercase tracking-widest text-gray-400 mb-2">{name}</h3>
-                  <div className="flex flex-col gap-1">
-                    {athletes.map((athleteRef, depthIndex) => {
-                      const player = playersById[athleteRef.id];
-                      if (!player) return null;
-
-                      return (
-                        <Link key={player.id} href={`/players/${player.id}`} className="flex items-center gap-1 text-sm text-gray-300 hover:text-gold transition-colors">
-                          <span className="text-gray-500 text-xs w-3">{depthIndex + 1}</span>
-                          <span className="truncate">{player.displayName}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          );
-        })()}
-      </section>
+      <TeamSchedule games={games} teamId={teamId} recordsById={recordsById} byeWeek={schedule.byeWeek} />
+      <TeamRoster groups={positionGroups} depth={depth} teamColor={teamColor} />
     </main>
   );
 }
