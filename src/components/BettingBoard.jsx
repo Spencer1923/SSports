@@ -3,6 +3,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import BetSlip from "@/components/BetSlip";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -46,20 +47,31 @@ function settle(game, line) {
   return { cover, ou };
 }
 
-// one pill in the odds grid
-function Cell({ main, sub, accent }) {
-  return (
-    <div className={`min-w-[58px] sm:min-w-[72px] rounded-lg border px-2 py-1.5 text-center font-mono tabular-nums ${accent ? "border-gold/40 bg-gold/10" : "border-white/10 bg-white/5"}`}>
+// one pill in the odds grid; becomes a button when onClick is passed
+function Cell({ main, sub, accent, onClick, selected }) {
+  const tone = selected ? "border-white/70 bg-white/15" : accent ? "border-gold/40 bg-gold/10" : "border-white/10 bg-white/5";
+  const base = `min-w-[58px] sm:min-w-[72px] rounded-lg border px-2 py-1.5 text-center font-mono tabular-nums ${tone}`;
+  const body = (
+    <>
       <p className="text-sm font-bold text-white">{main}</p>
       {sub != null && <p className="text-[10px] text-gray-500">{sub}</p>}
-    </div>
+    </>
+  );
+
+  if (!onClick) return <div className={base}>{body}</div>;
+  return (
+    <button onClick={onClick} aria-pressed={!!selected} className={`${base} cursor-pointer transition hover:border-white/40 hover:bg-white/10`}>
+      {body}
+    </button>
   );
 }
 
 // ---------- one game ----------
-function GameCard({ g }) {
+function GameCard({ g, slip, toggleLeg }) {
   const [open, setOpen] = useState(false); // "compare books" panel
   const line = g.lines[0]; // primary book
+  const matchup = `${g.away.abbr} @ ${g.home.abbr}`;
+  const canBet = g.state === "pre"; // picks can only be added before kickoff
   const prob = marketProb(line);
   const score = impliedScore(line);
   const result = settle(g, line);
@@ -96,6 +108,15 @@ function GameCard({ g }) {
     const side = isHome ? "home" : "away";
     const covered = result?.cover === t.abbr; // finished game: this team covered the spread
     const hitTotal = result?.ou === (isHome ? "Under" : "Over"); // finished game: this total result hit
+    // clicking a cell adds or removes that pick (needs a price, and only before kickoff)
+    const bet = (market, label, odds) => {
+      if (!canBet || odds == null) return {};
+      const id = `${g.id}-${market}-${side}`;
+      return {
+        selected: slip.some((l) => l.id === id),
+        onClick: () => toggleLeg({ id, gameId: g.id, market, label, matchup, odds }),
+      };
+    };
     return (
       <div key={t.id} className="contents">
         <div className="flex min-w-0 items-center gap-3">
@@ -106,9 +127,14 @@ function GameCard({ g }) {
           </div>
           {started && <span className="ml-auto pl-2 font-mono text-xl font-bold tabular-nums text-white">{t.score}</span>}
         </div>
-        <Cell main={fmtSpread(spread)} sub={fmtML(spreadOdds)} accent={covered} />
-        <Cell main={fmtML(ml)} accent={g.state === "pre" && edge === side} />
-        <Cell main={`${isHome ? "U" : "O"} ${line?.total ?? "—"}`} sub={fmtML(isHome ? line?.underOdds : line?.overOdds)} accent={hitTotal} />
+        <Cell main={fmtSpread(spread)} sub={fmtML(spreadOdds)} accent={covered} {...bet("spread", `${t.abbr} ${fmtSpread(spread)}`, spreadOdds)} />
+        <Cell main={fmtML(ml)} accent={g.state === "pre" && edge === side} {...bet("ml", `${t.abbr} ML`, ml)} />
+        <Cell
+          main={`${isHome ? "U" : "O"} ${line?.total ?? "—"}`}
+          sub={fmtML(isHome ? line?.underOdds : line?.overOdds)}
+          accent={hitTotal}
+          {...bet("total", `${isHome ? "Under" : "Over"} ${line?.total}`, isHome ? line?.underOdds : line?.overOdds)}
+        />
       </div>
     );
   };
@@ -237,6 +263,13 @@ export default function BettingBoard() {
   const searchParams = useSearchParams();
   const week = searchParams.get("week") ? Number(searchParams.get("week")) : null;
   const [sort, setSort] = useState("time"); // time | spread | total
+  const [slip, setSlip] = useState([]); // picks on the bet slip
+
+  // spread and moneyline share ONE slot per game (both pick a winner); the total has its own slot
+  const slotOf = (l) => `${l.gameId}-${l.market === "total" ? "total" : "side"}`;
+
+  // click a cell to add the pick, click again to remove it, or replace the other pick in the same slot
+  const toggleLeg = (leg) => setSlip((prev) => (prev.some((l) => l.id === leg.id) ? prev.filter((l) => l.id !== leg.id) : [...prev.filter((l) => slotOf(l) !== slotOf(leg)), leg]));
 
   const { data, error, isLoading } = useSWR(week ? `/api/betting?week=${week}` : "/api/betting", fetcher, { refreshInterval: 60000 });
 
@@ -377,10 +410,10 @@ export default function BettingBoard() {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         {sorted.map((g) => (
-          <GameCard key={g.id} g={g} />
+          <GameCard key={g.id} g={g} slip={slip} toggleLeg={toggleLeg} />
         ))}
       </div>
-
+      <BetSlip legs={slip} onRemove={(id) => setSlip((prev) => prev.filter((l) => l.id !== id))} onClear={() => setSlip([])} />
       <p className="mt-10 text-center text-[11px] text-gray-600">Lines come from ESPN feed.</p>
     </div>
   );
