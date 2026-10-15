@@ -10,7 +10,7 @@ export default function LeadersPage() {
     refreshInterval: 3600000, // leaders don't change fast, refresh hourly
   });
 
-  if (error) return <p>Failed to load leaders.</p>;
+  if (error || data?.error) return <p className="p-6">Failed to load leaders: {data?.error}</p>;
   if (isLoading) return <LoadingSpinner />;
 
   return (

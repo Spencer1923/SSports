@@ -16,6 +16,7 @@ export default function Navbar() {
     { href: "/leaders", label: "Leaders" },
     { href: "/team-stats", label: "Team Stats" },
     { href: "/injuries", label: "Injuries" },
+    { href: "/betting", label: "Betting" },
     { href: "/blog", label: "Blog" },
     { href: "/news", label: "News" },
     { href: "/transactions", label: "Transactions" },
