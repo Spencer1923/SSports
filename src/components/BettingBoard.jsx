@@ -4,23 +4,13 @@ import useSWR from "swr";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import BetSlip from "@/components/BetSlip";
+import EdgeBoard from "@/components/EdgeBoard";
+import { fmtOdds, marketProb } from "@/lib/odds";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 // ---------- formatting + math helpers ----------
-const fmtML = (n) => (n == null ? "—" : n > 0 ? `+${n}` : `${n}`);
 const fmtSpread = (n) => (n == null ? "—" : n === 0 ? "PK" : n > 0 ? `+${n}` : `${n}`);
-
-// moneyline -> implied probability (still includes the book's margin)
-const impliedProb = (ml) => (ml == null ? null : ml < 0 ? -ml / (-ml + 100) : 100 / (ml + 100));
-
-// home win probability with the book's margin (vig) removed
-function marketProb(line) {
-  const h = impliedProb(line?.homeML);
-  const a = impliedProb(line?.awayML);
-  if (h == null || a == null) return null;
-  return h / (h + a);
-}
 
 // expected final score from the spread + total
 function impliedScore(line) {
@@ -67,9 +57,10 @@ function Cell({ main, sub, accent, onClick, selected }) {
 }
 
 // ---------- one game ----------
-function GameCard({ g, slip, toggleLeg }) {
+function GameCard({ g, slip, toggleLeg, format }) {
   const [open, setOpen] = useState(false); // "compare books" panel
   const line = g.lines[0]; // primary book
+  const fmtML = (n) => fmtOdds(n, format); // every price on this card follows the chosen format
   const matchup = `${g.away.abbr} @ ${g.home.abbr}`;
   const canBet = g.state === "pre"; // picks can only be added before kickoff
   const prob = marketProb(line);
@@ -166,7 +157,7 @@ function GameCard({ g, slip, toggleLeg }) {
         {renderRow(g.home, true)}
       </div>
       {!line && <p className="mt-3 text-center text-xs text-gray-500">Lines not posted yet</p>}
-      {g.state === "pre" && edge && <p className="mt-2 text-center font-mono text-[10px] text-gray-500">Gold moneyline = ESPNa model rates this team 3+ pts higher than the market</p>}
+      {g.state === "pre" && edge && <p className="mt-2 text-center font-mono text-[10px] text-gray-500">Gold moneyline = the ESPN model rates this team 3+ pts higher than the market</p>}
 
       {/* market win probability, with a tick for ESPN's model */}
       {prob != null && (
@@ -264,6 +255,22 @@ export default function BettingBoard() {
   const week = searchParams.get("week") ? Number(searchParams.get("week")) : null;
   const [sort, setSort] = useState("time"); // time | spread | total
   const [slip, setSlip] = useState([]); // picks on the bet slip
+  // american | decimal | fractional | implied. The saved choice is read once, when the state is created
+  const [format, setFormat] = useState(() => {
+    try {
+      return localStorage.getItem("oddsFormat") || "american";
+    } catch {
+      return "american"; // on the server there's no localStorage
+    }
+  });
+
+  // switch the odds format and remember it for next visit
+  const changeFormat = (f) => {
+    setFormat(f);
+    try {
+      localStorage.setItem("oddsFormat", f);
+    } catch {}
+  };
 
   // spread and moneyline share ONE slot per game (both pick a winner); the total has its own slot
   const slotOf = (l) => `${l.gameId}-${l.market === "total" ? "total" : "side"}`;
@@ -323,7 +330,7 @@ export default function BettingBoard() {
     },
     dog && {
       label: "Biggest underdog",
-      value: `+${maxML(dog)}`,
+      value: fmtOdds(maxML(dog), format),
       sub: `${dog.l.homeML > dog.l.awayML ? dog.g.home.abbr : dog.g.away.abbr} · ${matchup(dog)}`,
       logos: [dog.l.homeML > dog.l.awayML ? dog.g.home.logo : dog.g.away.logo],
     },
@@ -393,6 +400,28 @@ export default function BettingBoard() {
         </section>
       )}
 
+      <EdgeBoard games={games} />
+
+      {/* odds format toggle */}
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <span className="mr-1 font-mono text-[11px] uppercase tracking-[0.25em] text-gray-500">Odds</span>
+        {[
+          ["american", "American"],
+          ["decimal", "Decimal"],
+          ["fractional", "Fractional"],
+          ["implied", "Implied %"],
+        ].map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => changeFormat(key)}
+            className={`cursor-pointer rounded-full px-4 py-1 text-xs uppercase tracking-widest transition ${
+              format === key ? "bg-gold font-bold text-black" : "border border-white/10 text-gray-400 hover:text-white"
+            }`}>
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* sort control */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <span className="mr-1 font-mono text-[11px] uppercase tracking-[0.25em] text-gray-500">Sort</span>
@@ -410,10 +439,10 @@ export default function BettingBoard() {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         {sorted.map((g) => (
-          <GameCard key={g.id} g={g} slip={slip} toggleLeg={toggleLeg} />
+          <GameCard key={g.id} g={g} slip={slip} toggleLeg={toggleLeg} format={format} />
         ))}
       </div>
-      <BetSlip legs={slip} onRemove={(id) => setSlip((prev) => prev.filter((l) => l.id !== id))} onClear={() => setSlip([])} />
+      <BetSlip legs={slip} format={format} onRemove={(id) => setSlip((prev) => prev.filter((l) => l.id !== id))} onClear={() => setSlip([])} />
       <p className="mt-10 text-center text-[11px] text-gray-600">Lines come from ESPN feed.</p>
     </div>
   );

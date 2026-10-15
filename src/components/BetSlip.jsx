@@ -5,7 +5,7 @@ import { fmtOdds, fromDecimal, toDecimal } from "@/lib/odds";
 // dollars with commas and 2 decimals
 const money = (n) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-export default function BetSlip({ legs, onRemove, onClear }) {
+export default function BetSlip({ legs, format, onRemove, onClear }) {
   const [stake, setStake] = useState("10"); // pretend dollars
   const [open, setOpen] = useState(true); // collapse so it doesn't cover the cards
 
@@ -26,7 +26,7 @@ export default function BetSlip({ legs, onRemove, onClear }) {
       <div className="flex items-center gap-3 px-4 py-3">
         <button onClick={() => setOpen(!open)} aria-expanded={open} className="flex flex-1 cursor-pointer items-center gap-3 text-left">
           <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-gold">{legs.length > 1 ? `${legs.length}-leg parlay` : "Bet slip"}</span>
-          <span className="font-mono text-sm font-bold tabular-nums text-white">{fmtOdds(american)}</span>
+          <span className="font-mono text-sm font-bold tabular-nums text-white">{fmtOdds(american, format)}</span>
           <span className="ml-auto text-gray-500">{open ? "▾" : "▴"}</span>
         </button>
         <button onClick={onClear} className="cursor-pointer text-[11px] uppercase tracking-widest text-gray-500 hover:text-white">
@@ -44,7 +44,7 @@ export default function BetSlip({ legs, onRemove, onClear }) {
                   <p className="truncate text-sm font-semibold text-gray-100">{l.label}</p>
                   <p className="font-mono text-[10px] uppercase tracking-widest text-gray-500">{l.matchup}</p>
                 </div>
-                <span className="font-mono text-sm font-bold tabular-nums text-white">{fmtOdds(l.odds)}</span>
+                <span className="font-mono text-sm font-bold tabular-nums text-white">{fmtOdds(l.odds, format)}</span>
                 <button onClick={() => onRemove(l.id)} aria-label={`Remove ${l.label}`} className="cursor-pointer text-gray-500 hover:text-white">
                   ✕
                 </button>
@@ -71,7 +71,7 @@ export default function BetSlip({ legs, onRemove, onClear }) {
 
             <div className="grid grid-cols-2 gap-2 text-center">
               {[
-                ["Combined odds", fmtOdds(american)],
+                ["Combined odds", fmtOdds(american, format)],
                 ["Implied probability", `${(impliedProb * 100).toFixed(1)}%`],
                 ["Payout", money(payout)],
                 ["Profit", money(profit)],
