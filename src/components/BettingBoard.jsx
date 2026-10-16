@@ -11,6 +11,13 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 
 // ---------- formatting + math helpers ----------
 const fmtSpread = (n) => (n == null ? "—" : n === 0 ? "PK" : n > 0 ? `+${n}` : `${n}`);
+// color for an injury status pill
+const statusTone = (s = "") => {
+  const t = s.toLowerCase();
+  if (t.includes("out") || t.includes("reserve")) return "bg-red-900/60 text-red-300";
+  if (t.includes("doubtful")) return "bg-orange-900/60 text-orange-300";
+  return "bg-yellow-900/50 text-yellow-300";
+};
 
 // expected final score from the spread + total
 function impliedScore(line) {
@@ -72,6 +79,20 @@ function GameCard({ g, slip, toggleLeg, format }) {
   const delta = g.modelHome != null && prob != null ? g.modelHome - prob : null;
   // the side the ESPN model likes at least 3 pts more than the market (null if no real disagreement)
   const edge = delta != null && Math.abs(delta) >= 0.03 ? (delta > 0 ? "home" : "away") : null;
+  // weather text for the chip, e.g. "72°F / 22°C · Clear · Wind 8 mph · 20% rain"
+  const w = g.weather;
+  const weatherText = !w
+    ? null
+    : w.indoor
+      ? "Dome · weather doesn't matter"
+      : [
+          w.temp != null && `${Math.round(w.temp)}°F / ${Math.round(((w.temp - 32) * 5) / 9)}°C`,
+          w.condition,
+          w.wind != null && `Wind ${Math.round(w.wind)} mph`,
+          w.rain > 0 && `${Math.round(w.rain)}% rain`,
+        ]
+          .filter(Boolean)
+          .join(" · ");
 
   // line movement chips (only when ESPN supplies opening numbers)
   const moves = [];
@@ -192,6 +213,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
 
       {/* telemetry chips */}
       <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] tabular-nums">
+        {weatherText && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-300">{weatherText}</span>}
         {score && (
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-300">
             Implied score {g.away.abbr} {score.away.toFixed(1)} – {score.home.toFixed(1)} {g.home.abbr}
@@ -205,6 +227,37 @@ function GameCard({ g, slip, toggleLeg, format }) {
         {result?.cover && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-200">Covered: {result.cover}</span>}
         {result?.ou && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-200">{result.ou}</span>}
       </div>
+
+      {/* key injuries: Out / Doubtful, plus any QB who isn't healthy (collapsed until clicked) */}
+      {(g.injuriesAway?.length > 0 || g.injuriesHome?.length > 0) && (
+        <details className="group mt-4 rounded-lg border border-white/10 bg-white/[0.02]">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-400 hover:text-white [&::-webkit-details-marker]:hidden">
+            <span>Key injuries ({(g.injuriesAway?.length || 0) + (g.injuriesHome?.length || 0)})</span>
+            <span className="transition-transform group-open:rotate-180">▾</span>
+          </summary>
+          <div className="grid grid-cols-1 gap-4 px-3 pb-3 pt-1 sm:grid-cols-2">
+            {[
+              [g.away, g.injuriesAway || []],
+              [g.home, g.injuriesHome || []],
+            ].map(([t, list]) => (
+              <div key={t.id}>
+                <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-gray-300">
+                  <img src={t.logo} alt="" className="h-4 w-4" />
+                  {t.abbr}
+                </p>
+                {list.length === 0 && <p className="text-[11px] text-gray-600">None listed</p>}
+                {list.map((i) => (
+                  <p key={i.name} className="flex items-center gap-1.5 py-0.5 text-xs text-gray-400">
+                    <span className="w-6 shrink-0 font-mono text-[10px] text-gray-500">{i.pos}</span>
+                    <span className="truncate">{i.name}</span>
+                    <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase ${statusTone(i.status)}`}>{i.status}</span>
+                  </p>
+                ))}
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
 
       {/* footer: source + compare books */}
       {line && (

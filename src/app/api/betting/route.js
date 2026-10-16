@@ -5,7 +5,9 @@ const HEADERS = { headers: { "User-Agent": "Mozilla/5.0" } };
 function num(v) {
   if (v === null || v === undefined || v === "") return null;
   if (String(v).toUpperCase() === "EVEN") return 100;
-  const cleaned = String(v).replace("\u2212", "-").replace(/[^\d.+-]/g, "");
+  const cleaned = String(v)
+    .replace("\u2212", "-")
+    .replace(/[^\d.+-]/g, "");
   if (cleaned === "") return null;
   const n = Number(cleaned);
   return Number.isFinite(n) ? n : null;
@@ -77,8 +79,7 @@ async function loadGame(event) {
   // against-the-spread record for a team
   const atsFor = (teamId) => {
     const entry = summary?.againstTheSpread?.find((a) => a.team?.id === teamId);
-    const rec =
-      entry?.records?.find((r) => /overall|ats/i.test(`${r.type} ${r.displayName}`)) || entry?.records?.[0];
+    const rec = entry?.records?.find((r) => /overall|ats/i.test(`${r.type} ${r.displayName}`)) || entry?.records?.[0];
     return rec?.summary || null;
   };
 
@@ -86,6 +87,46 @@ async function loadGame(event) {
   const proj = num(summary?.predictor?.homeTeam?.gameProjection);
   const wp0 = num(summary?.winprobability?.[0]?.homeWinPercentage);
   const modelHome = proj !== null ? proj / 100 : wp0 === null ? null : wp0 > 1 ? wp0 / 100 : wp0;
+
+  // weather + whether the stadium is a dome (weather doesn't matter indoors)
+  const w = summary?.gameInfo?.weather;
+  const indoor = !!summary?.gameInfo?.venue?.indoor;
+  const weather =
+    indoor || w
+      ? {
+          indoor,
+          temp: num(w?.temperature ?? w?.highTemperature),
+          condition: w?.displayValue || w?.conditionText || null,
+          wind: num(w?.gust),
+          rain: num(w?.precipitation),
+        }
+      : null;
+
+  // lower number = more likely to miss this game
+  const injuryRank = (s = "") => {
+    const t = s.toLowerCase();
+    if (t.includes("reserve") || t.includes("season")) return 3; // long-term, least relevant to this game
+    if (t.includes("out")) return 0;
+    if (t.includes("doubtful")) return 1;
+    if (t.includes("questionable") || t.includes("day")) return 2; // includes "Day-To-Day"
+    return 4;
+  };
+  const keyInjuries = (teamId) => {
+    const entry = summary?.injuries?.find((i) => String(i.team?.id ?? i.id) === String(teamId));
+    return (
+      (entry?.injuries || [])
+        .map((i) => ({
+          name: i.athlete?.displayName,
+          pos: i.athlete?.position?.abbreviation,
+          // status is usually text like "Questionable", but guard in case it's an object
+          status: typeof i.status === "string" ? i.status : i.status?.type || i.status?.name || "",
+        }))
+        .filter((i) => i.name)
+        // worst status first, quarterbacks first within the same status
+        .sort((a, b) => injuryRank(a.status) - injuryRank(b.status) || (b.pos === "QB") - (a.pos === "QB"))
+        .slice(0, 8)
+    );
+  };
 
   return {
     id: event.id,
@@ -98,6 +139,9 @@ async function loadGame(event) {
     atsHome: atsFor(home.id),
     atsAway: atsFor(away.id),
     modelHome,
+    weather,
+    injuriesAway: keyInjuries(away.id),
+    injuriesHome: keyInjuries(home.id),
     _raw: pick[0] || null, // first raw odds entry, returned once as "debug"
   };
 }
@@ -105,18 +149,14 @@ async function loadGame(event) {
 export async function GET(request) {
   const week = new URL(request.url).searchParams.get("week");
   try {
-    const url = week
-      ? `${BASE}/scoreboard?week=${week}&seasontype=2`
-      : `${BASE}/scoreboard`;
+    const url = week ? `${BASE}/scoreboard?week=${week}&seasontype=2` : `${BASE}/scoreboard`;
     const res = await fetch(url, HEADERS);
     if (!res.ok) {
       return Response.json({ error: `ESPN API returned ${res.status}` }, { status: 502 });
     }
     const board = await res.json();
 
-    const games = (
-      await Promise.all(board.events.map((e) => loadGame(e).catch(() => null)))
-    ).filter(Boolean);
+    const games = (await Promise.all(board.events.map((e) => loadGame(e).catch(() => null)))).filter(Boolean);
 
     const debug = games.find((g) => g._raw)?._raw || null;
     games.forEach((g) => delete g._raw);
