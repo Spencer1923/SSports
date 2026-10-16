@@ -72,6 +72,20 @@ async function loadGame(event) {
     if (r.ok) summary = await r.json();
   } catch {}
 
+  // each team's depth chart (cached for an hour), used to decide which injured players matter
+  const depthFor = async (teamId) => {
+    try {
+      const r = await fetch(`${BASE}/teams/${teamId}/depthcharts`, {
+        ...HEADERS,
+        next: { revalidate: 3600 },
+      });
+      return r.ok ? await r.json() : null;
+    } catch {
+      return null;
+    }
+  };
+  const [depthHome, depthAway] = await Promise.all([depthFor(home.id), depthFor(away.id)]);
+
   // all providers from the summary, falling back to the scoreboard's odds
   const pick = summary?.pickcenter?.length ? summary.pickcenter : comp.odds || [];
   const lines = pick.map((o) => normalizeLine(o, home.abbr));
@@ -111,22 +125,78 @@ async function loadGame(event) {
     if (t.includes("questionable") || t.includes("day")) return 2; // includes "Day-To-Day"
     return 4;
   };
-  const keyInjuries = (teamId) => {
+
+  // return man / holder / long snapper slots don't count as "starting" jobs
+  const MINOR_SLOTS = ["kr", "pr", "h", "ls"];
+
+  // how deep to go on the depth chart: 0 = starters only, 1 = starters + 2nd string, 2 = also 3rd string
+  const MAX_DEPTH = 1;
+
+  // kickers and punters only count if they're THE kicker or punter
+  const SPECIALISTS = ["pk", "p"];
+
+  // keep an injured player if he's a starter, a 2nd-stringer, or next in line because everyone ahead of him is hurt
+  function importantInjuries(injuries, depth) {
+    // slot name (qb, wr1, lt...) -> athlete ids in depth order; the first formation to list a slot wins
+    const slots = {};
+    depth?.depthchart?.forEach((formation) => {
+      Object.entries(formation.positions || {}).forEach(([key, slot]) => {
+        if (!MINOR_SLOTS.includes(key) && !slots[key]) {
+          slots[key] = (slot.athletes || []).map((a) => String(a.id));
+        }
+      });
+    });
+
+    const hurtIds = new Set(injuries.map((i) => i.id));
+    const kept = [];
+
+    injuries.forEach((inj) => {
+      // find this player's best (lowest) spot on the depth chart
+      let best = null;
+      Object.entries(slots).forEach(([key, ids]) => {
+        const idx = ids.indexOf(inj.id);
+        if (idx !== -1 && (best === null || idx < best.idx)) best = { key, idx, ids };
+      });
+      if (!best) return; // not on the depth chart (practice squad, special teams only, etc.)
+
+      const maxDepth = SPECIALISTS.includes(best.key) ? 0 : MAX_DEPTH;
+      const inRotation = best.idx <= maxDepth;
+      const isBackupQB = best.key === "qb" && best.idx === 1;
+      // everyone ahead of him at this spot is hurt too, so he's the one actually playing
+      const nextManUp = best.idx > 0 && best.ids.slice(0, best.idx).every((id) => hurtIds.has(id));
+      if (!(inRotation || isBackupQB || nextManUp)) return;
+
+      // label: "LCB" for the starter, "LCB · 2nd" for a backup
+      const key = best.key.toUpperCase();
+      const label = best.idx === 0 ? key : `${key} · ${best.idx + 1}${best.idx === 1 ? "nd" : best.idx === 2 ? "rd" : "th"}`;
+      kept.push({ ...inj, depthIdx: best.idx, role: label });
+    });
+    return kept;
+  }
+
+  const keyInjuries = (teamId, depth) => {
     const entry = summary?.injuries?.find((i) => String(i.team?.id ?? i.id) === String(teamId));
-    return (
-      (entry?.injuries || [])
-        .map((i) => ({
-          name: i.athlete?.displayName,
-          pos: i.athlete?.position?.abbreviation,
-          // status is usually text like "Questionable", but guard in case it's an object
-          status: typeof i.status === "string" ? i.status : i.status?.type || i.status?.name || "",
-        }))
-        .filter((i) => i.name)
-        // worst status first, quarterbacks first within the same status
-        .sort((a, b) => injuryRank(a.status) - injuryRank(b.status) || (b.pos === "QB") - (a.pos === "QB"))
-        .slice(0, 8)
-    );
+    const all = (entry?.injuries || [])
+      .map((i) => ({
+        id: String(i.athlete?.id ?? ""),
+        name: i.athlete?.displayName,
+        pos: i.athlete?.position?.abbreviation,
+        // status is usually text like "Questionable", but guard in case it's an object
+        status: typeof i.status === "string" ? i.status : i.status?.type || i.status?.name || "",
+      }))
+      .filter((i) => i.name);
+
+    // if the depth chart didn't load, fall back to anyone Out/Doubtful plus any QB
+    const shown = depth ? importantInjuries(all, depth) : all.filter((i) => injuryRank(i.status) <= 1 || i.pos === "QB").map((i) => ({ ...i, role: i.pos }));
+
+    // worst status first, then QBs, then higher on the depth chart (starters before backups)
+    const list = shown.sort((a, b) => injuryRank(a.status) - injuryRank(b.status) || (b.pos === "QB") - (a.pos === "QB") || (a.depthIdx ?? 0) - (b.depthIdx ?? 0)).slice(0, 10);
+
+    return { list, hidden: all.length - list.length }; // hidden = injured players left off the list
   };
+
+  const injAway = keyInjuries(away.id, depthAway);
+  const injHome = keyInjuries(home.id, depthHome);
 
   return {
     id: event.id,
@@ -140,8 +210,10 @@ async function loadGame(event) {
     atsAway: atsFor(away.id),
     modelHome,
     weather,
-    injuriesAway: keyInjuries(away.id),
-    injuriesHome: keyInjuries(home.id),
+    injuriesAway: injAway.list,
+    injuriesHome: injHome.list,
+    hiddenAway: injAway.hidden,
+    hiddenHome: injHome.hidden,
     _raw: pick[0] || null, // first raw odds entry, returned once as "debug"
   };
 }
