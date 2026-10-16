@@ -13,6 +13,7 @@ export default function Navbar() {
   const links = [
     { href: "/", label: "Home" },
     { href: "/standings", label: "Standings" },
+    { href: "/playoffs", label: "Playoffs" },
     { href: "/leaders", label: "Leaders" },
     { href: "/team-stats", label: "Team Stats" },
     { href: "/injuries", label: "Injuries" },
