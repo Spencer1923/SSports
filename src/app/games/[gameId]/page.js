@@ -197,7 +197,7 @@ export default function GamePage() {
       {/* betting lines + win probability side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
         <BettingLines pickcenter={data.pickcenter} home={homeTeam} away={awayTeam} />
-        <WinProbability plays={data.winprobability} home={homeTeam} away={awayTeam} />
+        <WinProbability plays={data.winprobability} playSource={data} home={homeTeam} away={awayTeam} />
       </div>
 
       <ScoringSummary plays={data.scoringPlays} teams={teams} />
