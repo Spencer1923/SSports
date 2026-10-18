@@ -7,10 +7,6 @@
   --color-jetblack: #0a0a0a;
 }
 
-:root {
-  background-color: #0a0a0a;
-}
-
 body {
   background: radial-gradient(ellipse at top, #1a1a1a, #0a0a0a 60%) fixed;
   color: #e5e5e5; /* text color */
