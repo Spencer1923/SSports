@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BackButton from "@/components/BackButton";
 import TeamSchedule from "@/components/TeamSchedule";
@@ -30,7 +30,7 @@ export default function TeamPage() {
   });
 
   if (error) return <p>Failed to load team.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton variant="detail" />;
 
   const { team, schedule, roster, depth } = data;
   const teamColor = `#${team.color}`;

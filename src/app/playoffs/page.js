@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
 import { useState, useMemo } from "react";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 import { buildMeta, computeSeeds, addMovement, computeRemainingSOS } from "@/lib/playoffs";
 import TeamLogo from "@/components/TeamLogo";
 
@@ -82,7 +82,7 @@ export default function PlayoffsPage() {
   const sos = useMemo(() => (meta ? computeRemainingSOS(data.games, picks, meta) : null), [data, meta, picks]);
 
   if (error || data?.error) return <p>Failed to load playoff picture.</p>;
-  if (isLoading || !current) return <LoadingSpinner />;
+  if (isLoading || !current) return <Skeleton variant="grid" hero count={2} rows={16} />;
 
   const open = data.games.filter((g) => !g.completed);
   const weeks = [...new Set(open.map((g) => g.week))].sort((a, b) => a - b);

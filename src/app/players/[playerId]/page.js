@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 import BackButton from "@/components/BackButton";
 
 // helper: fetches and parses JSON from a URL
@@ -12,7 +12,7 @@ export default function PlayerPage() {
   const { data, error, isLoading } = useSWR(`/api/players/${playerId}`, fetcher);
 
   if (error) return <p>Failed to load player.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton variant="detail" />;
 
   const player = data.athlete;
   // season stats are stored under statsSummary.statistics

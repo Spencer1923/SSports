@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
 import Link from "next/link";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -11,7 +11,7 @@ export default function LeadersPage() {
   });
 
   if (error || data?.error) return <p className="p-6">Failed to load leaders: {data?.error}</p>;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton variant="grid" count={6} />;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

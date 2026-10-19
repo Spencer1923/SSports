@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 import BackButton from "@/components/BackButton";
 import LiveDriveBanner from "@/components/LiveDriveBanner";
 // loaded after the box score paints; the empty placeholder keeps its space so the page doesn't jump
@@ -110,7 +110,7 @@ export default function GamePage() {
   });
 
   if (error) return <p>Failed to load game.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton variant="detail" />;
 
   // boxscore.teams holds team-level stats (yards, turnovers, etc.)
   const teams = data.boxscore?.teams || [];

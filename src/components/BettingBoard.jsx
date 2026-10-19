@@ -1,13 +1,12 @@
 "use client";
-import { useState } from "react";
-import useSWR from "swr";
+import { useEffect, useState } from "react";
+import useSWR, { preload } from "swr"; // preload = fetch a key early and stash it in SWR's cache
 import { useRouter, useSearchParams } from "next/navigation";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 import BetSlip from "@/components/BetSlip";
 import EdgeBoard from "@/components/EdgeBoard";
 import { fmtOdds, marketProb } from "@/lib/odds";
 import TeamLogo from "@/components/TeamLogo";
-
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -336,6 +335,7 @@ export default function BettingBoard() {
   const toggleLeg = (leg) => setSlip((prev) => (prev.some((l) => l.id === leg.id) ? prev.filter((l) => l.id !== leg.id) : [...prev.filter((l) => slotOf(l) !== slotOf(leg)), leg]));
 
   const { data, error, isLoading } = useSWR(week ? `/api/betting?week=${week}` : "/api/betting", fetcher, {
+    keepPreviousData: true, // keep showing the old week while the new one loads
     // lines move while games are live (30s) or upcoming (2 min); finished weeks never change
     refreshInterval: (d) => {
       const states = (d?.games || []).map((g) => g.state);
@@ -346,7 +346,8 @@ export default function BettingBoard() {
   });
 
   if (error || data?.error) return <p>Failed to load odds.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  // with keepPreviousData, isLoading stays true during a week switch, so check data instead
+  if (!data) return <Skeleton variant="grid" hero bare count={4} rows={4} />;
 
   const games = data.games || [];
   const currentWeek = week ?? data.week ?? 1;
@@ -502,7 +503,7 @@ export default function BettingBoard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <div className={`grid grid-cols-1 gap-4 transition-opacity xl:grid-cols-2 ${isLoading ? "opacity-60" : ""}`}>
         {sorted.map((g) => (
           <GameCard key={g.id} g={g} slip={slip} toggleLeg={toggleLeg} format={format} />
         ))}
