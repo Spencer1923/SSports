@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { useParams } from "next/navigation";
 import Skeleton from "@/components/Skeleton";
 import BackButton from "@/components/BackButton";
+import TeamLogo from "@/components/TeamLogo";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -23,7 +24,7 @@ export default function PlayerPage() {
       <BackButton />
       {/* headshot + basic info */}
       <div className="flex items-center gap-4">
-        <img src={player.headshot?.href} alt={player.displayName} className="w-28 h-28 rounded-full object-cover object-top ring-2 ring-gold/60 bg-white/5" />
+        <TeamLogo src={player.headshot?.href} alt={player.displayName} size={112} className="w-28 h-28 rounded-full object-cover object-top ring-2 ring-gold/60 bg-white/5" />
         <div>
           <h1 className="text-3xl font-extrabold uppercase tracking-wide text-white mb-1">{player.displayName}</h1>
           <p className="text-gray-300">

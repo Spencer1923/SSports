@@ -1,3 +1,5 @@
+import TeamLogo from "@/components/TeamLogo";
+
 // live field graphic. Left end zone = away team, right end zone = home team.
 // Only renders while a game is in progress.
 export default function LiveDriveBanner({ data }) {
@@ -24,11 +26,7 @@ export default function LiveDriveBanner({ data }) {
 
   // offense team id, with a fallback to matching by abbreviation
   const offId = drive.team?.id || last.end?.team?.id || last.start?.team?.id;
-  const offenseIsAway = offId
-    ? offId === away.id
-    : drive.team?.abbreviation
-      ? drive.team.abbreviation === away.abbr
-      : true;
+  const offenseIsAway = offId ? offId === away.id : drive.team?.abbreviation ? drive.team.abbreviation === away.abbr : true;
   const dir = offenseIsAway ? 1 : -1; // +1 = moving right, -1 = moving left
 
   // ---- field math (field runs from x=10 to x=110, end zones are 0-10 and 110-120) ----
@@ -49,13 +47,7 @@ export default function LiveDriveBanner({ data }) {
 
   // ---- text bits ----
   const situation = (last.end?.shortDownDistanceText || last.end?.downDistanceText || "").split(" at ")[0];
-  const driveText = [
-    `${drive.offensivePlays ?? plays.length} plays`,
-    `${drive.yards ?? 0} yds`,
-    drive.timeElapsed?.displayValue,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const driveText = [`${drive.offensivePlays ?? plays.length} plays`, `${drive.yards ?? 0} yds`, drive.timeElapsed?.displayValue].filter(Boolean).join(" · ");
 
   const num = { fill: "white", fillOpacity: 0.3, fontSize: 3.2, fontWeight: 700, textAnchor: "middle", dominantBaseline: "central" };
   const zoneText = { fill: "white", fillOpacity: 0.9, fontSize: 4.5, fontWeight: 800, textAnchor: "middle", dominantBaseline: "central", letterSpacing: 0.6 };
@@ -67,7 +59,7 @@ export default function LiveDriveBanner({ data }) {
         <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-red-400">
           <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" /> Live
         </span>
-        <img src={drive.team?.logos?.[0]?.href || drive.team?.logo} alt="" className="w-7 h-7" />
+        <TeamLogo src={drive.team?.logos?.[0]?.href || drive.team?.logo} size={28} className="w-7 h-7" />
         <p className="text-sm font-bold text-white flex-1 min-w-0 truncate">{drive.team?.displayName} ball</p>
         <p className="text-2xl font-extrabold tabular-nums text-gold">{situation}</p>
       </div>
@@ -96,8 +88,12 @@ export default function LiveDriveBanner({ data }) {
         {/* end zones in team colors */}
         <rect x="0" width="10" height="30" fill={away.color} fillOpacity="0.6" />
         <rect x="110" width="10" height="30" fill={home.color} fillOpacity="0.6" />
-        <text x="5" y="15" transform="rotate(-90 5 15)" {...zoneText}>{away.abbr}</text>
-        <text x="115" y="15" transform="rotate(90 115 15)" {...zoneText}>{home.abbr}</text>
+        <text x="5" y="15" transform="rotate(-90 5 15)" {...zoneText}>
+          {away.abbr}
+        </text>
+        <text x="115" y="15" transform="rotate(90 115 15)" {...zoneText}>
+          {home.abbr}
+        </text>
 
         {/* red zone: faint always, brighter when the ball is inside it */}
         <rect x={redZoneX} width="20" height="30" fill="#8B0000" fillOpacity={inRedZone ? 0.4 : 0.14} />
@@ -121,33 +117,25 @@ export default function LiveDriveBanner({ data }) {
           const n = i <= 5 ? i * 10 : (10 - i) * 10; // 10 20 30 40 50 40 30 20 10
           return (
             <g key={i}>
-              <text x={10 + i * 10} y="6" {...num}>{n}</text>
-              <text x={10 + i * 10} y="25" {...num}>{n}</text>
+              <text x={10 + i * 10} y="6" {...num}>
+                {n}
+              </text>
+              <text x={10 + i * 10} y="25" {...num}>
+                {n}
+              </text>
             </g>
           );
         })}
 
         {/* drive trail */}
-        <rect
-          x={Math.min(startX, ballX)}
-          y="12.8"
-          width={Math.abs(ballX - startX)}
-          height="4.4"
-          rx="2.2"
-          fill="url(#ld-drive)"
-        />
+        <rect x={Math.min(startX, ballX)} y="12.8" width={Math.abs(ballX - startX)} height="4.4" rx="2.2" fill="url(#ld-drive)" />
 
         {/* first-down line (gold) and line of scrimmage (white) */}
-        {showFirstDown && (
-          <line x1={firstDownX} x2={firstDownX} y1="0" y2="30" stroke="#D4AF37" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
-        )}
+        {showFirstDown && <line x1={firstDownX} x2={firstDownX} y1="0" y2="30" stroke="#D4AF37" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />}
         <line x1={ballX} x2={ballX} y1="0" y2="30" stroke="white" strokeOpacity="0.8" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
 
         {/* arrow showing which way the offense is moving */}
-        <polygon
-          points={`${ballX + dir * 3.2},12.8 ${ballX + dir * 3.2},17.2 ${ballX + dir * 5.6},15`}
-          fill="#D4AF37"
-        />
+        <polygon points={`${ballX + dir * 3.2},12.8 ${ballX + dir * 3.2},17.2 ${ballX + dir * 5.6},15`} fill="#D4AF37" />
 
         {/* the ball, with a pulsing ring */}
         <circle cx={ballX} cy="15" r="2" fill="none" stroke="#D4AF37" strokeWidth="1" vectorEffect="non-scaling-stroke">

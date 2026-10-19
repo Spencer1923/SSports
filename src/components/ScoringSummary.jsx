@@ -1,3 +1,5 @@
+import TeamLogo from "@/components/TeamLogo";
+
 // groups scoring plays by quarter and renders them as a vertical timeline
 export default function ScoringSummary({ plays = [], teams = [] }) {
   if (!plays.length) return null;
@@ -31,12 +33,10 @@ export default function ScoringSummary({ plays = [], teams = [] }) {
                 return (
                   <div key={p.id || i} className="relative flex items-start gap-3">
                     <span className="absolute -left-[21px] top-2 w-2 h-2 rounded-full bg-gold" />
-                    <img src={p.team?.logo || logoById[p.team?.id]} alt="" className="w-7 h-7 shrink-0" />
+                    <TeamLogo src={p.team?.logo || logoById[p.team?.id]} size={28} className="w-7 h-7 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 text-xs">
-                        <span className={`font-bold ${isTD ? "text-gold" : "text-white"}`}>
-                          {p.type?.abbreviation || p.type?.text}
-                        </span>
+                        <span className={`font-bold ${isTD ? "text-gold" : "text-white"}`}>{p.type?.abbreviation || p.type?.text}</span>
                         <span className="text-gray-500 tabular-nums">{p.clock?.displayValue}</span>
                       </div>
                       <p className="text-sm text-gray-300">{p.text}</p>

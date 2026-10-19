@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import Link from "next/link";
 import Skeleton from "@/components/Skeleton";
+import TeamLogo from "@/components/TeamLogo";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -15,7 +16,7 @@ function Leaderboard({ title, list, statKey, unit }) {
           <Link key={team.teamId} href={`/teams/${team.teamId}`} className="flex items-center justify-between px-3 py-2 text-sm transition-colors hover:bg-white/5">
             <div className="flex items-center gap-2">
               <span className={`w-5 tabular-nums ${index < 3 ? "text-gold font-bold" : "text-gray-500"}`}>{index + 1}</span>
-              <img src={team.logo} alt={team.teamName} className="w-6 h-6" />
+              <TeamLogo src={team.logo} alt={team.teamName} size={24} className="w-6 h-6" />
               <span className="text-gray-200">{team.teamName}</span>
             </div>
             <span className="text-gray-100 font-bold tabular-nums">

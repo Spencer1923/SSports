@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import Link from "next/link";
 import Skeleton from "@/components/Skeleton";
+import TeamLogo from "@/components/TeamLogo";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -27,7 +28,7 @@ export default function LeadersPage() {
             {/* #1 leader: big card with headshot */}
             {first && (
               <Link href={`/players/${first.athleteId}`} className="card card-hover flex items-center gap-4 mb-3 p-4 text-gray-200">
-                <img src={first.headshot} alt={first.athleteName} className="w-20 h-20 rounded-full object-cover ring-2 ring-gold/60" />
+                <TeamLogo src={first.headshot} alt={first.athleteName} size={80} className="w-20 h-20 rounded-full object-cover ring-2 ring-gold/60" />
                 <div>
                   <p className="text-lg font-bold">{first.athleteName}</p>
                   <p className="text-gray-400">{first.displayValue}</p>
@@ -40,7 +41,7 @@ export default function LeadersPage() {
               {rest.map((leader, index) => (
                 <Link key={leader.athleteId} href={`/players/${leader.athleteId}`} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded text-gray-300 transition-colors">
                   <span className="text-gray-400 w-4">{index + 2}</span>
-                  <img src={leader.teamLogo} alt="" className="w-6 h-6" />
+                  <TeamLogo src={leader.teamLogo} size={24} className="w-6 h-6" />
                   <span>{leader.athleteName}</span>
                   <span className="text-gray-400 ml-auto tabular-nums">{leader.displayValue}</span>
                 </Link>

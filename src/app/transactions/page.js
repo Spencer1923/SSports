@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import Skeleton from "@/components/Skeleton";
 import { TEAM_LOGOS } from "@/lib/divisions";
+import TeamLogo from "@/components/TeamLogo";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -47,7 +48,7 @@ export default function TransactionsPage() {
               const logo = t.team?.logo || TEAM_LOGOS[t.team?.displayName];
               return (
                 <div key={`${t.date}-${i}`} className="flex items-center gap-3 px-4 py-3">
-                  <img src={logo} alt={t.team?.displayName || ""} className="w-8 h-8 shrink-0" />
+                  <TeamLogo src={logo} alt={t.team?.displayName || ""} size={32} className="w-8 h-8 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-200">{t.description}</p>
                     <p className="text-xs text-gray-500">{t.team?.displayName}</p>

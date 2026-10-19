@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 // simple top navigation shared across all pages
 export default function Navbar() {
@@ -27,7 +28,8 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-black/70 backdrop-blur-md border-b border-gold/40 shadow-[0_4px_24px_rgba(139,0,0,0.35)] text-gray-200">
       <div className="flex items-center justify-between p-4">
         <Link href="/">
-          <img src="/logo-header.png" alt="SSports" className="h-12 md:h-20" />
+          {/* width/height = the resized file's pixel size; priority = load it first */}
+          <Image src="/logo-header.png" alt="SSports" width={800} height={357} sizes="215px" priority className="h-12 md:h-20 w-auto" />
         </Link>
 
         {/* desktop links — hidden on small screens */}

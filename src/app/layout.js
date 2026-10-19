@@ -1,12 +1,13 @@
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 import { Oswald, Inter } from "next/font/google";
+import Image from "next/image";
 
 const oswald = Oswald({ subsets: ["latin"], variable: "--font-heading" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 
 export const metadata = {
-  manifest: "/ssports_site.webmanifest",
+  manifest: "/site.webmanifest",
   title: {
     default: "SSports — NFL Scores, Standings & Analysis",
     template: "%s | SSports",
@@ -16,7 +17,7 @@ export const metadata = {
   openGraph: {
     title: "SSports",
     description: "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
-    images: ["/logo-medium.png"],
+    images: [{ url: "/logo-medium.png", width: 256, height: 199, alt: "SSports" }],
     type: "website",
   },
   icons: {
@@ -45,8 +46,8 @@ export default function RootLayout({ children }) {
         <Navbar /> {/* shows on every page */}
         {children}
         <footer className="relative flex flex-col items-center gap-2 p-8 mt-12 text-xs text-gray-500">
-  <span className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-crimson to-transparent" />
-          <img src="/logo-medium.png" alt="SSports" className="w-16 h-16" />
+          <span className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-crimson to-transparent" />
+          <Image src="/logo-medium.png" alt="SSports" width={256} height={199} sizes="64px" className="w-16 h-16 object-contain" />
         </footer>
       </body>
     </html>

@@ -5,6 +5,8 @@ import Skeleton from "@/components/Skeleton";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BackButton from "@/components/BackButton";
 import TeamSchedule from "@/components/TeamSchedule";
+import TeamLogo from "@/components/TeamLogo";
+
 // the roster is big and sits below the schedule, so it loads after the page paints
 const TeamRoster = dynamic(() => import("@/components/TeamRoster"), {
   loading: () => <div className="card mt-8 h-64 animate-pulse bg-white/5" />,
@@ -47,7 +49,7 @@ export default function TeamPage() {
       <BackButton />
       {/* header banner using team's own color */}
       <div className="flex items-center gap-4 p-5 rounded-xl text-white shadow-lg shadow-black/40 ring-1 ring-white/10" style={{ background: `linear-gradient(135deg, ${teamColor}, #0A0A0A 140%)` }}>
-        <img src={team.logos?.[0]?.href} alt={team.displayName} className="w-20 h-20 drop-shadow-lg" />
+        <TeamLogo src={team.logos?.[0]?.href} alt={team.displayName} size={80} className="w-20 h-20 drop-shadow-lg" />
         <div>
           <h1 className="text-3xl font-extrabold uppercase tracking-wide">{team.displayName}</h1>
           <p>{team.record?.items?.[0]?.summary}</p>

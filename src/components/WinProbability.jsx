@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
+import TeamLogo from "@/components/TeamLogo";
 
 // ESPN gives 0-1; normalize in case it ever sends 0-100
 const frac = (v) => (v > 1 ? v / 100 : (v ?? 0.5));
@@ -130,13 +131,13 @@ export default function WinProbability({ plays = [], playSource, home, away }) {
           return (
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <img src={home?.logo} alt="" className="w-6 h-6" />
+                <TeamLogo src={home?.logo} size={24} className="w-6 h-6" />
                 <span className="text-2xl font-extrabold tabular-nums text-white">{h}%</span>
               </div>
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{hover == null ? (homePct === 100 || homePct === 0 ? "Final" : "Now") : "Hovering"}</span>
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-extrabold tabular-nums text-white">{100 - h}%</span>
-                <img src={away?.logo} alt="" className="w-6 h-6" />
+                <TeamLogo src={away?.logo} size={24} className="w-6 h-6" /> <img src={away?.logo} alt="" className="w-6 h-6" />
               </div>
             </div>
           );
