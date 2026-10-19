@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Skeleton from "@/components/Skeleton";
 import { buildMeta, computeSeeds, addMovement, computeRemainingSOS } from "@/lib/playoffs";
 import TeamLogo from "@/components/TeamLogo";
+import Link from "next/link";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -39,7 +40,7 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
       </div>
       {rows.map((t) => (
         <div key={t.id}>
-          <div className={`flex items-center gap-3 px-4 py-1.5 text-sm transition-colors hover:bg-white/5 ${t.inPlayoffs ? "text-gray-200" : "text-gray-600"}`}>
+          <Link href={`/teams/${t.id}`} className={`flex items-center gap-3 px-4 py-1.5 text-sm transition-colors hover:bg-white/5 ${t.inPlayoffs ? "text-gray-200" : "text-gray-600"}`}>
             {/* seed badge: seed 1 (the bye) glows gold */}
             <span
               className={`flex h-6 w-6 items-center justify-center rounded-md font-mono text-xs font-bold tabular-nums ${
@@ -57,7 +58,7 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
             <span className="w-8 text-right font-mono text-xs">
               <Move n={t.move} />
             </span>
-          </div>
+          </Link>
           {/* playoff line under seed 7 */}
           {t.seed === 7 && (
             <div className="relative my-1 h-px bg-gradient-to-r from-transparent via-gold to-transparent">

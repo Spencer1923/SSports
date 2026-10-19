@@ -3,6 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { TEAM_LOGOS } from "@/lib/divisions";
+import Link from "next/link";
 
 export default async function PostPage({ params }) {
   // Next.js 15+ requires awaiting params before using it
@@ -51,7 +52,9 @@ export default async function PostPage({ params }) {
                     alt={item.player}
                     className="w-14 h-14 rounded-full object-cover object-top ring-2 ring-gold/60 bg-white/5"
                   />
-                  <span className="text-lg font-bold text-gray-100">{item.player}</span>
+                  <Link href={`/players/${item.playerId}`} className="text-lg font-bold text-gray-100 hover:text-gold">
+                    {item.player}
+                  </Link>
                 </div>
                 <p className="text-sm text-gray-400 mt-2">{item.reason}</p>
               </div>

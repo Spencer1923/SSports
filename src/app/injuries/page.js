@@ -4,6 +4,7 @@ import { TEAM_LOGOS } from "@/lib/divisions";
 import { useState } from "react";
 import TeamLogo from "@/components/TeamLogo";
 import Skeleton from "@/components/Skeleton";
+import Link from "next/link";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -15,7 +16,8 @@ const statusColor = (status = "") => {
   if (s.includes("questionable") || s.includes("day")) return "bg-yellow-900/60 text-yellow-300";
   return "bg-white/10 text-gray-300";
 };
-
+// pulls the player id out of ESPN's player card link, e.g. ".../player/_/id/5099542/name" -> "5099542"
+const playerId = (athlete) => athlete?.id || athlete?.links?.[0]?.href?.match(/\/id\/(\d+)/)?.[1];
 export default function InjuriesPage() {
   const { data, error, isLoading } = useSWR("/api/injuries", fetcher, {
     refreshInterval: 3600000, // injuries update slowly, refresh hourly
@@ -69,12 +71,17 @@ export default function InjuriesPage() {
           <div key={teamEntry.id} className="card overflow-hidden divide-y divide-white/5">
             <div className="flex items-center gap-2 bg-white/5 px-3 py-2">
               <TeamLogo src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} size={24} className="w-6 h-6" />
-              <h2 className="font-semibold text-gray-200">{teamEntry.displayName}</h2>
+              <Link href={`/teams/${teamEntry.id}`} className="font-semibold text-gray-200 hover:text-gold">
+                {teamEntry.displayName}
+                {teamEntry.displayName}
+              </Link>
               <span className="ml-auto text-xs text-gray-500">{teamEntry.injuries.length} listed</span>
             </div>
             {teamEntry.injuries.map((injury) => (
               <div key={injury.id} className="flex justify-between items-center px-3 py-2 text-sm hover:bg-white/5 transition-colors">
-                <span className="text-gray-200">{injury.athlete?.displayName}</span>
+                <Link href={`/players/${playerId(injury.athlete)}`} className="text-gray-200 hover:text-gold">
+                  {injury.athlete?.displayName}
+                </Link>
                 <span className="flex items-center gap-2">
                   <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${statusColor(injury.status)}`}>{injury.status}</span>
                   <span className="text-gray-400">{injury.details?.type}</span>

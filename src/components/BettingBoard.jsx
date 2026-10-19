@@ -7,6 +7,7 @@ import BetSlip from "@/components/BetSlip";
 import EdgeBoard from "@/components/EdgeBoard";
 import { fmtOdds, marketProb } from "@/lib/odds";
 import TeamLogo from "@/components/TeamLogo";
+import Link from "next/link";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -135,7 +136,11 @@ function GameCard({ g, slip, toggleLeg, format }) {
         <div className="flex min-w-0 items-center gap-3">
           <TeamLogo src={t.logo} size={36} className="h-9 w-9 shrink-0" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-gray-100">{t.name}</p>
+            <p className="truncate text-sm font-semibold text-gray-100">
+              <Link href={`/teams/${t.id}`} className="hover:text-gold">
+                {t.name}
+              </Link>
+            </p>
             <p className="font-mono text-[10px] text-gray-500">{[t.record, ats && `ATS ${ats}`].filter(Boolean).join(" · ")}</p>
           </div>
           {started && <span className="ml-auto pl-2 font-mono text-xl font-bold tabular-nums text-white">{t.score}</span>}
@@ -250,7 +255,9 @@ function GameCard({ g, slip, toggleLeg, format }) {
                 {list.map((i) => (
                   <p key={i.name} className="flex items-center gap-1.5 py-0.5 text-xs text-gray-400">
                     <span className="w-24 shrink-0 font-mono text-[10px] text-gray-500">{i.role}</span>
-                    <span className="truncate">{i.name}</span>
+                    <Link href={`/players/${i.id}`} className="truncate hover:text-gold">
+                      {i.name}
+                    </Link>
                     <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase ${statusTone(i.status)}`}>{i.status}</span>
                   </p>
                 ))}

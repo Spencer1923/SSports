@@ -12,6 +12,7 @@ const ScoringSummary = dynamic(() => import("@/components/ScoringSummary"));
 const DriveList = dynamic(() => import("@/components/DriveList"));
 import TeamLogo from "@/components/TeamLogo";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -144,7 +145,9 @@ export default function GamePage() {
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: `#${teams[0]?.team.color}` }} />
             <TeamLogo src={teams[0]?.team.logo} alt={teams[0]?.team.displayName} size={32} className="w-8 h-8" />
-            <span className="text-gray-200 font-semibold">{teams[0]?.team.abbreviation}</span>
+            <Link href={`/teams/${teams[0]?.team.id}`} className="text-gray-200 font-semibold hover:text-gold">
+              {teams[0]?.team.abbreviation}
+            </Link>
           </div>
 
           <span className="text-3xl font-extrabold tabular-nums text-white">
@@ -152,7 +155,9 @@ export default function GamePage() {
           </span>
 
           <div className="flex items-center gap-2">
-            <span className="text-gray-200 font-semibold">{teams[1]?.team.abbreviation}</span>
+            <Link href={`/teams/${teams[1]?.team.id}`} className="text-gray-200 font-semibold hover:text-gold">
+              {teams[1]?.team.abbreviation}
+            </Link>
             <TeamLogo src={teams[1]?.team.logo} alt={teams[1]?.team.displayName} size={32} className="w-8 h-8" />
             <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: `#${teams[1]?.team.color}` }} />
           </div>
@@ -217,7 +222,9 @@ export default function GamePage() {
           {playerStats.map((teamEntry, teamIndex) => (
             <div key={teamEntry.team.id} className={`flex items-center gap-2 ${teamIndex === 1 ? "flex-row-reverse" : ""}`}>
               <TeamLogo src={teamEntry.team.logo} alt={teamEntry.team.displayName} size={24} className="w-6 h-6" />
-              <h3 className="font-semibold text-gray-200">{teamEntry.team.displayName}</h3>
+              <Link href={`/teams/${teamEntry.team.id}`} className="font-semibold text-gray-200 hover:text-gold">
+                {teamEntry.team.displayName}
+              </Link>
             </div>
           ))}
         </div>
@@ -248,7 +255,9 @@ export default function GamePage() {
                   )}
                   {category.athletes.map((entry) => (
                     <div key={entry.athlete.id} className="flex gap-3 px-3 py-2 text-sm hover:bg-white/5 transition-colors">
-                      <span className="text-gray-200 flex-1">{entry.athlete.displayName}</span>
+                      <Link href={`/players/${entry.athlete.id}`} className="text-gray-200 flex-1 hover:text-gold">
+                        {entry.athlete.displayName}
+                      </Link>
                       {entry.stats.map((stat, i) => (
                         <span key={i} className="text-gray-400 w-12 text-center tabular-nums">
                           {stat}

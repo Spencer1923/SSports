@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 import { Oswald, Inter } from "next/font/google";
 import Image from "next/image";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const oswald = Oswald({ subsets: ["latin"], variable: "--font-heading" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
@@ -44,6 +45,7 @@ export default function RootLayout({ children }) {
     <html lang="en" data-scroll-behavior="smooth">
       <body className={`${oswald.variable} ${inter.variable}`}>
         <Navbar /> {/* shows on every page */}
+        <ScrollToTop />
         {children}
         <footer className="relative flex flex-col items-center gap-2 p-8 mt-12 text-xs text-gray-500">
           <span className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-crimson to-transparent" />
