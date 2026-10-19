@@ -1,6 +1,6 @@
 "use client";
 import useSWR from "swr";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 import { TEAM_LOGOS } from "@/lib/divisions";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -21,7 +21,7 @@ export default function TransactionsPage() {
   });
 
   if (error || data?.error) return <p className="p-6">Failed to load transactions.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton variant="feed" rows={5} />;
 
   // newest first
   const items = [...(data.transactions || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -52,9 +52,7 @@ export default function TransactionsPage() {
                     <p className="text-sm text-gray-200">{t.description}</p>
                     <p className="text-xs text-gray-500">{t.team?.displayName}</p>
                   </div>
-                  <span className={`text-[11px] font-bold uppercase px-2.5 py-1 rounded-full ${tag.cls}`}>
-                    {tag.label}
-                  </span>
+                  <span className={`text-[11px] font-bold uppercase px-2.5 py-1 rounded-full ${tag.cls}`}>{tag.label}</span>
                 </div>
               );
             })}

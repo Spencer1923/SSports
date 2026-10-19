@@ -69,6 +69,45 @@ export default function Skeleton({ variant = "scores", count = 6, rows = 4, hero
       </Wrap>
     );
   }
+  // lines = plain headline rows (news list); no page padding, since NewsFeed sits inside other pages
+  if (variant === "lines") {
+    return (
+      <div className="animate-pulse" aria-busy="true" aria-label="Loading">
+        {items.map((i) => (
+          <div key={i} className="border-b border-white/10 py-3">
+            <Bar className="h-4 w-full" />
+            <Bar className="mt-2 h-4 w-2/3" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // feed = day sections of rows (transactions); matches that page's narrower max-w-3xl width
+  if (variant === "feed") {
+    return (
+      <div className="mx-auto max-w-3xl animate-pulse px-4 py-8 sm:px-6" aria-busy="true" aria-label="Loading">
+        <Bar className="mb-6 h-9 w-48" />
+        {[0, 1].map((s) => (
+          <div key={s} className="mb-8">
+            <Bar className="mb-3 h-3 w-24" />
+            <div className="card divide-y divide-white/5">
+              {Array.from({ length: rows }, (_, r) => (
+                <div key={r} className="flex items-center gap-3 px-4 py-3">
+                  <Bar className="h-8 w-8 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Bar className="h-4 w-full" />
+                    <Bar className="h-3 w-24" />
+                  </div>
+                  <Bar className="h-6 w-16 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   // scores: same padding and row sizes as a real game card, so the layout doesn't shift
   return (

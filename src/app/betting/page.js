@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 import BettingBoard from "@/components/BettingBoard";
 
 export const metadata = {
@@ -10,7 +10,7 @@ export const metadata = {
 export default function BettingPage() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<Skeleton variant="grid" hero bare count={4} rows={4} />}>
         <BettingBoard />
       </Suspense>
     </main>

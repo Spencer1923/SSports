@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
 import Link from "next/link";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -34,7 +34,7 @@ export default function TeamStatsPage() {
   });
 
   if (error) return <p>Failed to load team stats.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton variant="grid" count={6} rows={10} />;
 
   const teams = data.teams || [];
 

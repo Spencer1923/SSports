@@ -1,6 +1,6 @@
 "use client";
 import useSWR from "swr";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -11,7 +11,7 @@ export default function NewsFeed({ limit }) {
   });
 
   if (error) return <p>Failed to load news.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton variant="lines" count={limit || 8} />;
 
   // trim to `limit` articles if provided, otherwise show all
   const articles = limit ? data.articles.slice(0, limit) : data.articles;
@@ -19,13 +19,7 @@ export default function NewsFeed({ limit }) {
   return (
     <div>
       {articles.map((article) => (
-        <a
-          key={article.id}
-          href={article.links?.web?.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block border-b py-2"
-        >
+        <a key={article.id} href={article.links?.web?.href} target="_blank" rel="noopener noreferrer" className="block border-b py-2">
           <p className="font-medium text-sm hover:text-crimson text-gray-300">{article.headline}</p>
         </a>
       ))}
