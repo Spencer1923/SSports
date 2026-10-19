@@ -6,7 +6,7 @@ const oswald = Oswald({ subsets: ["latin"], variable: "--font-heading" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 
 export const metadata = {
-  manifest: "ssports_site.webmanifest",
+  manifest: "/ssports_site.webmanifest",
   title: {
     default: "SSports — NFL Scores, Standings & Analysis",
     template: "%s | SSports",
@@ -21,20 +21,20 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: "ssports_favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "ssports_favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/ssports_favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/ssports_favicon-32x32.png", sizes: "32x32", type: "image/png" },
       {
-        url: "ssports_android-chrome-192x192.png",
+        url: "/ssports_android-chrome-192x192.png",
         sizes: "192x192",
         type: "image/png",
       },
       {
-        url: "ssports_android-chrome-512x512.png",
+        url: "/ssports_android-chrome-512x512.png",
         sizes: "512x512",
         type: "image/png",
       },
     ],
-    apple: "ssports_apple-touch-icon.png",
+    apple: "/ssports_apple-touch-icon.png",
   },
 };
 

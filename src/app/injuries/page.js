@@ -1,8 +1,9 @@
 "use client";
 import useSWR from "swr";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { TEAM_LOGOS } from "@/lib/divisions";
 import { useState } from "react";
+import TeamLogo from "@/components/TeamLogo";
+import Skeleton from "@/components/Skeleton";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -22,7 +23,7 @@ export default function InjuriesPage() {
   const [query, setQuery] = useState(""); // search text
   const [selected, setSelected] = useState(null); // team picked from the logo strip
   if (error) return <p>Failed to load injuries.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton variant="rows" count={8} />;
 
   // data.injuries is a list, one entry per team
   const teams = data.injuries || [];
@@ -56,7 +57,7 @@ export default function InjuriesPage() {
               className={`rounded-lg border p-1.5 cursor-pointer transition ${
                 selected === t.id ? "border-gold bg-gold/10" : selected ? "border-white/10 opacity-40 hover:opacity-100" : "border-white/10 hover:border-white/30"
               }`}>
-              <img src={TEAM_LOGOS[t.displayName]} alt={t.displayName} className="w-7 h-7" />
+              <TeamLogo src={TEAM_LOGOS[t.displayName]} alt={t.displayName} size={28} className="w-7 h-7" />
             </button>
           ))}
         </div>
@@ -67,7 +68,7 @@ export default function InjuriesPage() {
         {shown.map((teamEntry) => (
           <div key={teamEntry.id} className="card overflow-hidden divide-y divide-white/5">
             <div className="flex items-center gap-2 bg-white/5 px-3 py-2">
-              <img src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} className="w-6 h-6" />
+              <TeamLogo src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} size={24} className="w-6 h-6" />
               <h2 className="font-semibold text-gray-200">{teamEntry.displayName}</h2>
               <span className="ml-auto text-xs text-gray-500">{teamEntry.injuries.length} listed</span>
             </div>

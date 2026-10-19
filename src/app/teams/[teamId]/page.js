@@ -5,7 +5,11 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BackButton from "@/components/BackButton";
 import TeamSchedule from "@/components/TeamSchedule";
-import TeamRoster from "@/components/TeamRoster";
+// the roster is big and sits below the schedule, so it loads after the page paints
+const TeamRoster = dynamic(() => import("@/components/TeamRoster"), {
+  loading: () => <div className="card mt-8 h-64 animate-pulse bg-white/5" />,
+});
+import dynamic from "next/dynamic";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());

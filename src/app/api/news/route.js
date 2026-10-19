@@ -1,13 +1,12 @@
+import { espnFetch, cachedJson } from "@/lib/espn";
+
 export async function GET() {
   try {
     // ESPN's NFL news feed
-    const res = await fetch(
-      "https://site.api.espn.com/apis/site/v2/sports/football/nfl/news",
-      { headers: { "User-Agent": "Mozilla/5.0" } }
-    );
+    const res = await espnFetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/news", 300);
 
     if (!res.ok) {
-      return Response.json({ error: `ESPN API returned ${res.status}` }, { status: 502 });
+      return cachedJson(data, 300);
     }
 
     const data = await res.json();

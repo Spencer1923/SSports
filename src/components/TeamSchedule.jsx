@@ -1,9 +1,8 @@
 import Link from "next/link";
-
+import TeamLogo from "@/components/TeamLogo";
 // season at a glance: one tile per week, results for played games, date for upcoming ones
 export default function TeamSchedule({ games = [], teamId, recordsById = {}, byeWeek }) {
-  const fmtDate = (d) =>
-    new Date(d).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  const fmtDate = (d) => new Date(d).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
   // turn each game into a simple object with everything a tile needs
   const items = games.map((game) => {
@@ -51,10 +50,7 @@ export default function TeamSchedule({ games = [], teamId, recordsById = {}, bye
           // bye week tile
           if (item.type === "bye") {
             return (
-              <div
-                key="bye"
-                className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 p-2 text-center"
-              >
+              <div key="bye" className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 p-2 text-center">
                 <p className="text-[10px] uppercase tracking-widest text-gray-500">WK {item.week}</p>
                 <p className="text-sm font-bold text-gray-500 mt-2">BYE</p>
               </div>
@@ -62,10 +58,8 @@ export default function TeamSchedule({ games = [], teamId, recordsById = {}, bye
           }
 
           // result colors: green = win, red = loss, gray = tie / not played yet
-          const tone =
-            item.result === "W" ? "text-green-400" : item.result === "L" ? "text-red-400" : "text-gray-300";
-          const bar =
-            item.result === "W" ? "bg-green-500" : item.result === "L" ? "bg-red-600" : item.result === "T" ? "bg-gray-500" : "bg-transparent";
+          const tone = item.result === "W" ? "text-green-400" : item.result === "L" ? "text-red-400" : "text-gray-300";
+          const bar = item.result === "W" ? "bg-green-500" : item.result === "L" ? "bg-red-600" : item.result === "T" ? "bg-gray-500" : "bg-transparent";
 
           return (
             <Link
@@ -73,8 +67,7 @@ export default function TeamSchedule({ games = [], teamId, recordsById = {}, bye
               href={`/games/${item.id}`}
               className={`relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-2 text-center transition hover:-translate-y-0.5 hover:border-gold/50 ${
                 item.id === nextId ? "ring-1 ring-gold/70" : ""
-              }`}
-            >
+              }`}>
               {/* thin result bar across the top */}
               <span className={`absolute top-0 inset-x-0 h-0.5 ${bar}`} />
 
@@ -83,7 +76,7 @@ export default function TeamSchedule({ games = [], teamId, recordsById = {}, bye
                 <span>{item.isHome ? "vs" : "@"}</span>
               </div>
 
-              <img src={item.oppLogo} alt="" className="w-9 h-9 mx-auto my-1.5" />
+              <TeamLogo src={item.oppLogo} size={36} className="w-9 h-9 mx-auto my-1.5" />
 
               <p className="text-xs text-gray-200 truncate">
                 {item.oppAbbr} <span className="text-gray-500">({recordsById[item.oppId] || "—"})</span>

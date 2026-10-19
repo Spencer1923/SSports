@@ -5,7 +5,7 @@ import Link from "next/link";
 import Scoreboard from "@/components/Scoreboard";
 import NewsFeed from "@/components/NewsFeed";
 import { Suspense } from "react";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 
 // runs on the server — reads the latest blog posts from disk
 function getLatestPosts() {
@@ -35,7 +35,7 @@ export default function Home() {
         <div className="md:col-span-2">
           <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Scores</h2>
           {/* Suspense is required because Scoreboard reads the URL's ?week= param */}
-          <Suspense fallback={<LoadingSpinner />}>
+          <Suspense fallback={<Skeleton variant="scores" />}>
             <Scoreboard />
           </Suspense>
         </div>

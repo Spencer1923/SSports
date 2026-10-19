@@ -4,10 +4,14 @@ import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import BackButton from "@/components/BackButton";
 import LiveDriveBanner from "@/components/LiveDriveBanner";
-import BettingLines from "@/components/BettingLines";
-import WinProbability from "@/components/WinProbability";
-import ScoringSummary from "@/components/ScoringSummary";
-import DriveList from "@/components/DriveList";
+// loaded after the box score paints; the empty placeholder keeps its space so the page doesn't jump
+const Placeholder = ({ h }) => <div className="card animate-pulse bg-white/5" style={{ height: h }} />;
+const BettingLines = dynamic(() => import("@/components/BettingLines"), { loading: () => <Placeholder h={220} /> });
+const WinProbability = dynamic(() => import("@/components/WinProbability"), { loading: () => <Placeholder h={420} /> });
+const ScoringSummary = dynamic(() => import("@/components/ScoringSummary"));
+const DriveList = dynamic(() => import("@/components/DriveList"));
+import TeamLogo from "@/components/TeamLogo";
+import dynamic from "next/dynamic";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -100,7 +104,10 @@ function toNumber(value, isRatio, useSecond) {
 
 export default function GamePage() {
   const { gameId } = useParams();
-  const { data, error, isLoading } = useSWR(`/api/games/${gameId}`, fetcher);
+  const { data, error, isLoading } = useSWR(`/api/games/${gameId}`, fetcher, {
+    // refresh every 15s only while the game is live; otherwise don't poll
+    refreshInterval: (d) => (d?.header?.competitions?.[0]?.status?.type?.state === "in" ? 15000 : 0),
+  });
 
   if (error) return <p>Failed to load game.</p>;
   if (isLoading) return <LoadingSpinner />;
@@ -136,7 +143,7 @@ export default function GamePage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: `#${teams[0]?.team.color}` }} />
-            <img src={teams[0]?.team.logo} alt={teams[0]?.team.displayName} className="w-8 h-8" />
+            <TeamLogo src={teams[0]?.team.logo} alt={teams[0]?.team.displayName} size={32} className="w-8 h-8" />
             <span className="text-gray-200 font-semibold">{teams[0]?.team.abbreviation}</span>
           </div>
 
@@ -146,7 +153,7 @@ export default function GamePage() {
 
           <div className="flex items-center gap-2">
             <span className="text-gray-200 font-semibold">{teams[1]?.team.abbreviation}</span>
-            <img src={teams[1]?.team.logo} alt={teams[1]?.team.displayName} className="w-8 h-8" />
+            <TeamLogo src={teams[1]?.team.logo} alt={teams[1]?.team.displayName} size={32} className="w-8 h-8" />
             <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: `#${teams[1]?.team.color}` }} />
           </div>
         </div>
@@ -209,7 +216,7 @@ export default function GamePage() {
         <div className="hidden md:grid md:grid-cols-2 gap-8 mb-4">
           {playerStats.map((teamEntry, teamIndex) => (
             <div key={teamEntry.team.id} className={`flex items-center gap-2 ${teamIndex === 1 ? "flex-row-reverse" : ""}`}>
-              <img src={teamEntry.team.logo} alt={teamEntry.team.displayName} className="w-6 h-6" />
+              <TeamLogo src={teamEntry.team.logo} alt={teamEntry.team.displayName} size={24} className="w-6 h-6" />
               <h3 className="font-semibold text-gray-200">{teamEntry.team.displayName}</h3>
             </div>
           ))}

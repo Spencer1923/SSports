@@ -1,10 +1,9 @@
+import { espnFetch, cachedJson } from "@/lib/espn";
 export async function GET() {
   try {
     // step 1: get list of all 32 teams
-    const teamsRes = await fetch(
-      "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams",
-      { headers: { "User-Agent": "Mozilla/5.0" } }
-    );
+    // the list of 32 teams basically never changes: cache for 1 day
+    const teamsRes = await espnFetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams", 86400);
     if (!teamsRes.ok) {
       return Response.json({ error: `ESPN teams list returned ${teamsRes.status}` }, { status: 502 });
     }
@@ -14,10 +13,8 @@ export async function GET() {
     // step 2: fetch each team's season statistics in parallel
     const statsPerTeam = await Promise.all(
       teams.map(async ({ team }) => {
-        const statsRes = await fetch(
-          `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/types/2/teams/${team.id}/statistics`,
-          { headers: { "User-Agent": "Mozilla/5.0" } }
-        );
+        // season stats only change when games finish: 10 minutes is plenty
+        const statsRes = await espnFetch(`https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/types/2/teams/${team.id}/statistics`, 600);
         if (!statsRes.ok) return null;
         const statsData = await statsRes.json();
 
@@ -36,10 +33,10 @@ export async function GET() {
           color: team.color,
           stats: statMap,
         };
-      })
+      }),
     );
 
-    return Response.json({ teams: statsPerTeam.filter(Boolean) });
+    return cachedJson({ teams: statsPerTeam.filter(Boolean) }, 600);
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }

@@ -1,9 +1,11 @@
 "use client";
-import useSWR from "swr";
+import useSWR, { preload } from "swr"; // preload = fetch a key early and stash it in SWR's cache
 import Link from "next/link";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Skeleton from "@/components/Skeleton";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { prefetchProps } from "@/lib/prefetch";
+import TeamLogo from "@/components/TeamLogo";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -34,8 +36,26 @@ export default function Scoreboard() {
 
   const url = week ? `/api/scores?week=${week}` : "/api/scores";
   const { data, error, isLoading } = useSWR(url, fetcher, {
-    refreshInterval: 30000, // refresh every 30s
+    // d = the latest data. 15s while any game is live, 60s while games are still upcoming
+    // (to catch kickoffs), and no polling at all once every game is final
+    refreshInterval: (d) => {
+      const states = (d?.events || []).map((g) => g.status.type.state);
+      if (states.includes("in")) return 15000;
+      if (states.includes("pre")) return 60000;
+      return 0;
+    },
+    keepPreviousData: true, // keep showing the old week while the new one loads
   });
+
+  // the week on screen (null until the first load finishes)
+  const shownWeek = week ?? data?.week?.number ?? null;
+
+  // once a week is showing, quietly load the weeks on either side so Prev/Next feel instant
+  useEffect(() => {
+    if (!shownWeek) return;
+    if (shownWeek > 1) preload(`/api/scores?week=${shownWeek - 1}`, fetcher);
+    if (shownWeek < 18) preload(`/api/scores?week=${shownWeek + 1}`, fetcher);
+  }, [shownWeek]);
 
   // track previous scores to detect changes and trigger a flash animation
   const prevScores = useRef({});
@@ -61,7 +81,9 @@ export default function Scoreboard() {
   }, [data]);
 
   if (error) return <p>Failed to load scores.</p>;
-  if (isLoading) return <LoadingSpinner />;
+  // only show the spinner on the very first load; after that the old data stays visible.
+  // (with keepPreviousData, isLoading stays true during a week switch, so we check data instead)
+  if (!data) return <Skeleton variant="scores" />;
 
   // ESPN's response includes the current week number so we can initialize navigation from it
   const currentWeek = week ?? data?.week?.number ?? 1;
@@ -83,7 +105,8 @@ export default function Scoreboard() {
         </button>
       </div>
 
-      <div className="grid gap-3">
+      {/* dims slightly while the next week loads, so you can tell something is happening */}
+      <div className={`grid gap-3 transition-opacity ${isLoading ? "opacity-60" : ""}`}>
         {data.events.map((game) => {
           // ESPN lists competitors as [home, away] or [away, home] depending on game — sort by homeAway field
           const competitors = game.competitions[0].competitors;
@@ -92,7 +115,7 @@ export default function Scoreboard() {
           const odds = game.competitions[0].odds?.[0]; // betting line from ESPN
 
           return (
-            <Link key={game.id} href={`/games/${game.id}`} className="card card-hover group block p-3">
+            <Link key={game.id} href={`/games/${game.id}`} className="card card-hover group block p-3" {...prefetchProps(`/api/games/${game.id}`)}>
               {/* game status at top, small and subtle */}
               <p className="flex items-center gap-2 text-xs text-gray-400 mb-2 group-hover:text-gray-100">
                 {/* pulsing red dot for live games */}
@@ -101,17 +124,13 @@ export default function Scoreboard() {
               </p>
 
               {game.status.type.state === "pre" && odds?.details && (
-                <p className="inline-block rounded-full border border-white/10 bg-white/5 px-2 py-0.5 mb-2 text-[11px] tabular-nums text-gray-300">
-                  {odds.details}
-                  
-                                   
-                </p>
+                <p className="inline-block rounded-full border border-white/10 bg-white/5 px-2 py-0.5 mb-2 text-[11px] tabular-nums text-gray-300">{odds.details}</p>
               )}
 
               {/* away team row */}
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  <img src={away.team.logo} alt={away.team.displayName} className="w-6 h-6" />
+                  <TeamLogo src={away.team.logo} alt={away.team.displayName} size={24} className="w-6 h-6" />
                   <span className="text-gray-300 text-sm group-hover:text-white">{away.team.shortDisplayName}</span>
                 </div>
                 {game.status.type.state !== "pre" && (
@@ -125,7 +144,7 @@ export default function Scoreboard() {
               {/* home team row */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <img src={home.team.logo} alt={home.team.displayName} className="w-6 h-6" />
+                  <TeamLogo src={home.team.logo} alt={home.team.displayName} size={24} className="w-6 h-6" />
                   <span className="text-gray-300 text-sm group-hover:text-white">{home.team.shortDisplayName}</span>
                 </div>
                 {game.status.type.state !== "pre" && (

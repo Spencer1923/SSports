@@ -1,3 +1,4 @@
+import { cachedJson } from "@/lib/espn";
 // Pulls all 18 regular-season weeks from ESPN and returns a small, clean
 // list of games + a lookup of teams, so the client can do all the standings math.
 
@@ -55,7 +56,9 @@ export async function GET() {
       });
     });
 
-    return Response.json({ games, teams });
+    // the CDN may keep the combined result for 5 minutes (same as the fetch cache above),
+    // so most visitors never trigger the 18 ESPN calls
+    return cachedJson({ games, teams }, 300);
   } catch (err) {
     // if any week fails, fail loudly so the simulator never shows wrong standings
     return Response.json({ error: err.message }, { status: 502 });

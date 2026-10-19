@@ -6,6 +6,8 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import BetSlip from "@/components/BetSlip";
 import EdgeBoard from "@/components/EdgeBoard";
 import { fmtOdds, marketProb } from "@/lib/odds";
+import TeamLogo from "@/components/TeamLogo";
+
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -132,7 +134,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
     return (
       <div key={t.id} className="contents">
         <div className="flex min-w-0 items-center gap-3">
-          <img src={t.logo} alt="" className="h-9 w-9 shrink-0" />
+          <TeamLogo src={t.logo} size={36} className="h-9 w-9 shrink-0" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-gray-100">{t.name}</p>
             <p className="font-mono text-[10px] text-gray-500">{[t.record, ats && `ATS ${ats}`].filter(Boolean).join(" · ")}</p>
@@ -242,7 +244,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
             ].map(([t, list, hidden]) => (
               <div key={t.id}>
                 <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-gray-300">
-                  <img src={t.logo} alt="" className="h-4 w-4" />
+                  <TeamLogo src={t.logo} size={16} className="h-4 w-4" />
                   {t.abbr}
                 </p>
                 {list.length === 0 && <p className="text-[11px] text-gray-600">No key players listed</p>}
@@ -333,7 +335,15 @@ export default function BettingBoard() {
   // click a cell to add the pick, click again to remove it, or replace the other pick in the same slot
   const toggleLeg = (leg) => setSlip((prev) => (prev.some((l) => l.id === leg.id) ? prev.filter((l) => l.id !== leg.id) : [...prev.filter((l) => slotOf(l) !== slotOf(leg)), leg]));
 
-  const { data, error, isLoading } = useSWR(week ? `/api/betting?week=${week}` : "/api/betting", fetcher, { refreshInterval: 60000 });
+  const { data, error, isLoading } = useSWR(week ? `/api/betting?week=${week}` : "/api/betting", fetcher, {
+    // lines move while games are live (30s) or upcoming (2 min); finished weeks never change
+    refreshInterval: (d) => {
+      const states = (d?.games || []).map((g) => g.state);
+      if (states.includes("in")) return 30000;
+      if (states.includes("pre")) return 120000;
+      return 0;
+    },
+  });
 
   if (error || data?.error) return <p>Failed to load odds.</p>;
   if (isLoading) return <LoadingSpinner />;
@@ -445,7 +455,7 @@ export default function BettingBoard() {
                 <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-white">{t.value}</p>
                 <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400">
                   {t.logos.map((src, i) => (
-                    <img key={i} src={src} alt="" className="h-4 w-4" />
+                    <TeamLogo key={i} src={src} size={16} className="h-4 w-4" />
                   ))}
                   <span className="truncate">{t.sub}</span>
                 </div>

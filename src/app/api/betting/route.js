@@ -1,3 +1,4 @@
+import { espnFetch, cachedJson } from "@/lib/espn";
 const BASE = "https://site.api.espn.com/apis/site/v2/sports/football/nfl";
 const HEADERS = { headers: { "User-Agent": "Mozilla/5.0" } };
 
@@ -68,7 +69,10 @@ async function loadGame(event) {
 
   let summary = null;
   try {
-    const r = await fetch(`${BASE}/summary?event=${event.id}`, HEADERS);
+    // finished games never change, live games change constantly
+    const gameState = comp.status?.type?.state;
+    const secs = gameState === "post" ? 86400 : gameState === "in" ? 15 : 60;
+    const r = await espnFetch(`${BASE}/summary?event=${event.id}`, secs);
     if (r.ok) summary = await r.json();
   } catch {}
 
@@ -222,7 +226,7 @@ export async function GET(request) {
   const week = new URL(request.url).searchParams.get("week");
   try {
     const url = week ? `${BASE}/scoreboard?week=${week}&seasontype=2` : `${BASE}/scoreboard`;
-    const res = await fetch(url, HEADERS);
+    const res = await espnFetch(url, 30);
     if (!res.ok) {
       return Response.json({ error: `ESPN API returned ${res.status}` }, { status: 502 });
     }
@@ -233,11 +237,17 @@ export async function GET(request) {
     const debug = games.find((g) => g._raw)?._raw || null;
     games.forEach((g) => delete g._raw);
 
-    return Response.json({
-      week: board.week?.number ?? (week ? Number(week) : null),
-      games,
-      debug,
-    });
+    // a week where every game is final can be cached for a day; otherwise 30 seconds
+    const allDone = games.length > 0 && games.every((g) => g.state === "post");
+
+    return cachedJson(
+      {
+        week: board.week?.number ?? (week ? Number(week) : null),
+        games,
+        debug,
+      },
+      allDone ? 86400 : 30,
+    );
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }

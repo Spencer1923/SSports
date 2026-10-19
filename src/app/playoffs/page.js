@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { useState, useMemo } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { buildMeta, computeSeeds, addMovement, computeRemainingSOS } from "@/lib/playoffs";
+import TeamLogo from "@/components/TeamLogo";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -46,7 +47,7 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
               }`}>
               {t.seed}
             </span>
-            <img src={meta[t.id].logo} alt={meta[t.id].name} className={`h-7 w-7 ${t.inPlayoffs ? "" : "opacity-40"}`} />
+            <TeamLogo src={meta[t.id].logo} alt={meta[t.id].name} size={28} className={`h-7 w-7 ${t.inPlayoffs ? "" : "opacity-40"}`} />
             <span className="flex-1 font-semibold">
               {meta[t.id].abbr}
               {t.divWinner && <span className="ml-2 rounded-full border border-gold/40 bg-gold/10 px-1.5 py-0.5 font-mono text-[9px] text-gold">DIV</span>}
@@ -153,7 +154,7 @@ export default function PlayoffsPage() {
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-gray-500">{t.label}</p>
             <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-white">{t.value}</p>
             <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400">
-              {t.logo && <img src={t.logo} alt="" className="h-4 w-4" />}
+              {t.logo && <TeamLogo src={t.logo} size={16} className="h-4 w-4" />}
               <span>{t.sub}</span>
             </div>
           </div>
@@ -210,7 +211,7 @@ export default function PlayoffsPage() {
                           ? "border-white/10 opacity-40 hover:opacity-100"
                           : "border-white/10 bg-white/5 hover:border-white/40 hover:bg-white/10"
                     }`}>
-                    <img src={meta[id].logo} alt={meta[id].name} className="h-7 w-7" />
+                    <TeamLogo src={meta[id].logo} alt={meta[id].name} size={28} className="h-7 w-7" />
                     <span className="font-mono text-sm font-bold text-white">{meta[id].abbr}</span>
                   </button>
                 );

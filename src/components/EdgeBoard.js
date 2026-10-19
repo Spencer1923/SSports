@@ -1,4 +1,5 @@
 import { marketProb } from "@/lib/odds";
+import TeamLogo from "@/components/TeamLogo";
 
 // ranks games by how far ESPN's model is from the market's win probability
 export default function EdgeBoard({ games = [] }) {
@@ -16,9 +17,7 @@ export default function EdgeBoard({ games = [] }) {
 
   return (
     <section className="mb-8">
-      <h2 className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-gray-400">
-        Edge board · model vs market
-      </h2>
+      <h2 className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-gray-400">Edge board · model vs market</h2>
       <div className="card divide-y divide-white/5">
         {rows.map(({ g, prob, gap }, i) => {
           // the side the model likes more than the market does
@@ -30,7 +29,7 @@ export default function EdgeBoard({ games = [] }) {
           return (
             <div key={g.id} className="flex items-center gap-3 px-4 py-3">
               <span className="w-5 font-mono text-xs tabular-nums text-gray-600">{i + 1}</span>
-              <img src={pick.logo} alt="" className="h-8 w-8 shrink-0" />
+              <TeamLogo src={pick.logo} size={32} className="h-8 w-8 shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-gray-100">
                   {pick.name}
@@ -41,10 +40,7 @@ export default function EdgeBoard({ games = [] }) {
                 </p>
                 {/* bar length = size of the gap, in the team's color */}
                 <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/5">
-                  <div
-                    className="h-full rounded-full"
-                    style={{ width: `${(Math.abs(gap) / max) * 100}%`, backgroundColor: pick.color || "#D4AF37" }}
-                  />
+                  <div className="h-full rounded-full" style={{ width: `${(Math.abs(gap) / max) * 100}%`, backgroundColor: pick.color || "#D4AF37" }} />
                 </div>
               </div>
               <div className="text-right font-mono tabular-nums">
@@ -58,8 +54,7 @@ export default function EdgeBoard({ games = [] }) {
         })}
       </div>
       <p className="mt-2 text-[11px] leading-snug text-gray-600">
-        The team shown is the side ESPNs model likes more than the market does. The number is the gap in win
-        probability points (market → model). It shows disagreement, not a prediction.
+        The team shown is the side ESPNs model likes more than the market does. The number is the gap in win probability points (market → model). It shows disagreement, not a prediction.
       </p>
     </section>
   );
