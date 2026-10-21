@@ -5,9 +5,14 @@ export function espnFetch(url, seconds) {
   return fetch(url, { headers: HEADERS, next: { revalidate: seconds } });
 }
 
-// JSON response the CDN may cache for `seconds`; `swr` = how long it may serve the old copy while refreshing
+// `seconds` = how long the CDN may reuse a copy; `swr` = how long it may serve an old one while refreshing
 export function cachedJson(data, seconds, swr = seconds * 5) {
+  const value = `public, s-maxage=${seconds}, stale-while-revalidate=${swr}`;
   return Response.json(data, {
-    headers: { "Cache-Control": `public, s-maxage=${seconds}, stale-while-revalidate=${swr}` },
+    headers: {
+      "Cache-Control": value,
+      // Netlify reads this header first, so the CDN follows exactly the same rule
+      "Netlify-CDN-Cache-Control": value,
+    },
   });
 }

@@ -49,3 +49,39 @@ export const TEAM_LOGOS = {
 // groups division names by conference, used to build side-by-side columns
 export const AFC_DIVISIONS = ["AFC East", "AFC North", "AFC South", "AFC West"];
 export const NFC_DIVISIONS = ["NFC East", "NFC North", "NFC South", "NFC West"];
+
+// maps team display name to ESPN's team id, used to link to /teams/[id]
+export const TEAM_IDS = {
+  "Atlanta Falcons": "1",
+  "Buffalo Bills": "2",
+  "Chicago Bears": "3",
+  "Cincinnati Bengals": "4",
+  "Cleveland Browns": "5",
+  "Dallas Cowboys": "6",
+  "Denver Broncos": "7",
+  "Detroit Lions": "8",
+  "Green Bay Packers": "9",
+  "Tennessee Titans": "10",
+  "Indianapolis Colts": "11",
+  "Kansas City Chiefs": "12",
+  "Las Vegas Raiders": "13",
+  "Los Angeles Rams": "14",
+  "Miami Dolphins": "15",
+  "Minnesota Vikings": "16",
+  "New England Patriots": "17",
+  "New Orleans Saints": "18",
+  "New York Giants": "19",
+  "New York Jets": "20",
+  "Philadelphia Eagles": "21",
+  "Arizona Cardinals": "22",
+  "Pittsburgh Steelers": "23",
+  "Los Angeles Chargers": "24",
+  "San Francisco 49ers": "25",
+  "Seattle Seahawks": "26",
+  "Tampa Bay Buccaneers": "27",
+  "Washington Commanders": "28",
+  "Carolina Panthers": "29",
+  "Jacksonville Jaguars": "30",
+  "Baltimore Ravens": "33",
+  "Houston Texans": "34",
+};

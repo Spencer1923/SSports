@@ -69,6 +69,36 @@ export default function Skeleton({ variant = "scores", count = 6, rows = 4, hero
       </Wrap>
     );
   }
+  // leaders = single column of sections: a section label, one big headshot card, then four small rows
+  if (variant === "leaders") {
+    return (
+      <Wrap bare={bare}>
+        <Bar className="mb-6 h-9 w-56" /> {/* page title */}
+        {items.map((i) => (
+          <div key={i} className="mb-10">
+            <Bar className="mb-3 h-3 w-32" /> {/* category label */}
+            <div className="card mb-3 flex items-center gap-4 p-4">
+              <Bar className="h-20 w-20 rounded-full" /> {/* headshot */}
+              <div className="space-y-2">
+                <Bar className="h-5 w-40" />
+                <Bar className="h-4 w-24" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              {[0, 1, 2, 3].map((r) => (
+                <div key={r} className="flex items-center gap-3 p-2">
+                  <Bar className="h-4 w-4" />
+                  <Bar className="h-6 w-6 rounded-full" />
+                  <Bar className="h-4 w-40" />
+                  <Bar className="ml-auto h-4 w-12" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </Wrap>
+    );
+  }
   // lines = plain headline rows (news list); no page padding, since NewsFeed sits inside other pages
   if (variant === "lines") {
     return (

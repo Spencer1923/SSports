@@ -42,7 +42,7 @@ export default function Navbar() {
         </div>
 
         {/* hamburger button — only shown on small screens */}
-        <button onClick={() => setOpen(!open)} className="md:hidden text-gray-300 text-2xl px-2" aria-label="Toggle menu">
+        <button onClick={() => setOpen(!open)} className="md:hidden text-gray-300 text-2xl px-3 py-2" aria-label="Toggle menu">
           ☰
         </button>
       </div>
@@ -51,7 +51,7 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden flex flex-col gap-3 px-4 pb-4">
           {links.map((link) => (
-            <Link key={link.href} className={`${linkClass} ${pathname === link.href ? "text-gold" : ""}`} href={link.href} onClick={() => setOpen(false)}>
+            <Link key={link.href} className={`${linkClass} block py-2.5 ${pathname === link.href ? "text-gold" : ""}`} href={link.href} onClick={() => setOpen(false)}>
               {link.label}
             </Link>
           ))}

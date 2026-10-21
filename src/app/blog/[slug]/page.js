@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { TEAM_LOGOS } from "@/lib/divisions";
+import { TEAM_LOGOS, TEAM_IDS } from "@/lib/divisions";
 import Link from "next/link";
 
 export default async function PostPage({ params }) {
@@ -29,7 +29,14 @@ export default async function PostPage({ params }) {
                 <div>
                   <div className="flex items-center gap-2">
                     {fullName && <img src={TEAM_LOGOS[fullName]} alt={item.team} className="w-8 h-8 drop-shadow-lg" />}
-                    <span className="text-lg font-bold text-gray-100">{item.team}</span>
+                    {/* link to the team page when we know the id, plain text otherwise */}
+                    {fullName ? (
+                      <Link href={`/teams/${TEAM_IDS[fullName]}`} className="text-lg font-bold text-gray-100 hover:text-gold">
+                        {item.team}
+                      </Link>
+                    ) : (
+                      <span className="text-lg font-bold text-gray-100">{item.team}</span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-400 mt-1">{item.reason}</p>
                 </div>

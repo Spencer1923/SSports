@@ -64,7 +64,7 @@ export default function BetSlip({ legs, format, onRemove, onClear }) {
                   inputMode="decimal"
                   value={stake}
                   onChange={(e) => setStake(e.target.value)}
-                  className="ml-1 w-20 bg-transparent text-right tabular-nums focus:outline-none"
+                  className="ml-1 w-20 bg-transparent text-base sm:text-sm text-right tabular-nums focus:outline-none"
                 />
               </span>
             </label>

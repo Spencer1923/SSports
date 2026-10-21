@@ -48,7 +48,7 @@ export default function InjuriesPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search a team or player..."
-          className="w-full sm:w-80 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:border-gold/60"
+          className="w-full sm:w-80 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-base sm:text-sm text-gray-200 placeholder-gray-500 focus:border-gold/60"
         />
         <div className="flex flex-wrap gap-2">
           {withInjuries.map((t) => (

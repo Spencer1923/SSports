@@ -4,6 +4,8 @@ import { useParams } from "next/navigation";
 import Skeleton from "@/components/Skeleton";
 import BackButton from "@/components/BackButton";
 import LiveDriveBanner from "@/components/LiveDriveBanner";
+import LastMeetings from "@/components/LastMeetings";
+
 // loaded after the box score paints; the empty placeholder keeps its space so the page doesn't jump
 const Placeholder = ({ h }) => <div className="card animate-pulse bg-white/5" style={{ height: h }} />;
 const BettingLines = dynamic(() => import("@/components/BettingLines"), { loading: () => <Placeholder h={220} /> });
@@ -212,6 +214,7 @@ export default function GamePage() {
         <WinProbability plays={data.winprobability} playSource={data} home={homeTeam} away={awayTeam} />
       </div>
 
+      <LastMeetings team={homeTeam} opp={awayTeam} />
       <ScoringSummary plays={data.scoringPlays} teams={teams} />
       <DriveList drives={data.drives} />
 

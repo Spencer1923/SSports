@@ -516,7 +516,7 @@ export default function BettingBoard() {
         ))}
       </div>
       <BetSlip legs={slip} format={format} onRemove={(id) => setSlip((prev) => prev.filter((l) => l.id !== id))} onClear={() => setSlip([])} />
-      <p className="mt-10 text-center text-[11px] text-gray-600">Lines come from ESPN feed.</p>
+      <p className={`mt-10 text-center text-[11px] text-gray-600 ${slip.length ? "pb-80 sm:pb-0" : ""}`}>Lines come from ESPN feed.</p>
     </div>
   );
 }

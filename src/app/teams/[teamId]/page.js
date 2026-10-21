@@ -6,6 +6,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import BackButton from "@/components/BackButton";
 import TeamSchedule from "@/components/TeamSchedule";
 import TeamLogo from "@/components/TeamLogo";
+import TeamHistory from "@/components/TeamHistory";
 
 // the roster is big and sits below the schedule, so it loads after the page paints
 const TeamRoster = dynamic(() => import("@/components/TeamRoster"), {
@@ -57,6 +58,7 @@ export default function TeamPage() {
       </div>
 
       <TeamSchedule games={games} teamId={teamId} recordsById={recordsById} byeWeek={schedule.byeWeek} />
+      <TeamHistory teamId={teamId} />
       <TeamRoster groups={positionGroups} depth={depth} teamColor={teamColor} />
     </main>
   );

@@ -96,7 +96,7 @@ export default function TeamRoster({ groups = [], depth, teamColor }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Find a player or #..."
-          className="sm:ml-auto w-full sm:w-56 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:border-gold/60"
+          className="sm:ml-auto w-full sm:w-56 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-base sm:text-sm text-gray-200 placeholder-gray-500 focus:border-gold/60"
         />
       </div>
 
