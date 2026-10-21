@@ -25,7 +25,7 @@ export async function GET(request) {
             const other = comp?.competitors?.find((c) => c.team?.id === opp);
             const a = self?.score?.value;
             const b = other?.score?.value;
-            if (!self || !other || a == null || b == null) return []; // not our opponent, or not played
+            if (!self || !other || a == null || b == null) return []; // not the opponent, or not played
             return [
               {
                 id: event.id,

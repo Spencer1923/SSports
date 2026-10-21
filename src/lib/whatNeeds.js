@@ -5,7 +5,7 @@ import { computeSeeds } from "@/lib/playoffs";
 export function whatNeeds(games, meta, teamId, target) {
   const conf = meta[teamId].conference;
 
-  // current wins (ties count half), used to decide which side of a rival game "hurts" our team
+  // current wins (ties count half), used to decide which side of a rival game "hurts" the team
   const base = computeSeeds(games, {}, meta);
   const wins = {};
   ["AFC", "NFC"].forEach((c) => base[c].forEach((t) => (wins[t.id] = t.w + t.t / 2)));
@@ -33,7 +33,7 @@ export function whatNeeds(games, meta, teamId, target) {
       if (hc && !ac) best[g.id] = "away"; // a conference rival should lose to an outsider
       else if (ac && !hc) best[g.id] = "home";
       else if (hc && ac) best[g.id] = wins[g.homeId] <= wins[g.awayId] ? "home" : "away"; // the weaker rival should win
-      else best[g.id] = "home"; // neither team is in our conference: barely matters
+      else best[g.id] = "home"; // neither team is in the conference: barely matters
     }
     worst[g.id] = flip(best[g.id]);
   });

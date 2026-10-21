@@ -34,8 +34,10 @@ export default function TeamSchedule({ games = [], teamId, recordsById = {}, bye
     };
   });
 
-  // add the bye week in its spot, then order everything by week
-  if (byeWeek) items.push({ type: "bye", week: byeWeek });
+  // find the bye myself: the week (1-18) with no game, instead of trusting ESPN's byeWeek
+  const played = new Set(items.map((i) => i.week));
+  const bye = Array.from({ length: 18 }, (_, i) => i + 1).find((w) => !played.has(w));
+  if (bye) items.push({ type: "bye", week: bye });
   items.sort((a, b) => a.week - b.week);
 
   // the first unplayed game gets a gold ring
