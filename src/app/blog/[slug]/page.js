@@ -9,6 +9,25 @@ import TeamLogo from "@/components/TeamLogo";
 // rank badge: the top 3 get a gold treatment, #1 glows
 const badge = (i) => (i === 0 ? "bg-gold text-black shadow-[0_0_18px_rgba(212,175,55,0.7)]" : i < 3 ? "border border-gold/50 bg-gold/10 text-gold" : "border border-white/15 bg-white/5 text-gray-300");
 
+// finds the previous post of the same kind and returns { team or playerId: its old rank }
+function getPrevRanks(slug, field, keyName, date) {
+  const dir = path.join(process.cwd(), "src/content/posts");
+  const prev = fs
+    .readdirSync(dir)
+    .map((f) => ({ slug: f.replace(".mdx", ""), ...matter(fs.readFileSync(path.join(dir, f), "utf8")).data }))
+    .filter((p) => p[field] && p.slug !== slug && new Date(p.date) < new Date(date))
+    .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  if (!prev) return null; // first post of its kind: show no arrows
+  return Object.fromEntries(prev[field].map((item, i) => [item[keyName], i]));
+}
+
+// ▲ green = moved up, ▼ red = moved down, – = same, NEW = wasn't ranked last time
+function Move({ prev, now }) {
+  if (prev === undefined) return <span className="font-mono text-xs text-gray-500">NEW</span>;
+  const n = prev - now;
+  if (!n) return <span className="font-mono text-xs text-gray-500">–</span>;
+  return <span className={`font-mono text-xs font-bold ${n > 0 ? "text-green-400" : "text-red-400"}`}>{n > 0 ? `▲${n}` : `▼${-n}`}</span>;
+}
 export default async function PostPage({ params }) {
   // Next.js 15+ requires awaiting params before using it
   const { slug } = await params;
@@ -16,6 +35,8 @@ export default async function PostPage({ params }) {
   const filePath = path.join(process.cwd(), "src/content/posts", `${slug}.mdx`);
   const source = fs.readFileSync(filePath, "utf8");
   const { content, data } = matter(source); // split frontmatter from body text
+  const prevTeams = data.ranking ? getPrevRanks(slug, "ranking", "team", data.date) : null;
+  const prevPlayers = data.mvpRanking ? getPrevRanks(slug, "mvpRanking", "playerId", data.date) : null;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
@@ -44,6 +65,7 @@ export default async function PostPage({ params }) {
                     ) : (
                       <span className="text-xl font-bold text-gray-100">{item.team}</span>
                     )}
+                    {prevTeams && <Move prev={prevTeams[item.team]} now={i} />}
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-gray-400">{item.reason}</p>
                 </div>
@@ -71,6 +93,7 @@ export default async function PostPage({ params }) {
                   <Link href={`/players/${item.playerId}`} className="text-xl font-bold text-gray-100 hover:text-gold">
                     {item.player}
                   </Link>
+                  {prevPlayers && <Move prev={prevPlayers[item.playerId]} now={i} />}
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-gray-400">{item.reason}</p>
               </div>
