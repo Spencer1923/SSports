@@ -1,9 +1,13 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { TEAM_LOGOS, TEAM_IDS } from "@/lib/divisions";
-import Link from "next/link";
+import TeamLogo from "@/components/TeamLogo";
+
+// rank badge: the top 3 get a gold treatment, #1 glows
+const badge = (i) => (i === 0 ? "bg-gold text-black shadow-[0_0_18px_rgba(212,175,55,0.7)]" : i < 3 ? "border border-gold/50 bg-gold/10 text-gold" : "border border-white/15 bg-white/5 text-gray-300");
 
 export default async function PostPage({ params }) {
   // Next.js 15+ requires awaiting params before using it
@@ -14,31 +18,34 @@ export default async function PostPage({ params }) {
   const { content, data } = matter(source); // split frontmatter from body text
 
   return (
-    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+      {/* header */}
       <h1 className="page-title">{data.title}</h1>
-      <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-6">{data.date}</p>
-      {/* team power rankings, with logo + reasoning per team */}
+      <p className="mb-6 font-mono text-[11px] uppercase tracking-[0.3em] text-gold/80">
+        {data.ranking ? "Power rankings" : data.mvpRanking ? "MVP race" : "Article"} · {data.date}
+      </p>
+
+      {/* team power rankings */}
       {data.ranking && (
-        <ol className="space-y-3 my-6">
+        <ol className="my-6 space-y-3">
           {data.ranking.map((item, i) => {
             const fullName = Object.keys(TEAM_LOGOS).find((name) => name.includes(item.team));
             return (
-              <li key={item.team} className="card p-4 flex gap-4">
-                {/* big gold rank number */}
-                <span className="text-3xl font-extrabold tabular-nums text-gold w-10 shrink-0">{i + 1}</span>
-                <div>
-                  <div className="flex items-center gap-2">
-                    {fullName && <img src={TEAM_LOGOS[fullName]} alt={item.team} className="w-8 h-8 drop-shadow-lg" />}
-                    {/* link to the team page when we know the id, plain text otherwise */}
+              <li key={item.team} className="card card-hover relative flex gap-4 overflow-hidden p-4">
+                <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
+                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-mono text-xl font-extrabold tabular-nums ${badge(i)}`}>{i + 1}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-3">
+                    {fullName && <TeamLogo src={TEAM_LOGOS[fullName]} alt={item.team} size={40} className="h-10 w-10 drop-shadow-lg" />}
                     {fullName ? (
-                      <Link href={`/teams/${TEAM_IDS[fullName]}`} className="text-lg font-bold text-gray-100 hover:text-gold">
+                      <Link href={`/teams/${TEAM_IDS[fullName]}`} className="text-xl font-bold text-gray-100 hover:text-gold">
                         {item.team}
                       </Link>
                     ) : (
-                      <span className="text-lg font-bold text-gray-100">{item.team}</span>
+                      <span className="text-xl font-bold text-gray-100">{item.team}</span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-400 mt-1">{item.reason}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-400">{item.reason}</p>
                 </div>
               </li>
             );
@@ -46,30 +53,34 @@ export default async function PostPage({ params }) {
         </ol>
       )}
 
-      {/* MVP rankings, with player headshot + reasoning per player */}
+      {/* MVP rankings */}
       {data.mvpRanking && (
-        <ol className="space-y-3 my-6">
+        <ol className="my-6 space-y-3">
           {data.mvpRanking.map((item, i) => (
-            <li key={item.playerId} className="card p-4 flex gap-4">
-              <span className="text-3xl font-extrabold tabular-nums text-gold w-10 shrink-0">{i + 1}</span>
-              <div>
+            <li key={item.playerId} className="card card-hover relative flex gap-4 overflow-hidden p-4">
+              <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
+              <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-mono text-xl font-extrabold tabular-nums ${badge(i)}`}>{i + 1}</span>
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3">
-                  <img
+                  <TeamLogo
                     src={`https://a.espncdn.com/i/headshots/nfl/players/full/${item.playerId}.png`}
                     alt={item.player}
-                    className="w-14 h-14 rounded-full object-cover object-top ring-2 ring-gold/60 bg-white/5"
+                    size={56}
+                    className="h-14 w-14 rounded-full bg-white/5 object-cover object-top ring-2 ring-gold/60"
                   />
-                  <Link href={`/players/${item.playerId}`} className="text-lg font-bold text-gray-100 hover:text-gold">
+                  <Link href={`/players/${item.playerId}`} className="text-xl font-bold text-gray-100 hover:text-gold">
                     {item.player}
                   </Link>
                 </div>
-                <p className="text-sm text-gray-400 mt-2">{item.reason}</p>
+                <p className="mt-2 text-sm leading-relaxed text-gray-400">{item.reason}</p>
               </div>
             </li>
           ))}
         </ol>
       )}
-      <article className="prose prose-invert max-w-none">
+
+      {/* the written article */}
+      <article className="card prose prose-invert mt-8 max-w-none p-5 sm:p-8">
         <MDXRemote source={content} />
       </article>
     </main>

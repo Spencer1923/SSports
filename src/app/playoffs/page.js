@@ -7,7 +7,6 @@ import TeamLogo from "@/components/TeamLogo";
 import Link from "next/link";
 import PlayoffOdds from "@/components/PlayoffOdds";
 import WhatNeeds from "@/components/WhatNeeds";
-import SosTrend from "@/components/SosTrend";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -166,15 +165,6 @@ export default function PlayoffsPage() {
       </section>
 
       {/* Monte Carlo odds: simulated from the real results so far (ignores your picks) */}
-      <div className="mb-4">
-        <PlayoffOdds games={data.games} meta={meta} />
-      </div>
-      <div className="mb-4">
-        <WhatNeeds games={data.games} meta={meta} />
-      </div>
-      <div className="mb-10">
-        <SosTrend games={data.games} meta={meta} />
-      </div>
 
       {/* both conferences */}
       <div className="mb-10 grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -234,6 +224,12 @@ export default function PlayoffsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* the two collapsible panels sit under the pick simulator */}
+      <div className="mt-10 space-y-4">
+        <PlayoffOdds games={data.games} meta={meta} />
+        <WhatNeeds games={data.games} meta={meta} />
       </div>
     </div>
   );

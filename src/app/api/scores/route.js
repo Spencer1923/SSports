@@ -1,6 +1,8 @@
 //gets scores every 15 seconds
 import { HEADERS, cachedJson } from "@/lib/espn";
 
+export const dynamic = "force-dynamic"; // never let the platform cache this route's output
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const week = searchParams.get("week");

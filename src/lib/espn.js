@@ -11,7 +11,7 @@ export function cachedJson(data, seconds, swr = seconds * 5) {
   return Response.json(data, {
     headers: {
       "Cache-Control": value,
-      // Netlify reads this header first, so the CDN follows exactly the same rule
+      // Netlify's CDN reads this header first, so it follows the same rule
       "Netlify-CDN-Cache-Control": value,
     },
   });
