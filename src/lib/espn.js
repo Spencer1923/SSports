@@ -13,6 +13,7 @@ export function cachedJson(data, seconds, swr = seconds * 5) {
       "Cache-Control": value,
       // Netlify's CDN reads this header first, so it follows the same rule
       "Netlify-CDN-Cache-Control": value,
+      "Netlify-Vary": "query",
     },
   });
 }
