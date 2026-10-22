@@ -1,22 +1,23 @@
 # 🏈 SSports
 
-A full-stack NFL companion site — live scores, standings, team and player stats, game analysis, playoff projections, betting odds, news, transactions, and a custom blog for weekly power & MVP rankings.
+A full-stack NFL companion site: live scores, standings, team and player stats, game analysis, a playoff simulator with Monte Carlo odds, betting odds, news, transactions, and a hand-written blog for weekly power and MVP rankings.
 
 **[Live Demo](https://s-sports.netlify.app/)** · **[GitHub](https://github.com/Spencer1923/SSports)**
 
 ## What I Built
 
-SSports is a Next.js app that consumes ESPN's public API to deliver an up-to-date NFL fan experience — from scores, standings, and team/player stats to game analysis, playoff scenarios, and betting markets — alongside live news, transactions, and a hand-written blog. The app includes API routes that proxy and reshape ESPN data, dynamic routes for every team, player, and game.
+SSports is a Next.js app that consumes ESPN's public API through its own API routes, which proxy, trim, and cache the data. Every team, player, and game has its own page, and the interactive tools (playoff simulator, odds board, bet slip) run on the client.
 
 **Highlights:**
-- Live scoreboard with week selection, automatic refresh, and score-change animations
-- Game pages with team and player box scores, live drives, scoring summaries, betting lines, head-to-head history, and win probability
-- Dynamic team pages with schedules, rosters, and depth charts; player profiles with bios and season stats
-- League leaderboards and team-stat comparisons for offense and defense
-- Playoff simulator with editable game outcomes, projected seeds, and remaining strength of schedule
-- Betting odds board with spreads, moneylines, totals, implied probabilities, sorting, and a bet slip
-- Live NFL news and transaction feeds, alongside weekly MDX blog posts for power rankings and MVP rankings
-- Fully responsive, mobile-friendly navigation
+- Live scoreboard with week navigation, smart polling (fast only while games are live), and score-change animations
+- Game pages with box scores, live field graphic, drives, scoring summary, betting lines, head-to-head history, and an interactive win probability chart that labels the "Play of the Game"
+- Team pages with schedule, roster with depth chart, and past-season records
+- Playoff simulator: pick any remaining game and watch both conferences reseed with NFL-style tiebreakers and remaining strength of schedule
+- Monte Carlo playoff odds (2,000 simulated seasons, weighted by betting lines) for division, bye, and playoff chances
+- "What needs to happen" tool showing the results a team needs to make the playoffs, win its division, or get the #1 seed
+- Betting odds board with spreads, moneylines, totals, market signals, model-vs-market edges, odds-format toggle, and a parlay bet slip
+- Weekly MDX blog with power and MVP rankings, including movement arrows versus the previous week
+- Fully responsive, with skeleton loading states on every page
 
 ## Screenshots
 
@@ -37,14 +38,14 @@ SSports is a Next.js app that consumes ESPN's public API to deliver an up-to-dat
 ![Team Stats](./screenshots/teamstats.jpg)
 ![Blog](./screenshots/blog.jpg)
 
-
 ## Tech Stack
 
-- **Framework:** Next.js 16 (App Router) and React 19
+- **Framework:** Next.js 16 (App Router, Turbopack) and React 19 with the React Compiler
 - **Styling:** Tailwind CSS 4 with a custom gold/crimson theme
-- **Data:** ESPN's public API (scores, standings, stats, odds, injuries, news, transactions, and team/player data)
-- **Client data:** SWR for fetching and refreshing live page data
-- **Content:** Markdown/MDX blog posts, parsed with `gray-matter`
+- **Data:** ESPN's public API, reshaped by internal API routes
+- **Client data:** SWR with conditional polling, preloading, and `keepPreviousData`
+- **Content:** MDX blog posts parsed with `gray-matter` and `next-mdx-remote`
+- **Performance:** CDN cache headers by data type, trimmed responses, `next/image` logos, lazy-loaded sections, and a Web Worker for simulations
 - **Deployment:** Netlify
 
 ## Features
@@ -53,20 +54,20 @@ SSports is a Next.js app that consumes ESPN's public API to deliver an up-to-dat
 | --- | --- |
 | `/` | Live scoreboard, latest articles, and NFL news |
 | `/standings` | AFC/NFC standings by division |
-| `/playoffs` | Playoff simulator with projected seeds, schedule strength, and clinching scenarios |
-| `/leaders` | League statistical leaders across passing, rushing, defense, and more |
-| `/team-stats` | Team-level offense and defense statistics |
-| `/teams/[teamId]` | Team schedule, roster, depth chart, and history |
+| `/playoffs` | Pick-the-winners simulator, projected seeds, strength of schedule, Monte Carlo odds, and "what needs to happen" |
+| `/leaders` | League leaders in passing, receiving, rushing, interceptions, and sacks |
+| `/team-stats` | Team leaderboards with bars scaled to the league leader |
+| `/teams/[teamId]` | Schedule, roster with depth chart, and past-season records |
 | `/players/[playerId]` | Player bio, season stats, and league ranks |
-| `/games/[gameId]` | Box score, team/player stats, drives, scoring, odds, and win probability |
-| `/injuries` | League-wide injury report |
-| `/betting` | NFL odds board, market signals, and bet slip |
+| `/games/[gameId]` | Box score, live drives, scoring, odds, last meetings, and win probability |
+| `/injuries` | League-wide injury report with search and team filter |
+| `/betting` | Odds board, market signals, edge board, and bet slip |
 | `/news` | NFL news feed |
 | `/transactions` | Recent league transactions |
 | `/blog` | Weekly power rankings and MVP rankings |
-| `/blog/[slug]` | Individual blog article |
+| `/blog/[slug]` | Individual article with ranking movement |
 
-The app also exposes internal API routes under `/api` for scores, standings, stats, odds, news, injuries, transactions, and team/player/game data.
+Internal API routes under `/api` cover scores, standings, leaders, team stats, injuries, news, transactions, betting, playoff data, history, head-to-head, and team/player/game data.
 
 ## Getting Started
 
@@ -81,4 +82,4 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## What I Learned
 
-Building SSports involved working with ESPN's public endpoints and handling inconsistent data shapes, missing fields, caching, and live updates. I also built a cohesive design system with Tailwind CSS 4, reusable data-heavy interfaces, and responsive navigation, and implemented features like depth-chart merging, win-probability displays, betting calculations, and playoff scenario projections.
+ESPN's API is undocumented, so I learned to handle inconsistent data shapes, missing fields, and an 11 MB injuries feed that Next's data cache can't hold. I cut load times by caching at the CDN by data type and by trimming responses. I measured the results with Lighthouse and brought LCP from 9.0 s to 1.6 s on Netlify. On the feature side, I built the NFL tiebreaker seeding logic, a Web Worker Monte Carlo simulator, a win-probability chart with football-aware "Play of the Game" scoring, and betting math for parlays and implied odds.
