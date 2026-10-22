@@ -49,11 +49,11 @@ function settle(game, line) {
 // one pill in the odds grid; becomes a button when onClick is passed
 function Cell({ main, sub, accent, onClick, selected }) {
   const tone = selected ? "border-white/70 bg-white/15" : accent ? "border-gold/40 bg-gold/10" : "border-white/10 bg-white/5";
-  const base = `min-w-[58px] sm:min-w-[72px] rounded-lg border px-2 py-1.5 text-center font-mono tabular-nums ${tone}`;
+  const base = `min-w-[50px] sm:min-w-[62px] rounded-md border px-1.5 py-1 text-center font-mono tabular-nums ${tone}`;
   const body = (
     <>
-      <p className="text-sm font-bold text-white">{main}</p>
-      {sub != null && <p className="text-[10px] text-gray-500">{sub}</p>}
+      <p className="text-[13px] font-bold leading-tight text-white">{main}</p>
+      {sub != null && <p className="text-[9px] leading-tight text-gray-500">{sub}</p>}
     </>
   );
 
@@ -134,7 +134,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
     return (
       <div key={t.id} className="contents">
         <div className="flex min-w-0 items-center gap-3">
-          <TeamLogo src={t.logo} size={36} className="h-9 w-9 shrink-0" />
+          <TeamLogo src={t.logo} size={28} className="h-7 w-7 shrink-0" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-gray-100">
               <Link href={`/teams/${t.id}`} className="hover:text-gold">
@@ -143,7 +143,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
             </p>
             <p className="font-mono text-[10px] text-gray-500">{[t.record, ats && `ATS ${ats}`].filter(Boolean).join(" · ")}</p>
           </div>
-          {started && <span className="ml-auto pl-2 font-mono text-xl font-bold tabular-nums text-white">{t.score}</span>}
+          {started && <span className="ml-auto pl-2 font-mono text-lg font-bold tabular-nums text-white">{t.score}</span>}
         </div>
         <Cell main={fmtSpread(spread)} sub={fmtML(spreadOdds)} accent={covered} {...bet("spread", `${t.abbr} ${fmtSpread(spread)}`, spreadOdds)} />
         <Cell main={fmtML(ml)} accent={g.state === "pre" && edge === side} {...bet("ml", `${t.abbr} ML`, ml)} />
@@ -162,10 +162,10 @@ function GameCard({ g, slip, toggleLeg, format }) {
   const bestHome = Math.max(...g.lines.map((l) => l.homeML ?? -Infinity));
 
   return (
-    <div className="card relative overflow-hidden p-4 sm:p-5">
+    <div className="card relative overflow-hidden p-3 sm:p-4">
       <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
-      <div className="mb-4 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em]">
+      <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.15em]">
         {status}
         <span className="text-gray-600">
           {g.away.abbr} @ {g.home.abbr}
@@ -173,7 +173,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
       </div>
 
       {/* odds grid: team | spread | moneyline | total */}
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-x-2 gap-y-2">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-x-1.5 gap-y-1">
         <span />
         {["Spread", "Money", "Total"].map((h) => (
           <span key={h} className="text-center font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">
@@ -184,12 +184,14 @@ function GameCard({ g, slip, toggleLeg, format }) {
         {renderRow(g.home, true)}
       </div>
       {!line && <p className="mt-3 text-center text-xs text-gray-500">Lines not posted yet</p>}
-      {g.state === "pre" && edge && <p className="mt-2 text-center font-mono text-[10px] text-gray-500">Gold moneyline = the ESPN model rates this team 3+ pts higher than the market</p>}
+      {g.state === "pre" && edge && (
+        <p className="mt-2 hidden text-center font-mono text-[10px] text-gray-500 sm:block">Gold moneyline = the ESPN model rates this team 3+ pts higher than the market</p>
+      )}
 
       {/* market win probability, with a tick for ESPN's model */}
       {prob != null && (
-        <div className="mt-5">
-          <div className="flex justify-between font-mono text-xs tabular-nums text-gray-300">
+        <div className="mt-3">
+          <div className="flex justify-between font-mono text-[11px] tabular-nums text-gray-300">
             <span>
               {g.away.abbr} {Math.round((1 - prob) * 100)}%
             </span>
@@ -199,7 +201,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
             </span>
           </div>
           <div className="relative mt-1">
-            <div className="flex h-2 gap-0.5 overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10">
+            <div className="flex h-1.5 gap-0.5 overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10">
               <div style={{ width: `${(1 - prob) * 100}%`, backgroundColor: awayColor }} />
               <div style={{ width: `${prob * 100}%`, backgroundColor: homeColor }} />
             </div>
@@ -218,8 +220,8 @@ function GameCard({ g, slip, toggleLeg, format }) {
       )}
 
       {/* telemetry chips */}
-      <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] tabular-nums">
-        {weatherText && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-300">{weatherText}</span>}
+      <div className="mt-3 flex flex-wrap gap-1 font-mono text-[9px] tabular-nums">
+        {weatherText && <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-gray-300">{weatherText}</span>}
         {score && (
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-300">
             Implied score {g.away.abbr} {score.away.toFixed(1)} – {score.home.toFixed(1)} {g.home.abbr}
@@ -236,8 +238,8 @@ function GameCard({ g, slip, toggleLeg, format }) {
 
       {/* key injuries per the depth chart: starters, the backup QB, and backups behind an injured starter */}
       {(g.injuriesAway?.length > 0 || g.injuriesHome?.length > 0) && (
-        <details className="group mt-4 rounded-lg border border-white/10 bg-white/[0.02]">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-400 hover:text-white [&::-webkit-details-marker]:hidden">
+        <details className="group mt-3 rounded-lg border border-white/10 bg-white/[0.02] text-[0.8em]">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-gray-500 hover:text-white [&::-webkit-details-marker]:hidden">
             <span>Key injuries ({(g.injuriesAway?.length || 0) + (g.injuriesHome?.length || 0)})</span>
             <span className="transition-transform group-open:rotate-180">▾</span>
           </summary>
@@ -253,26 +255,27 @@ function GameCard({ g, slip, toggleLeg, format }) {
                 </p>
                 {list.length === 0 && <p className="text-[11px] text-gray-600">No key players listed</p>}
                 {list.map((i) => (
-                  <p key={i.name} className="flex items-center gap-1.5 py-0.5 text-xs text-gray-400">
-                    <span className="w-24 shrink-0 font-mono text-[10px] text-gray-500">{i.role}</span>
+                  <p key={i.name} className="flex items-center gap-1.5 py-0 text-[10px] text-gray-500">
+                    <span className="w-20 shrink-0 font-mono text-[9px] text-gray-600">{i.role}</span>
                     <Link href={`/players/${i.id}`} className="truncate hover:text-gold">
                       {i.name}
                     </Link>
-                    <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase ${statusTone(i.status)}`}>{i.status}</span>
+                    <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0 text-[8px] font-bold uppercase ${statusTone(i.status)}`}>{i.status}</span>
                   </p>
                 ))}
                 {hidden > 0 && <p className="mt-1 text-[10px] text-gray-600">+{hidden} depth / special teams hidden</p>}
               </div>
             ))}
           </div>
-          <p className="px-3 pb-3 text-[10px] leading-snug text-gray-600">Starters and 2nd-string players on ESPNs depth chart, plus anyone next in line when the players ahead of him are hurt.</p>
+          <p className="hidden px-3 pb-3 text-[10px] leading-snug text-gray-600 sm:block">
+            Starters and 2nd-string players on ESPNs depth chart, plus anyone next in line when the players ahead of him are hurt.
+          </p>
         </details>
       )}
 
       {/* footer: source + compare books */}
       {line && (
-        <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-xs text-gray-500">
-          <span>{line.provider}</span>
+        <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-[10px] text-gray-600">
           {g.lines.length > 1 && (
             <button onClick={() => setOpen(!open)} aria-expanded={open} className="cursor-pointer text-gold hover:text-white">
               Compare {g.lines.length} books {open ? "▴" : "▾"}
@@ -420,7 +423,7 @@ export default function BettingBoard() {
     <div>
       {/* mission-control header */}
       <header
-        className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 p-6 sm:p-8"
+        className="relative mb-4 overflow-hidden rounded-2xl border border-white/10 p-4 sm:mb-8 sm:p-8"
         style={{
           background: "radial-gradient(1000px 300px at 15% -30%, rgba(212,175,55,0.2), transparent), radial-gradient(700px 300px at 100% 130%, rgba(139,0,0,0.3), transparent), #0b0b0b",
         }}>
@@ -433,11 +436,11 @@ export default function BettingBoard() {
         />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-gold/80">
+            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-gold/80 sm:text-[11px] sm:tracking-[0.35em]">
               Market intelligence · Week {currentWeek} · {games.length} games
             </p>
-            <h1 className="mt-2 text-4xl font-extrabold uppercase tracking-wide text-white sm:text-5xl">The Odds Board</h1>
-            <p className="mt-2 max-w-xl text-sm text-gray-400">Live lines, implied probabilities, and market signals across every game this week.</p>
+            <h1 className="mt-1 text-2xl font-extrabold uppercase tracking-wide text-white sm:mt-2 sm:text-5xl">The Odds Board</h1>
+            <p className="mt-2 hidden max-w-xl text-sm text-gray-400 sm:block">Live lines, implied probabilities, and market signals across every game this week.</p>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => router.push(`/betting?week=${Math.max(1, currentWeek - 1)}`)} className={btn}>
@@ -476,8 +479,8 @@ export default function BettingBoard() {
       <EdgeBoard games={games} />
 
       {/* odds format toggle */}
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <span className="mr-1 font-mono text-[11px] uppercase tracking-[0.25em] text-gray-500">Odds</span>
+      <div className="mb-2 flex items-center gap-1.5 overflow-x-auto sm:mb-3 sm:flex-wrap sm:gap-2">
+        <span className="mr-0.5 shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-gray-500 sm:mr-1 sm:text-[11px] sm:tracking-[0.25em]">Odds</span>
         {[
           ["american", "American"],
           ["decimal", "Decimal"],
@@ -487,7 +490,7 @@ export default function BettingBoard() {
           <button
             key={key}
             onClick={() => changeFormat(key)}
-            className={`cursor-pointer rounded-full px-4 py-1 text-xs uppercase tracking-widest transition ${
+            className={`shrink-0 cursor-pointer rounded-full px-2.5 py-1 text-[10px] uppercase tracking-normal transition sm:px-4 sm:text-xs sm:tracking-widest ${
               format === key ? "bg-gold font-bold text-black" : "border border-white/10 text-gray-400 hover:text-white"
             }`}>
             {label}
@@ -496,13 +499,13 @@ export default function BettingBoard() {
       </div>
 
       {/* sort control */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-3 flex items-center gap-1.5 overflow-x-auto sm:mb-4 sm:flex-wrap sm:gap-2">
         <span className="mr-1 font-mono text-[11px] uppercase tracking-[0.25em] text-gray-500">Sort</span>
         {SORTS.map(([key, label]) => (
           <button
             key={key}
             onClick={() => setSort(key)}
-            className={`cursor-pointer rounded-full px-4 py-1 text-xs uppercase tracking-widest transition ${
+            className={`shrink-0 cursor-pointer rounded-full px-2.5 py-1 text-[10px] uppercase tracking-normal transition sm:px-4 sm:text-xs sm:tracking-widest ${
               sort === key ? "bg-gold font-bold text-black" : "border border-white/10 text-gray-400 hover:text-white"
             }`}>
             {label}
@@ -510,13 +513,13 @@ export default function BettingBoard() {
         ))}
       </div>
 
-      <div className={`grid grid-cols-1 gap-4 transition-opacity xl:grid-cols-2 ${isLoading ? "opacity-60" : ""}`}>
+      <div className={`grid grid-cols-1 gap-3 transition-opacity xl:grid-cols-2 ${isLoading ? "opacity-60" : ""}`}>
         {sorted.map((g) => (
           <GameCard key={g.id} g={g} slip={slip} toggleLeg={toggleLeg} format={format} />
         ))}
       </div>
       <BetSlip legs={slip} format={format} onRemove={(id) => setSlip((prev) => prev.filter((l) => l.id !== id))} onClear={() => setSlip([])} />
-      <p className={`mt-10 text-center text-[11px] text-gray-600 ${slip.length ? "pb-80 sm:pb-0" : ""}`}>Lines come from ESPN feed.</p>
+      <p className={`mt-10 text-center text-[11px] text-gray-600 ${slip.length ? "pb-24 sm:pb-0" : ""}`}>Lines come from ESPN feed.</p>
     </div>
   );
 }

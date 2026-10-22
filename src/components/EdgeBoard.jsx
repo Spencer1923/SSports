@@ -20,9 +20,12 @@ export default function EdgeBoard({ games = [] }) {
 
   return (
     <section className="mb-8">
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="card flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left hover:bg-white/5">
-        <span className="font-mono text-xs uppercase tracking-[0.25em] text-gray-400">Edge board · model vs market</span>
-        <span className="flex-1 text-xs text-gray-500">{open ? "Ranked by largest probability gap" : "Tap to compare model vs market"}</span>
+      <button onClick={() => setOpen(!open)} aria-expanded={open} className="card flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-left hover:bg-white/5 sm:px-4 sm:py-3">
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-gray-400 sm:text-xs sm:tracking-[0.25em]">
+          Edge board<span className="hidden sm:inline"> · model vs market</span>
+        </span>
+        <span className="hidden flex-1 text-xs text-gray-500 sm:block">{open ? "Ranked by largest probability gap" : "Tap to compare model vs market"}</span>
+        <span className="flex-1 sm:hidden" />
         <span className={`text-gray-500 transition-transform ${open ? "rotate-90" : ""}`}>›</span>
       </button>
 
@@ -63,7 +66,7 @@ export default function EdgeBoard({ games = [] }) {
               );
             })}
           </div>
-          <p className="mt-2 text-[11px] leading-snug text-gray-600">
+          <p className="mt-2 hidden text-[11px] leading-snug text-gray-600 sm:block">
             The team shown is the side ESPNs model likes more than the market does. The number is the gap in win probability points (market → model). It shows disagreement, not a prediction.
           </p>
         </div>

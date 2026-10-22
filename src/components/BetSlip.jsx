@@ -7,7 +7,7 @@ const money = (n) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, m
 
 export default function BetSlip({ legs, format, onRemove, onClear }) {
   const [stake, setStake] = useState("10"); // pretend dollars
-  const [open, setOpen] = useState(true); // collapse so it doesn't cover the cards
+  const [open, setOpen] = useState(false);
 
   if (!legs.length) return null;
 
@@ -21,30 +21,27 @@ export default function BetSlip({ legs, format, onRemove, onClear }) {
   const sameGame = new Set(legs.map((l) => l.gameId)).size < legs.length;
 
   return (
-    <aside className="fixed inset-x-3 bottom-3 z-40 overflow-hidden rounded-2xl border border-gold/40 bg-black/85 shadow-[0_10px_40px_rgba(0,0,0,0.6)] backdrop-blur-md sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-96">
+    <aside className="fixed inset-x-6 bottom-2 z-40 text-[0.85em] sm:text-[1em] overflow-hidden rounded-2xl border border-gold/40 bg-black/85 shadow-[0_10px_40px_rgba(0,0,0,0.6)] backdrop-blur-md sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-96">
       {/* header: always visible, click to collapse */}
-      <div className="flex items-center gap-3 px-4 py-3">
+      <div className="flex items-center gap-2 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
         <button onClick={() => setOpen(!open)} aria-expanded={open} className="flex flex-1 cursor-pointer items-center gap-3 text-left">
           <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-gold">{legs.length > 1 ? `${legs.length}-leg parlay` : "Bet slip"}</span>
           <span className="font-mono text-sm font-bold tabular-nums text-white">{fmtOdds(american, format)}</span>
           <span className="ml-auto text-gray-500">{open ? "▾" : "▴"}</span>
         </button>
-        <button onClick={onClear} className="cursor-pointer text-[11px] uppercase tracking-widest text-gray-500 hover:text-white">
-          Clear
-        </button>
       </div>
 
       {open && (
-        <div className="max-h-[70vh] overflow-y-auto border-t border-white/10">
+        <div className="max-h-[40vh] overflow-y-auto border-t border-white/10 sm:max-h-[70vh]">
           {/* the picks */}
           <div className="divide-y divide-white/5">
             {legs.map((l) => (
-              <div key={l.id} className="flex items-center gap-3 px-4 py-2.5">
+              <div key={l.id} className="flex items-center gap-3 px-4 py-1.5 sm:py-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-gray-100">{l.label}</p>
+                  <p className="truncate text-xs font-semibold text-gray-100 sm:text-sm">{l.label}</p>
                   <p className="font-mono text-[10px] uppercase tracking-widest text-gray-500">{l.matchup}</p>
                 </div>
-                <span className="font-mono text-sm font-bold tabular-nums text-white">{fmtOdds(l.odds, format)}</span>
+                <span className="font-mono text-xs font-bold tabular-nums text-white sm:text-sm">{fmtOdds(l.odds, format)}</span>
                 <button onClick={() => onRemove(l.id)} aria-label={`Remove ${l.label}`} className="cursor-pointer text-gray-500 hover:text-white">
                   ✕
                 </button>
@@ -53,7 +50,7 @@ export default function BetSlip({ legs, format, onRemove, onClear }) {
           </div>
 
           {/* stake + results */}
-          <div className="space-y-3 border-t border-white/10 px-4 py-3">
+          <div className="space-y-2 border-t border-white/10 px-3 py-2 sm:space-y-3 sm:px-4 sm:py-3">
             <label className="flex items-center justify-between gap-3 text-xs uppercase tracking-widest text-gray-400">
               Stake
               <span className="flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-sm normal-case tracking-normal text-white">
@@ -69,21 +66,28 @@ export default function BetSlip({ legs, format, onRemove, onClear }) {
               </span>
             </label>
 
-            <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="grid grid-cols-2 gap-2 text-center [&>*:nth-child(-n+2)]:hidden sm:[&>*:nth-child(-n+2)]:block">
               {[
                 ["Combined odds", fmtOdds(american, format)],
                 ["Implied probability", `${(impliedProb * 100).toFixed(1)}%`],
                 ["Payout", money(payout)],
                 ["Profit", money(profit)],
               ].map(([label, value], i) => (
-                <div key={label} className="rounded-lg bg-white/5 px-2 py-2">
+                <div key={label} className="rounded-lg bg-white/5 px-2 py-1 sm:py-2">
                   <p className="text-[10px] uppercase tracking-widest text-gray-500">{label}</p>
-                  <p className={`font-mono text-base font-bold tabular-nums ${i === 3 ? "text-gold" : "text-white"}`}>{value}</p>
+                  <p className={`"font-mono text-sm font-bold tabular-nums sm:text-base ${i === 3 ? "text-gold" : "text-white"}`}>{value}</p>
                 </div>
               ))}
             </div>
 
-            <p className="text-[11px] leading-snug text-gray-600">
+            {/* destructive action lives inside the open panel, away from the expand arrow */}
+            <button
+              onClick={onClear}
+              className="w-full cursor-pointer rounded-lg border border-white/10 py-1.5 text-[11px] uppercase tracking-widest text-gray-400 transition hover:border-crimson hover:text-white">
+              Clear all
+            </button>
+
+            <p className="hidden text-[11px] leading-snug text-gray-600 sm:block">
               Pretend money only. {sameGame && "Legs from the same game are correlated, so real books price them differently. "}
               Implied probability includes the books margin.
             </p>
