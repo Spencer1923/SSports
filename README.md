@@ -9,6 +9,7 @@ A full-stack NFL companion site: live scores, standings, team and player stats, 
 SSports is a Next.js app that consumes ESPN's public API through its own API routes, which proxy, trim, and cache the data. Every team, player, and game has its own page, and the interactive tools (playoff simulator, odds board, bet slip) run on the client.
 
 **Highlights:**
+
 - Live scoreboard with week navigation, smart polling (fast only while games are live), and score-change animations
 - Game pages with box scores, live field graphic, drives, scoring summary, betting lines, head-to-head history, and an interactive win probability chart that labels the "Play of the Game"
 - Team pages with schedule, roster with depth chart, and past-season records
@@ -29,7 +30,8 @@ SSports is a Next.js app that consumes ESPN's public API through its own API rou
 ![Playoff Path Simulator](./screenshots/need-happen.jpg)
 ![Team Page](./screenshots/team.jpg)
 ![Box Score](./screenshots/box-score.jpg)
-![Live Game Page]()
+![Live Game Page](live-game.jpg)
+![Win Probability](win-prob.jpg)
 ![Player Bio](./screenshots/bio.jpg)
 ![League Leaders](./screenshots/leaders.jpg)
 ![Betting](./screenshots/betting.jpg)
@@ -50,22 +52,22 @@ SSports is a Next.js app that consumes ESPN's public API through its own API rou
 
 ## Features
 
-| Page | Description |
-| --- | --- |
-| `/` | Live scoreboard, latest articles, and NFL news |
-| `/standings` | AFC/NFC standings by division |
-| `/playoffs` | Pick-the-winners simulator, projected seeds, strength of schedule, Monte Carlo odds, and "what needs to happen" |
-| `/leaders` | League leaders in passing, receiving, rushing, interceptions, and sacks |
-| `/team-stats` | Team leaderboards with bars scaled to the league leader |
-| `/teams/[teamId]` | Schedule, roster with depth chart, and past-season records |
-| `/players/[playerId]` | Player bio, season stats, and league ranks |
-| `/games/[gameId]` | Box score, live drives, scoring, odds, last meetings, and win probability |
-| `/injuries` | League-wide injury report with search and team filter |
-| `/betting` | Odds board, market signals, edge board, and bet slip |
-| `/news` | NFL news feed |
-| `/transactions` | Recent league transactions |
-| `/blog` | Weekly power rankings and MVP rankings |
-| `/blog/[slug]` | Individual article with ranking movement |
+| Page                  | Description                                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `/`                   | Live scoreboard, latest articles, and NFL news                                                                  |
+| `/standings`          | AFC/NFC standings by division                                                                                   |
+| `/playoffs`           | Pick-the-winners simulator, projected seeds, strength of schedule, Monte Carlo odds, and "what needs to happen" |
+| `/leaders`            | League leaders in passing, receiving, rushing, interceptions, and sacks                                         |
+| `/team-stats`         | Team leaderboards with bars scaled to the league leader                                                         |
+| `/teams/[teamId]`     | Schedule, roster with depth chart, and past-season records                                                      |
+| `/players/[playerId]` | Player bio, season stats, and league ranks                                                                      |
+| `/games/[gameId]`     | Box score, live drives, scoring, odds, last meetings, and win probability                                       |
+| `/injuries`           | League-wide injury report with search and team filter                                                           |
+| `/betting`            | Odds board, market signals, edge board, and bet slip                                                            |
+| `/news`               | NFL news feed                                                                                                   |
+| `/transactions`       | Recent league transactions                                                                                      |
+| `/blog`               | Weekly power rankings and MVP rankings                                                                          |
+| `/blog/[slug]`        | Individual article with ranking movement                                                                        |
 
 Internal API routes under `/api` cover scores, standings, leaders, team stats, injuries, news, transactions, betting, playoff data, history, head-to-head, and team/player/game data.
 
