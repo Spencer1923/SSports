@@ -23,15 +23,15 @@ SSports is a Next.js app that consumes ESPN's public API through its own API rou
 ## Screenshots
 
 ![Homepage](./screenshots/home.jpg)
-![Standings](./screenshots/standings.jpg)
+![Standings](./screenshots/standing.jpg)
 ![Playoffs](./screenshots/playoffs.jpg)
 ![Playoff Predictor](./screenshots/playoff-predict.jpg)
 ![Odds Simulator](./screenshots/odds-sim.jpg)
 ![Playoff Path Simulator](./screenshots/need-happen.jpg)
 ![Team Page](./screenshots/team.jpg)
 ![Box Score](./screenshots/box-score.jpg)
-![Live Game Page](live-game.jpg)
-![Win Probability](win-prob.jpg)
+![Live Game Page](./screenshots/live-game.jpg)
+![Win Probability](./screenshots/win-prob.jpg)
 ![Player Bio](./screenshots/bio.jpg)
 ![League Leaders](./screenshots/leaders.jpg)
 ![Betting](./screenshots/betting.jpg)
