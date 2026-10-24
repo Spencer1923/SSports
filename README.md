@@ -22,23 +22,23 @@ SSports is a Next.js app that consumes ESPN's public API through its own API rou
 
 ## Screenshots
 
-![Homepage](./screenshots/home.jpg)
-![Standings](./screenshots/standing.jpg)
-![Playoffs](./screenshots/playoffs.jpg)
-![Playoff Predictor](./screenshots/playoff-predict.jpg)
-![Odds Simulator](./screenshots/odds-sim.jpg)
-![Playoff Path Simulator](./screenshots/need-happen.jpg)
-![Team Page](./screenshots/team.jpg)
-![Live Game Page](./screenshots/live-game.jpg)
-![Win Probability](./screenshots/win-prob.jpg)
-![Box Score](./screenshots/box-score.jpg)
-![Player Bio](./screenshots/bio.jpg)
-![League Leaders](./screenshots/leaders.jpg)
-![Betting](./screenshots/betting.jpg)
-![Bet Slip](./screenshots/bet-slip.jpg)
-![Injuries](./screenshots/injuries.jpg)
-![Team Stats](./screenshots/teamstats.jpg)
-![Blog](./screenshots/blog.jpg)
+<img src="./screenshots/home.jpg" alt="Homepage" width="50%">
+<img src="./screenshots/standing.jpg" alt="Standings" width="50%">
+<img src="./screenshots/playoffs.jpg" alt="Playoffs" width="50%">
+<img src="./screenshots/playoff-predict.jpg" alt="Playoff Predictor" width="50%">
+<img src="./screenshots/odds-sim.jpg" alt="Odds Simulator" width="50%">
+<img src="./screenshots/need-happen.jpg" alt="Playoff Path Simulator" width="50%">
+<img src="./screenshots/team.jpg" alt="Team Page" width="50%">
+<img src="./screenshots/live-game.jpg" alt="Live Game Page" width="50%">
+<img src="./screenshots/win-prob.jpg" alt="Win Probability" width="50%">
+<img src="./screenshots/box-score.jpg" alt="Box Score" width="50%">
+<img src="./screenshots/bio.jpg" alt="Player Bio" width="50%">
+<img src="./screenshots/leaders.jpg" alt="League Leaders" width="50%">
+<img src="./screenshots/betting.jpg" alt="Betting" width="50%">
+<img src="./screenshots/bet-slip.jpg" alt="Bet Slip" width="50%">
+<img src="./screenshots/injuries.jpg" alt="Injuries" width="50%">
+<img src="./screenshots/teamstats.jpg" alt="Team Stats" width="50%">
+<img src="./screenshots/blog.jpg" alt="Blog" width="50%">
 
 ## Tech Stack
 
