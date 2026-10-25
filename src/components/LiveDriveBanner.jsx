@@ -132,7 +132,7 @@ export default function LiveDriveBanner({ data }) {
 
         {/* first-down line (gold) and line of scrimmage (white) */}
         {showFirstDown && <line x1={firstDownX} x2={firstDownX} y1="0" y2="30" stroke="#D4AF37" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />}
-        <line x1={ballX} x2={ballX} y1="0" y2="30" stroke="white" strokeOpacity="0.8" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        <line x1={ballX} x2={ballX} y1="0" y2="30" stroke="#004cff" strokeOpacity="0.8" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
 
         {/* arrow showing which way the offense is moving */}
         <polygon points={`${ballX + dir * 3.2},12.8 ${ballX + dir * 3.2},17.2 ${ballX + dir * 5.6},15`} fill="#D4AF37" />

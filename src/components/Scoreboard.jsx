@@ -113,6 +113,8 @@ export default function Scoreboard() {
           const home = competitors.find((c) => c.homeAway === "home");
           const away = competitors.find((c) => c.homeAway === "away");
           const odds = game.competitions[0].odds?.[0]; // betting line from ESPN
+          const situation = game.status.type.state === "in" ? game.competitions[0].situation : null; // live-only: down, distance, ball spot, possession
+          console.log(game.competitions[0].situation);
 
           return (
             <Link key={game.id} href={`/games/${game.id}`} className="card card-hover group block p-3" {...prefetchProps(`/api/games/${game.id}`)}>
@@ -122,6 +124,13 @@ export default function Scoreboard() {
                 {game.status.type.state === "in" && <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />}
                 {game.status.type.state === "pre" ? formatGameDate(game.date) : game.status.type.detail}
               </p>
+              {situation?.downDistanceText && (
+                <p
+                  className={`mb-2 inline-block rounded-full border px-2 py-0.5 text-[11px] tabular-nums ${situation.isRedZone ? "border-red-500/50 bg-red-900/40 text-red-300" : "border-gold/30 bg-gold/10 text-gold"}`}>
+                  {situation.downDistanceText}
+                  {situation.isRedZone ? " · RED ZONE" : ""}
+                </p>
+              )}
 
               {game.status.type.state === "pre" && odds?.details && (
                 <p className="inline-block rounded-full border border-white/10 bg-white/5 px-2 py-0.5 mb-2 text-[11px] tabular-nums text-gray-300">{odds.details}</p>
@@ -132,6 +141,7 @@ export default function Scoreboard() {
                 <div className="flex items-center gap-2">
                   <TeamLogo src={away.team.logo} alt={away.team.displayName} size={24} className="w-6 h-6" />
                   <span className="text-gray-300 text-sm group-hover:text-white">{away.team.shortDisplayName}</span>
+                  {situation?.possession === away.team.id && <span className="text-gold text-xs">●</span>}
                 </div>
                 {game.status.type.state !== "pre" && (
                   <span
@@ -146,6 +156,7 @@ export default function Scoreboard() {
                 <div className="flex items-center gap-2">
                   <TeamLogo src={home.team.logo} alt={home.team.displayName} size={24} className="w-6 h-6" />
                   <span className="text-gray-300 text-sm group-hover:text-white">{home.team.shortDisplayName}</span>
+                  {situation?.possession === home.team.id && <span className="text-gold text-xs">●</span>}
                 </div>
                 {game.status.type.state !== "pre" && (
                   <span
