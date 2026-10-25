@@ -138,7 +138,8 @@ function GameCard({ g, slip, toggleLeg, format }) {
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-gray-100">
               <Link href={`/teams/${t.id}`} className="hover:text-gold">
-                {t.name}
+                <span className="sm:hidden">{t.abbr}</span>
+                <span className="hidden sm:inline">{t.name}</span>
               </Link>
             </p>
             <p className="font-mono text-[10px] text-gray-500">{[t.record, ats && `ATS ${ats}`].filter(Boolean).join(" · ")}</p>
@@ -458,15 +459,15 @@ export default function BettingBoard() {
       {tiles.length > 0 && (
         <section className="mb-8">
           <h2 className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-gray-400">Market signals</h2>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-5">
             {tiles.map((t) => (
-              <div key={t.label} className="relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <div key={t.label} className="relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-2 sm:p-4">
                 <span className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gold/10 blur-2xl" />
-                <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-gray-500">{t.label}</p>
-                <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-white">{t.value}</p>
-                <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400">
+                <p className="truncate font-mono text-[8px] uppercase tracking-[0.1em] text-gray-500 sm:text-[10px] sm:tracking-[0.25em]">{t.label}</p>
+                <p className="mt-0.5 font-mono text-base font-bold tabular-nums text-white sm:mt-2 sm:text-3xl">{t.value}</p>
+                <div className="mt-1 flex items-center gap-1.5 text-[9px] text-gray-400 sm:mt-2 sm:text-xs">
                   {t.logos.map((src, i) => (
-                    <TeamLogo key={i} src={src} size={16} className="h-4 w-4" />
+                    <TeamLogo key={i} src={src} size={16} className="h-3 w-3 sm:h-4 sm:w-4" />
                   ))}
                   <span className="truncate">{t.sub}</span>
                 </div>
