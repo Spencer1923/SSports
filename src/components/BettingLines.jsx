@@ -30,7 +30,7 @@ export default function BettingLines({ pickcenter = [], home, away }) {
         {/* away on the left, home on the right (same order as the box score header) */}
         <div className="grid grid-cols-3 items-center gap-y-4 text-center">
           <div className="flex flex-col items-center gap-1">
-            <TeamLogo src={away?.logo} size={32} className="w-8 h-8" /> <img src={away?.logo} alt="" className="w-8 h-8" />
+            <TeamLogo src={away?.logo} size={32} className="w-8 h-8" />
             <span className="text-xs text-gray-400">{away?.abbreviation}</span>
           </div>
           <span />
