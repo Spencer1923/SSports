@@ -29,19 +29,17 @@ export default function WhatNeeds({ games, meta }) {
 
   return (
     <section>
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="card flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left hover:bg-white/5">
-        <span className="font-mono text-xs uppercase tracking-[0.25em] text-gray-400">What needs to happen</span>
-        <span className="flex-1 text-xs text-gray-500">{open ? "Pick a team and a goal" : "Tap to see what a team needs"}</span>
+      <button onClick={() => setOpen(!open)} aria-expanded={open} className="card flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-left hover:bg-white/5 sm:px-4 sm:py-3">
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-gray-400 sm:text-xs sm:tracking-[0.25em]">What needs to happen</span>
+        <span className="hidden flex-1 text-xs text-gray-500 sm:block">{open ? "Pick a team and a goal" : "Tap to see what a team needs"}</span>
+        <span className="flex-1 sm:hidden" />
         <span className={`text-gray-500 transition-transform ${open ? "rotate-90" : ""}`}>›</span>
       </button>
 
       {open && (
         <div className="card mt-3 p-4">
           <div className="flex flex-wrap items-center gap-2">
-            <select
-              value={teamId}
-              onChange={(e) => setTeamId(e.target.value)}
-              className="rounded-full border border-white/10 bg-black px-4 py-2 text-base text-gray-200 sm:text-sm">
+            <select value={teamId} onChange={(e) => setTeamId(e.target.value)} className="rounded-full border border-white/10 bg-black px-4 py-2 text-base text-gray-200 sm:text-sm">
               <option value="">Choose a team…</option>
               {teams.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -78,7 +76,9 @@ export default function WhatNeeds({ games, meta }) {
                         <span className="text-gray-500">beats</span>
                         <TeamLogo src={meta[g.loserId].logo} size={24} className="h-6 w-6 opacity-60" />
                         <span>{meta[g.loserId].abbr}</span>
-                        <span className={`ml-auto rounded-full px-2 py-0.5 font-mono text-[10px] uppercase ${g.own ? "bg-gold/15 text-gold" : "bg-white/10 text-gray-400"}`}>{g.own ? "Win" : "Needs help"}</span>
+                        <span className={`ml-auto rounded-full px-2 py-0.5 font-mono text-[10px] uppercase ${g.own ? "bg-gold/15 text-gold" : "bg-white/10 text-gray-400"}`}>
+                          {g.own ? "Win" : "Needs help"}
+                        </span>
                       </div>
                     ))}
                   </div>

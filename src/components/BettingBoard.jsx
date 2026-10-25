@@ -49,11 +49,11 @@ function settle(game, line) {
 // one pill in the odds grid; becomes a button when onClick is passed
 function Cell({ main, sub, accent, onClick, selected }) {
   const tone = selected ? "border-white/70 bg-white/15" : accent ? "border-gold/40 bg-gold/10" : "border-white/10 bg-white/5";
-  const base = `min-w-[50px] sm:min-w-[62px] rounded-md border px-1.5 py-1 text-center font-mono tabular-nums ${tone}`;
+  const base = `min-w-[42px] sm:min-w-[62px] rounded-md border px-1 py-0.5 sm:px-1.5 sm:py-1 text-center font-mono tabular-nums ${tone}`;
   const body = (
     <>
-      <p className="text-[13px] font-bold leading-tight text-white">{main}</p>
-      {sub != null && <p className="text-[9px] leading-tight text-gray-500">{sub}</p>}
+      <p className="text-[11px] font-bold leading-none text-white sm:text-[13px]">{main}</p>
+      {sub != null && <p className="text-[7px] leading-none text-gray-500 sm:text-[9px]">{sub}</p>}
     </>
   );
 
@@ -134,17 +134,17 @@ function GameCard({ g, slip, toggleLeg, format }) {
     return (
       <div key={t.id} className="contents">
         <div className="flex min-w-0 items-center gap-3">
-          <TeamLogo src={t.logo} size={28} className="h-7 w-7 shrink-0" />
+          <TeamLogo src={t.logo} size={28} className="h-5 w-5 shrink-0 sm:h-7 sm:w-7" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-gray-100">
+            <p className="truncate text-xs font-semibold text-gray-100 sm:text-sm">
               <Link href={`/teams/${t.id}`} className="hover:text-gold">
                 <span className="sm:hidden">{t.abbr}</span>
                 <span className="hidden sm:inline">{t.name}</span>
               </Link>
             </p>
-            <p className="font-mono text-[10px] text-gray-500">{[t.record, ats && `ATS ${ats}`].filter(Boolean).join(" · ")}</p>
+            <p className="font-mono text-[9px] text-gray-500">{[t.record, ats && `ATS ${ats}`].filter(Boolean).join(" · ")}</p>
           </div>
-          {started && <span className="ml-auto pl-2 font-mono text-lg font-bold tabular-nums text-white">{t.score}</span>}
+          {started && <span className="ml-auto pl-2 font-mono text-base font-bold tabular-nums text-white sm:text-lg">{t.score}</span>}
         </div>
         <Cell main={fmtSpread(spread)} sub={fmtML(spreadOdds)} accent={covered} {...bet("spread", `${t.abbr} ${fmtSpread(spread)}`, spreadOdds)} />
         <Cell main={fmtML(ml)} accent={g.state === "pre" && edge === side} {...bet("ml", `${t.abbr} ML`, ml)} />
@@ -163,10 +163,10 @@ function GameCard({ g, slip, toggleLeg, format }) {
   const bestHome = Math.max(...g.lines.map((l) => l.homeML ?? -Infinity));
 
   return (
-    <div className="card relative overflow-hidden p-3 sm:p-4">
+    <div className="card relative overflow-hidden p-2 sm:p-4">
       <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
-      <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.15em]">
+      <div className="mb-1 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.15em]">
         {status}
         <span className="text-gray-600">
           {g.away.abbr} @ {g.home.abbr}
@@ -191,7 +191,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
 
       {/* market win probability, with a tick for ESPN's model */}
       {prob != null && (
-        <div className="mt-3">
+       <div className="mt-2 sm:mt-3">
           <div className="flex justify-between font-mono text-[11px] tabular-nums text-gray-300">
             <span>
               {g.away.abbr} {Math.round((1 - prob) * 100)}%
@@ -209,7 +209,7 @@ function GameCard({ g, slip, toggleLeg, format }) {
             {g.modelHome != null && <span className="absolute -top-1 h-4 w-0.5 rounded bg-white shadow-[0_0_6px_white]" style={{ left: `${(1 - g.modelHome) * 100}%` }} title="ESPN model" />}
           </div>
           {delta != null && (
-            <p className="mt-1 text-center font-mono text-[10px] text-gray-500">
+            <p className="mt-1 hidden text-center font-mono text-[10px] text-gray-500 sm:block">
               ESPN model: {g.home.abbr} {Math.round(g.modelHome * 100)}% ·{" "}
               <span className={delta > 0 ? "text-green-400" : "text-red-400"}>
                 {delta > 0 ? "+" : ""}
@@ -221,62 +221,67 @@ function GameCard({ g, slip, toggleLeg, format }) {
       )}
 
       {/* telemetry chips */}
-      <div className="mt-3 flex flex-wrap gap-1 font-mono text-[9px] tabular-nums">
-        {weatherText && <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-gray-300">{weatherText}</span>}
-        {score && (
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-300">
-            Implied score {g.away.abbr} {score.away.toFixed(1)} – {score.home.toFixed(1)} {g.home.abbr}
-          </span>
-        )}
-        {moves.map((m) => (
-          <span key={m} className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-gold">
-            {m}
-          </span>
-        ))}
-        {result?.cover && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-200">Covered: {result.cover}</span>}
-        {result?.ou && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-200">{result.ou}</span>}
-      </div>
-
-      {/* key injuries per the depth chart: starters, the backup QB, and backups behind an injured starter */}
-      {(g.injuriesAway?.length > 0 || g.injuriesHome?.length > 0) && (
-        <details className="group mt-3 rounded-lg border border-white/10 bg-white/[0.02] text-[0.8em]">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-gray-500 hover:text-white [&::-webkit-details-marker]:hidden">
-            <span>Key injuries ({(g.injuriesAway?.length || 0) + (g.injuriesHome?.length || 0)})</span>
-            <span className="transition-transform group-open:rotate-180">▾</span>
-          </summary>
-          <div className="grid grid-cols-1 gap-4 px-3 pb-2 pt-1 sm:grid-cols-2">
-            {[
-              [g.away, g.injuriesAway || [], g.hiddenAway || 0],
-              [g.home, g.injuriesHome || [], g.hiddenHome || 0],
-            ].map(([t, list, hidden]) => (
-              <div key={t.id}>
-                <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-gray-300">
-                  <TeamLogo src={t.logo} size={16} className="h-4 w-4" />
-                  {t.abbr}
-                </p>
-                {list.length === 0 && <p className="text-[11px] text-gray-600">No key players listed</p>}
-                {list.map((i) => (
-                  <p key={i.name} className="flex items-center gap-1.5 py-0 text-[10px] text-gray-500">
-                    <span className="w-20 shrink-0 font-mono text-[9px] text-gray-600">{i.role}</span>
-                    <Link href={`/players/${i.id}`} className="truncate hover:text-gold">
-                      {i.name}
-                    </Link>
-                    <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0 text-[8px] font-bold uppercase ${statusTone(i.status)}`}>{i.status}</span>
-                  </p>
-                ))}
-                {hidden > 0 && <p className="mt-1 text-[10px] text-gray-600">+{hidden} depth / special teams hidden</p>}
-              </div>
+      <details className="group mt-2 rounded-lg border border-white/10 bg-white/[0.02]">
+        <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-gray-400 hover:text-white [&::-webkit-details-marker]:hidden">
+          <span>More info</span>
+          <span className="transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <div className="px-2 pb-2">
+          <div className="flex flex-wrap gap-1 font-mono text-[9px] tabular-nums">
+            {weatherText && <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-gray-300">{weatherText}</span>}
+            {score && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-300">
+                Implied score {g.away.abbr} {score.away.toFixed(1)} – {score.home.toFixed(1)} {g.home.abbr}
+              </span>
+            )}
+            {moves.map((m) => (
+              <span key={m} className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-gold">
+                {m}
+              </span>
             ))}
+            {result?.cover && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-200">Covered: {result.cover}</span>}
+            {result?.ou && <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-gray-200">{result.ou}</span>}
           </div>
-          <p className="hidden px-3 pb-3 text-[10px] leading-snug text-gray-600 sm:block">
-            Starters and 2nd-string players on ESPNs depth chart, plus anyone next in line when the players ahead of him are hurt.
-          </p>
-        </details>
-      )}
+
+          {/* key injuries per the depth chart: starters, the backup QB, and backups behind an injured starter */}
+          {(g.injuriesAway?.length > 0 || g.injuriesHome?.length > 0) && (
+            <div className="mt-2 text-[0.8em]">
+              <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.15em] text-gray-500">Key injuries ({(g.injuriesAway?.length || 0) + (g.injuriesHome?.length || 0)})</p>
+              <div className="grid grid-cols-1 gap-4 px-3 pb-2 pt-1 sm:grid-cols-2">
+                {[
+                  [g.away, g.injuriesAway || [], g.hiddenAway || 0],
+                  [g.home, g.injuriesHome || [], g.hiddenHome || 0],
+                ].map(([t, list, hidden]) => (
+                  <div key={t.id}>
+                    <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-gray-300">
+                      <TeamLogo src={t.logo} size={16} className="h-4 w-4" />
+                      {t.abbr}
+                    </p>
+                    {list.length === 0 && <p className="text-[11px] text-gray-600">No key players listed</p>}
+                    {list.map((i) => (
+                      <p key={i.name} className="flex items-center gap-1.5 py-0 text-[10px] text-gray-500">
+                        <span className="w-20 shrink-0 font-mono text-[9px] text-gray-600">{i.role}</span>
+                        <Link href={`/players/${i.id}`} className="truncate hover:text-gold">
+                          {i.name}
+                        </Link>
+                        <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0 text-[8px] font-bold uppercase ${statusTone(i.status)}`}>{i.status}</span>
+                      </p>
+                    ))}
+                    {hidden > 0 && <p className="mt-1 text-[10px] text-gray-600">+{hidden} depth / special teams hidden</p>}
+                  </div>
+                ))}
+              </div>
+              <p className="hidden px-3 pb-3 text-[10px] leading-snug text-gray-600 sm:block">
+                Starters and 2nd-string players on ESPNs depth chart, plus anyone next in line when the players ahead of him are hurt.
+              </p>
+            </div>
+          )}
+        </div>
+      </details>
 
       {/* footer: source + compare books */}
       {line && (
-        <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-[10px] text-gray-600">
+        <div className="mt-2 flex items-center justify-between border-t border-white/10 pt-2 text-[10px] text-gray-600">
           {g.lines.length > 1 && (
             <button onClick={() => setOpen(!open)} aria-expanded={open} className="cursor-pointer text-gold hover:text-white">
               Compare {g.lines.length} books {open ? "▴" : "▾"}
@@ -426,13 +431,19 @@ export default function BettingBoard() {
       <header
         className="relative mb-4 overflow-hidden rounded-2xl border border-white/10 p-4 sm:mb-8 sm:p-8"
         style={{
-          background: "radial-gradient(1000px 300px at 15% -30%, rgba(212,175,55,0.2), transparent), radial-gradient(700px 300px at 100% 130%, rgba(139,0,0,0.3), transparent), #0b0b0b",
+          background: "radial-gradient(260px 110px at 0% -15%, rgba(212,175,55,0.4), transparent 70%), radial-gradient(280px 120px at 100% 120%, rgba(190,15,25,0.5), transparent 70%), #08080a",
         }}>
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          className="pointer-events-none absolute inset-0 hidden sm:block"
+          style={{ background: "radial-gradient(620px 260px at 0% -20%, rgba(212,175,55,0.45), transparent 70%), radial-gradient(700px 320px at 100% 125%, rgba(190,15,25,0.55), transparent 70%)" }}
+        />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.12]"
           style={{
-            backgroundImage: "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
+            backgroundImage: "radial-gradient(white 1.3px, transparent 1.7px)",
+            backgroundSize: "14px 14px",
+            maskImage: "linear-gradient(90deg, black, transparent 75%)",
+            WebkitMaskImage: "linear-gradient(90deg, black, transparent 75%)",
           }}
         />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
@@ -454,6 +465,7 @@ export default function BettingBoard() {
           </div>
         </div>
       </header>
+      <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-gold/80 via-gold/20 to-transparent" />
 
       {/* market signals */}
       {tiles.length > 0 && (

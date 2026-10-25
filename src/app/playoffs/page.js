@@ -125,40 +125,58 @@ export default function PlayoffsPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* mission-control header (same recipe as the Odds Board) */}
       <header
-        className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 p-6 sm:p-8"
-        style={{ background: "radial-gradient(1000px 300px at 15% -30%, rgba(212,175,55,0.2), transparent), radial-gradient(700px 300px at 100% 130%, rgba(139,0,0,0.3), transparent), #0b0b0b" }}>
+        className="relative mb-4 overflow-hidden rounded-2xl border border-white/10 p-4 sm:mb-8 sm:p-8"
+        style={{
+          background: "radial-gradient(260px 110px at 0% -15%, rgba(212,175,55,0.4), transparent 70%), radial-gradient(280px 120px at 100% 120%, rgba(190,15,25,0.5), transparent 70%), #08080a",
+        }}>
+        <div
+          className="pointer-events-none absolute inset-0 hidden sm:block"
+          style={{ background: "radial-gradient(620px 260px at 0% -20%, rgba(212,175,55,0.45), transparent 70%), radial-gradient(700px 320px at 100% 125%, rgba(190,15,25,0.55), transparent 70%)" }}
+        />
         {/* faint grid overlay */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
-          style={{ backgroundImage: "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)", backgroundSize: "32px 32px" }}
+          className="pointer-events-none absolute inset-0 opacity-[0.12]"
+          style={{
+            backgroundImage: "radial-gradient(white 1.3px, transparent 1.7px)",
+            backgroundSize: "14px 14px",
+            maskImage: "linear-gradient(90deg, black, transparent 75%)",
+            WebkitMaskImage: "linear-gradient(90deg, black, transparent 75%)",
+          }}
         />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-gold/80">
-              Scenario lab · {open.length} games left · {pickedCount} picks
+            <p className="truncate font-mono text-[9px] uppercase tracking-[0.12em] text-gold/80 sm:text-[11px] sm:tracking-[0.35em]">
+              Scenario lab · {open.length} games left<span className="hidden sm:inline"> · {pickedCount} picks</span>s
             </p>
-            <h1 className="mt-2 text-4xl font-extrabold uppercase tracking-wide text-white sm:text-5xl">Playoff Simulator</h1>
-            <p className="mt-2 max-w-xl text-sm text-gray-400">Pick any remaining game and watch both conferences reseed, with tiebreakers and remaining strength of schedule.</p>
+            <h1 className="mt-1 text-2xl font-extrabold uppercase tracking-wide text-white sm:mt-2 sm:text-5xl">
+              <span className="sm:hidden">Playoff Sim</span>
+              <span className="hidden sm:inline">Playoff Simulator</span>
+            </h1>
+            <p className="mt-1 truncate text-xs text-gray-400 sm:mt-2 sm:max-w-xl sm:whitespace-normal sm:text-sm">
+              <span className="sm:hidden">Pick winners, watch seeds change.</span>
+              <span className="hidden sm:inline">Pick any remaining game and watch both conferences reseed, with tiebreakers and remaining strength of schedule.</span>
+            </p>
           </div>
           <button
             onClick={() => setPicks({})}
             disabled={!pickedCount}
-            className="cursor-pointer rounded-full border border-white/15 px-4 py-1.5 text-sm text-gray-300 transition hover:border-crimson hover:text-white disabled:cursor-default disabled:opacity-30">
+            className="cursor-pointer rounded-full border border-white/15 px-3 py-1 text-xs text-gray-300 sm:px-4 sm:py-1.5 sm:text-sm transition hover:border-crimson hover:text-white disabled:cursor-default disabled:opacity-30">
             Reset picks
           </button>
         </div>
       </header>
+      <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-gold/80 via-gold/20 to-transparent" />
 
       {/* signal tiles */}
-      <section className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <section className="mb-4 grid grid-cols-3 gap-2 sm:mb-8 sm:gap-3">
         {tiles.map((t) => (
-          <div key={t.label} className="relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div key={t.label} className="relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-2 sm:p-4">
             <span className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gold/10 blur-2xl" />
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-gray-500">{t.label}</p>
-            <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-white">{t.value}</p>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400">
-              {t.logo && <TeamLogo src={t.logo} size={16} className="h-4 w-4" />}
-              <span>{t.sub}</span>
+            <p className="truncate font-mono text-[8px] uppercase tracking-[0.08em] text-gray-500 sm:text-[10px] sm:tracking-[0.25em]">{t.label}</p>
+            <p className="mt-0.5 font-mono text-base font-bold tabular-nums text-white sm:mt-2 sm:text-3xl">{t.value}</p>
+            <div className="mt-0.5 flex items-center gap-1 text-[9px] text-gray-400 sm:mt-2 sm:gap-1.5 sm:text-xs">
+              {t.logo && <TeamLogo src={t.logo} size={16} className="h-3 w-3 sm:h-4 sm:w-4" />}
+              <span className="truncate">{t.sub}</span>
             </div>
           </div>
         ))}
@@ -191,11 +209,11 @@ export default function PlayoffsPage() {
       </div>
 
       {/* game cards */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:gap-3 md:grid-cols-2 xl:grid-cols-3">
         {weekGames.map((g) => (
-          <div key={g.id} className="card relative overflow-hidden p-3">
+          <div key={g.id} className="card relative overflow-hidden p-2 sm:p-3">
             <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-gray-600">
+            <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.15em] text-gray-600 sm:mb-2 sm:text-[10px] sm:tracking-[0.2em]">
               {meta[g.awayId].abbr} @ {meta[g.homeId].abbr}
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -209,15 +227,15 @@ export default function PlayoffsPage() {
                     key={side}
                     onClick={() => toggle(g.id, side)}
                     aria-pressed={chosen}
-                    className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-2 py-2.5 transition ${
+                    className={`flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2 py-1 transition sm:gap-2 sm:py-2.5 ${
                       chosen
                         ? "border-gold bg-gold/10 shadow-[0_0_14px_rgba(212,175,55,0.25)]"
                         : picks[g.id]
                           ? "border-white/10 opacity-40 hover:opacity-100"
                           : "border-white/10 bg-white/5 hover:border-white/40 hover:bg-white/10"
                     }`}>
-                    <TeamLogo src={meta[id].logo} alt={meta[id].name} size={28} className="h-7 w-7" />
-                    <span className="font-mono text-sm font-bold text-white">{meta[id].abbr}</span>
+                    <TeamLogo src={meta[id].logo} alt={meta[id].name} size={28} className="h-5 w-5 sm:h-7 sm:w-7" />
+                    <span className="font-mono text-xs font-bold text-white sm:text-sm">{meta[id].abbr}</span>
                   </button>
                 );
               })}
