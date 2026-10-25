@@ -1,4 +1,5 @@
 import { espnFetch, cachedJson } from "@/lib/espn";
+export const dynamic = "force-dynamic"; // never let the platform cache this route's output
 const BASE = "https://site.api.espn.com/apis/site/v2/sports/football/nfl";
 const HEADERS = { headers: { "User-Agent": "Mozilla/5.0" } };
 
@@ -71,8 +72,8 @@ async function loadGame(event) {
   try {
     // finished games never change, live games change constantly
     const gameState = comp.status?.type?.state;
-    const secs = gameState === "post" ? 86400 : gameState === "in" ? 15 : 60;
-    const r = await espnFetch(`${BASE}/summary?event=${event.id}`, secs);
+    // only finished games are cached; upcoming and live games are always fetched fresh
+    const r = gameState === "post" ? await espnFetch(`${BASE}/summary?event=${event.id}`, 86400) : await fetch(`${BASE}/summary?event=${event.id}`, { ...HEADERS, cache: "no-store" });
     if (r.ok) summary = await r.json();
   } catch {}
 
@@ -226,7 +227,7 @@ export async function GET(request) {
   const week = new URL(request.url).searchParams.get("week");
   try {
     const url = week ? `${BASE}/scoreboard?week=${week}&seasontype=2` : `${BASE}/scoreboard`;
-    const res = await espnFetch(url, 30);
+    const res = await fetch(url, { ...HEADERS, cache: "no-store" });
     if (!res.ok) {
       return Response.json({ error: `ESPN API returned ${res.status}` }, { status: 502 });
     }
@@ -246,7 +247,8 @@ export async function GET(request) {
         games,
         debug,
       },
-      allDone ? 86400 : 30,
+      allDone ? 86400 : 10,
+      allDone ? 86400 : 0,
     );
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
