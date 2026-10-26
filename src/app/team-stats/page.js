@@ -57,6 +57,7 @@ export default function TeamStatsPage() {
   if (isLoading) return <Skeleton variant="grid" count={6} rows={10} />;
 
   const teams = data.teams || [];
+  console.log(Object.entries(teams[0]?.stats || {}).map(([k, v]) => `${k} = ${v}`).join("\n"));
   const sortBy = (key) => [...teams].sort((a, b) => (b.stats?.[key] || 0) - (a.stats?.[key] || 0));
 
   const boards = [
