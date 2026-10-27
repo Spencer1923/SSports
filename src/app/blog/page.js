@@ -2,8 +2,15 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter"; // reads frontmatter (title/date) from .mdx files
 import Link from "next/link";
-import { TEAM_LOGOS } from "@/lib/divisions";
-import TeamLogo from "@/components/TeamLogo";
+
+// "2026-10-26" -> "Oct 26, 2026". Built from its parts so the timezone can't shift it a day.
+function formatDate(str) {
+  const [y, m, d] = String(str).split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+// short label for the kind of post
+const kindOf = (post) => (post.ranking ? "Power Rankings" : post.mvpRanking ? "MVP Race" : "Article");
 
 export default function BlogPage() {
   // read all files in the posts folder
@@ -19,53 +26,42 @@ export default function BlogPage() {
     })
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
+  const thisWeek = posts.slice(0, 2); // your two posts for the week
+  const earlier = posts.slice(2);
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <h1 className="page-title">Blog</h1>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {posts.map((post, i) => {
-          const kind = post.ranking ? "Power rankings" : post.mvpRanking ? "MVP race" : "Article";
-          // top 3 of whichever ranking the post has
-          const top = (post.ranking || post.mvpRanking || []).slice(0, 3);
-
-          return (
-            <Link key={post.slug} href={`/blog/${post.slug}`} className={`card card-hover group relative block overflow-hidden p-5 ${i === 0 ? "md:col-span-2" : ""}`}>
-              <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-              <span className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gold/10 blur-2xl" />
-
-              <div className="relative">
-                <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em]">
-                  {i === 0 && <span className="rounded-full bg-gold px-2 py-0.5 font-bold text-black">Latest</span>}
-                  <span className="text-gold/80">{kind}</span>
-                  <span className="text-gray-600">· {post.date}</span>
-                </div>
-
-                <h2 className={`font-extrabold uppercase tracking-wide text-gray-100 group-hover:text-white ${i === 0 ? "text-3xl" : "text-xl"}`}>{post.title}</h2>
-
-                {/* top 3 preview: team logos or player headshots */}
-                {top.length > 0 && (
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    {top.map((item, n) => {
-                      const fullName = item.team && Object.keys(TEAM_LOGOS).find((name) => name.includes(item.team));
-                      const img = fullName ? TEAM_LOGOS[fullName] : item.playerId ? `https://a.espncdn.com/i/headshots/nfl/players/full/${item.playerId}.png` : null;
-                      return (
-                        <span key={n} className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1 pl-1 pr-3 text-sm text-gray-300">
-                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/15 font-mono text-[11px] font-bold text-gold">{n + 1}</span>
-                          {img && <TeamLogo src={img} size={24} className={`h-6 w-6 ${item.playerId ? "rounded-full object-cover object-top" : ""}`} />}
-                          {item.team || item.player}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.2em] text-gold">Read →</p>
-              </div>
-            </Link>
-          );
-        })}
+      {/* this week: the two newest posts, equal size */}
+      <h2 className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500">This week</h2>
+      <div className="mb-10 grid gap-3 md:grid-cols-2">
+        {thisWeek.map((post) => (
+          <Link key={post.slug} href={`/blog/${post.slug}`} className="card card-hover group block p-5">
+            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500">
+              {kindOf(post)} · {formatDate(post.date)}
+            </p>
+            <h3 className="text-2xl font-bold leading-tight text-gray-100 group-hover:text-white">{post.title}</h3>
+          </Link>
+        ))}
       </div>
+
+      {/* earlier weeks: small cards */}
+      {earlier.length > 0 && (
+        <>
+          <h2 className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500">Earlier</h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {earlier.map((post) => (
+              <Link key={post.slug} href={`/blog/${post.slug}`} className="card card-hover group block p-4">
+                <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">
+                  {kindOf(post)} · {formatDate(post.date)}
+                </p>
+                <h3 className="text-base font-semibold leading-snug text-gray-200 group-hover:text-white">{post.title}</h3>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
     </main>
   );
 }

@@ -114,7 +114,7 @@ export default function Scoreboard() {
           const away = competitors.find((c) => c.homeAway === "away");
           const odds = game.competitions[0].odds?.[0]; // betting line from ESPN
           const situation = game.status.type.state === "in" ? game.competitions[0].situation : null; // live-only: down, distance, ball spot, possession
-          console.log(game.competitions[0].situation);
+         
 
           return (
             <Link key={game.id} href={`/games/${game.id}`} className="card card-hover group block p-3" {...prefetchProps(`/api/games/${game.id}`)}>

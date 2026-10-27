@@ -28,7 +28,10 @@ export default function PlayoffOdds({ games, meta }) {
   // a null key tells SWR "don't fetch yet", so nothing loads until the panel is opened
   const a = useSWR(open && weeks[0] ? `/api/betting?week=${weeks[0]}` : null, fetcher);
   const b = useSWR(open && weeks[1] ? `/api/betting?week=${weeks[1]}` : null, fetcher);
-  const waiting = open && (a.isLoading || b.isLoading); // if a fetch fails we carry on without its lines
+  // season-long odds (Super Bowl / conference / division), only fetched when the panel is open
+  const f = useSWR(open ? "/api/futures" : null, fetcher);
+  const futures = f.data?.teams ?? null; // null if the fetch fails, and the sim just skips the market part
+  const waiting = open && (a.isLoading || b.isLoading || f.isLoading); // if a fetch fails we carry on without it
 
   // { gameId: home win probability } from the market, for games that aren't final
   const market = useMemo(() => {
@@ -48,9 +51,9 @@ export default function PlayoffOdds({ games, meta }) {
     if (!open || waiting) return;
     const worker = new Worker(new URL("../lib/monteCarlo.worker.js", import.meta.url));
     worker.onmessage = (e) => setResult({ forGames: games, forMarket: market, data: e.data });
-    worker.postMessage({ games, meta, runs: 2000, market });
+    worker.postMessage({ games, meta, runs: 2000, market, futures });
     return () => worker.terminate();
-  }, [open, waiting, games, meta, market]);
+  }, [open, waiting, games, meta, market, futures]);
 
   // only use the result if it matches the current inputs; otherwise show the loading state
   const odds = result?.forGames === games && result?.forMarket === market ? result.data : null;
@@ -109,7 +112,8 @@ export default function PlayoffOdds({ games, meta }) {
                 })}
               </div>
               <p className="mt-2 text-[11px] leading-snug text-gray-600">
-                {lineCount} near-term games use betting-market win chances; later games use team records. Based on real results, not your picks.
+                {lineCount} near-term games use betting-market win chances; later games use team ratings (sportsbook futures, record, point differential and opponent strength). Later games use team records. Based on real
+                results, not your picks.
               </p>
             </>
           )}

@@ -209,3 +209,15 @@ export function computeRemainingSOS(games, picks, meta) {
   });
   return out;
 }
+
+// ---------- 8. PLAYED STRENGTH OF SCHEDULE ----------
+// For each team: the combined win % of the opponents it has ALREADY played.
+// Uses real results only (no picks), so it never changes when you click picks.
+export function computePlayedSOS(games, meta) {
+  const rec = computeRecords(games, {}, meta); // {} = ignore all picks
+  const out = {};
+  Object.keys(meta).forEach((id) => {
+    out[id] = { played: rec[id].played.length, sos: combined(rec[id].played, rec) }; // reuses the helper from step 3
+  });
+  return out;
+}

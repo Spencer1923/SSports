@@ -1,13 +1,41 @@
 import TeamLogo from "@/components/TeamLogo";
+import { useEffect, useRef, useState } from "react";
+
+// three small dots: gold = timeout left, dim = timeout used
+function TimeoutDots({ left }) {
+  return (
+    <span className="flex gap-1" title={`${left} timeouts left`}>
+      {[0, 1, 2].map((i) => (
+        <span key={i} className={`h-2 w-2 rounded-full ${i < left ? "bg-gold" : "bg-white/15"}`} />
+      ))}
+    </span>
+  );
+}
 
 // live field graphic. Left end zone = away team, right end zone = home team.
 // Only renders while a game is in progress.
 export default function LiveDriveBanner({ data }) {
+  // pulse = true for 1.5 seconds after either team's score changes
+  const [pulse, setPulse] = useState(false);
+  const prevTotal = useRef(null); // the last combined score we saw (null = first load)
+  const scoreTotal = (data.header?.competitions?.[0]?.competitors || []).reduce((sum, c) => sum + (Number(c.score) || 0), 0);
+
+  useEffect(() => {
+    // only pulse if we already had a score to compare against (so no pulse on page load)
+    if (prevTotal.current !== null && prevTotal.current !== scoreTotal) {
+      setPulse(true);
+      const timer = setTimeout(() => setPulse(false), 1500);
+      prevTotal.current = scoreTotal;
+      return () => clearTimeout(timer); // cancel the old timer if the score changes again
+    }
+    prevTotal.current = scoreTotal;
+  }, [scoreTotal]);
   const state = data.header?.competitions?.[0]?.status?.type?.state;
   const drive = data.drives?.current;
   const plays = drive?.plays || [];
   const last = plays[plays.length - 1];
   if (state !== "in" || !drive || !last) return null;
+  
 
   // ---- who is home / away (end-zone colors + which way the offense is moving) ----
   const comps = data.header?.competitions?.[0]?.competitors || [];
@@ -23,6 +51,14 @@ export default function LiveDriveBanner({ data }) {
   };
   const away = info(comps.find((c) => c.homeAway === "away"));
   const home = info(comps.find((c) => c.homeAway === "home"));
+
+  // timeouts left = 3 minus timeouts used (null if ESPN didn't send the number)
+  const timeoutsLeft = (side) => {
+    const used = comps.find((c) => c.homeAway === side)?.timeoutsUsed;
+    return used != null ? Math.max(0, 3 - used) : null;
+  };
+  const awayTO = timeoutsLeft("away");
+  const homeTO = timeoutsLeft("home");
 
   // offense team id, with a fallback to matching by abbreviation
   const offId = drive.team?.id || last.end?.team?.id || last.start?.team?.id;
@@ -42,6 +78,9 @@ export default function LiveDriveBanner({ data }) {
   const showFirstDown = dist != null && toGo > dist;
   const firstDownX = showFirstDown ? clamp(toX(toGo - dist), 10, 110) : null;
 
+  // a penalty play has type id "8" in ESPN's data; the text check is a backup
+  // trim() removes leading spaces, since ESPN's play text sometimes starts with one
+  const lastWasPenalty = last.type?.id === "8" || /^penalty/i.test((last.text || "").trim());
   const inRedZone = toGo <= 20;
   const redZoneX = offenseIsAway ? 90 : 10; // the 20 yards being attacked
 
@@ -53,7 +92,15 @@ export default function LiveDriveBanner({ data }) {
   const zoneText = { fill: "white", fillOpacity: 0.9, fontSize: 4.5, fontWeight: 800, textAnchor: "middle", dominantBaseline: "central", letterSpacing: 0.6 };
 
   return (
-    <div className="card p-4 mb-8" style={{ borderColor: "rgba(212,175,55,0.5)" }}>
+    <div
+      className="card p-4 mb-8"
+      // inline styles because .card is unlayered CSS; the border and glow turn crimson inside the 20
+      style={{
+        // gold pulse wins over the red zone glow while it's showing
+        borderColor: pulse ? "rgba(212,175,55,1)" : inRedZone ? "rgba(220,38,38,0.7)" : "rgba(212,175,55,0.5)",
+        boxShadow: pulse ? "0 0 36px rgba(212,175,55,0.85)" : inRedZone ? "0 0 24px rgba(139,0,0,0.55)" : undefined,
+        transition: "box-shadow 0.5s, border-color 0.5s",
+      }}>
       {/* top row: live tag, team with the ball, down & distance */}
       <div className="flex items-center gap-3 mb-3">
         <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-red-400">
@@ -61,7 +108,7 @@ export default function LiveDriveBanner({ data }) {
         </span>
         <TeamLogo src={drive.team?.logos?.[0]?.href || drive.team?.logo} size={28} className="w-7 h-7" />
         <p className="text-sm font-bold text-white flex-1 min-w-0 truncate">{drive.team?.displayName} ball</p>
-        <p className="text-2xl font-extrabold tabular-nums text-gold">{situation}</p>
+        <p className="text-2xl font-extrabold tabular-nums text-white">{situation}</p>
       </div>
 
       {/* the field */}
@@ -76,6 +123,11 @@ export default function LiveDriveBanner({ data }) {
           <linearGradient id="ld-drive" x1={dir === 1 ? 0 : 1} x2={dir === 1 ? 1 : 0} y1="0" y2="0">
             <stop offset="0" stopColor="#D4AF37" stopOpacity="0" />
             <stop offset="1" stopColor="#D4AF37" stopOpacity="0.9" />
+          </linearGradient>
+          {/* red zone glow: transparent at the 20, strongest at the goal line */}
+          <linearGradient id="ld-redzone" x1={offenseIsAway ? 0 : 1} x2={offenseIsAway ? 1 : 0} y1="0" y2="0">
+            <stop offset="0" stopColor="#DC2626" stopOpacity="0" />
+            <stop offset="1" stopColor="#DC2626" stopOpacity="0.55" />
           </linearGradient>
         </defs>
 
@@ -96,7 +148,14 @@ export default function LiveDriveBanner({ data }) {
         </text>
 
         {/* red zone: faint always, brighter when the ball is inside it */}
-        <rect x={redZoneX} width="20" height="30" fill="#8B0000" fillOpacity={inRedZone ? 0.4 : 0.14} />
+        {/* faint red zone tint, always visible */}
+        <rect x={redZoneX} width="20" height="30" fill="#8B0000" fillOpacity="0.14" />
+        {/* pulsing glow, only while the ball is inside the 20 */}
+        {inRedZone && (
+          <rect x={redZoneX} width="20" height="30" fill="url(#ld-redzone)">
+            <animate attributeName="opacity" values="0.5;1;0.5" dur="1.6s" repeatCount="indefinite" />
+          </rect>
+        )}
 
         {/* hash marks + yard lines + yard numbers */}
         <rect x="10" width="100" height="30" fill="url(#ld-hash)" />
@@ -132,19 +191,38 @@ export default function LiveDriveBanner({ data }) {
 
         {/* first-down line (gold) and line of scrimmage (white) */}
         {showFirstDown && <line x1={firstDownX} x2={firstDownX} y1="0" y2="30" stroke="#D4AF37" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />}
-        <line x1={ballX} x2={ballX} y1="0" y2="30" stroke="#004cff" strokeOpacity="0.8" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        {/* everything that marks the ball sits in one group. We draw it at x=0 and
+            slide the whole group to ballX, so CSS can animate the move between plays */}
+        <g style={{ transform: `translateX(${ballX}px)`, transition: "transform 1.2s ease-out" }}>
+          {/* line of scrimmage */}
+          <line x1="0" x2="0" y1="0" y2="30" stroke="#004cff" strokeOpacity="0.8" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
 
-        {/* arrow showing which way the offense is moving */}
-        <polygon points={`${ballX + dir * 3.2},12.8 ${ballX + dir * 3.2},17.2 ${ballX + dir * 5.6},15`} fill="#D4AF37" />
+          {/* arrow showing which way the offense is moving */}
+          <polygon points={`${dir * 3.2},12.8 ${dir * 3.2},17.2 ${dir * 5.6},15`} fill="#D4AF37" />
 
-        {/* the ball, with a pulsing ring */}
-        <circle cx={ballX} cy="15" r="2" fill="none" stroke="#D4AF37" strokeWidth="1" vectorEffect="non-scaling-stroke">
-          <animate attributeName="r" values="2;5.5" dur="1.4s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.8;0" dur="1.4s" repeatCount="indefinite" />
-        </circle>
-        <ellipse cx={ballX} cy="15" rx="2.1" ry="1.3" fill="#8a4b1f" stroke="white" strokeWidth="0.25" />
-        <line x1={ballX - 0.8} x2={ballX + 0.8} y1="15" y2="15" stroke="white" strokeWidth="0.25" />
+          {/* the ball, with a pulsing ring */}
+          <circle cx="0" cy="15" r="2" fill="none" stroke="#D4AF37" strokeWidth="1" vectorEffect="non-scaling-stroke">
+            <animate attributeName="r" values="2;5.5" dur="1.4s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.8;0" dur="1.4s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="0" cy="15" rx="2.1" ry="1.3" fill="#8a4b1f" stroke="white" strokeWidth="0.25" />
+          <line x1="-0.8" x2="0.8" y1="15" y2="15" stroke="white" strokeWidth="0.25" />
+        </g>
       </svg>
+
+      {/* timeout dots: away on the left, home on the right, matching the end zones */}
+      {awayTO != null && homeTO != null && (
+        <div className="mt-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">{away.abbr}</span>
+            <TimeoutDots left={awayTO} />
+          </div>
+          <div className="flex items-center gap-2">
+            <TimeoutDots left={homeTO} />
+            <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">{home.abbr}</span>
+          </div>
+        </div>
+      )}
 
       {/* info tiles */}
       <div className="grid grid-cols-3 gap-2 mt-3 text-center">
@@ -161,6 +239,8 @@ export default function LiveDriveBanner({ data }) {
       </div>
 
       <p className="text-sm text-gray-300 mt-3">
+        {/* yellow flag pill, only when the last play was a penalty */}
+        {lastWasPenalty && <span className="mr-2 rounded-full border border-yellow-400/50 bg-yellow-400/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-yellow-300">🚩 Flag</span>}
         <span className="text-gray-500">Last play: </span>
         {last.text}
       </p>

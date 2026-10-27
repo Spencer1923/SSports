@@ -1,4 +1,36 @@
 import { espnFetch, cachedJson } from "@/lib/espn";
+
+// adds up the points scored AGAINST each team, using finished games from the scoreboard
+async function getPointsAllowed() {
+  const weeks = Array.from({ length: 18 }, (_, i) => i + 1); // weeks 1 to 18
+  const allowed = {}; // will look like { teamId: { points: 0, games: 0 } }
+
+  await Promise.all(
+    weeks.map(async (week) => {
+      // cached 10 minutes, so this is cheap after the first load
+      const res = await espnFetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2`, 600);
+      if (!res.ok) return; // skip a week that fails
+
+      const data = await res.json();
+      data.events?.forEach((event) => {
+        if (!event.status?.type?.completed) return; // only count finished games
+        const teams = event.competitions?.[0]?.competitors || [];
+        if (teams.length !== 2) return;
+
+        // each team's "points allowed" is the OTHER team's score
+        teams.forEach((team, i) => {
+          const opponent = teams[1 - i];
+          const id = team.team.id;
+          if (!allowed[id]) allowed[id] = { points: 0, games: 0 };
+          allowed[id].points += Number(opponent.score) || 0;
+          allowed[id].games += 1;
+        });
+      });
+    }),
+  );
+
+  return allowed;
+}
 export async function GET() {
   try {
     // step 1: get list of all 32 teams
@@ -9,6 +41,9 @@ export async function GET() {
     }
     const teamsData = await teamsRes.json();
     const teams = teamsData.sports[0].leagues[0].teams;
+
+    // fetch points-allowed totals once, before the per-team loop
+    const pointsAllowed = await getPointsAllowed();
 
     // step 2: fetch each team's season statistics in parallel
     const statsPerTeam = await Promise.all(
@@ -26,12 +61,16 @@ export async function GET() {
           });
         });
 
+        // points allowed per game = total points against / games played
+        const pa = pointsAllowed[team.id];
+        const pointsAllowedPerGame = pa ? pa.points / pa.games : 0;
+
         return {
           teamId: team.id,
           teamName: team.displayName,
           logo: team.logos?.[0]?.href,
           color: team.color,
-          stats: statMap,
+          stats: { ...statMap, pointsAllowedPerGame }, // copy all stats and add our new one
         };
       }),
     );

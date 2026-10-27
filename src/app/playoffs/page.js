@@ -2,7 +2,8 @@
 import useSWR from "swr";
 import { useState, useMemo } from "react";
 import Skeleton from "@/components/Skeleton";
-import { buildMeta, computeSeeds, addMovement, computeRemainingSOS } from "@/lib/playoffs";
+import { buildMeta, computeSeeds, addMovement } from "@/lib/playoffs";
+import { computeSOS } from "@/lib/ratings";
 import TeamLogo from "@/components/TeamLogo";
 import Link from "next/link";
 import PlayoffOdds from "@/components/PlayoffOdds";
@@ -16,13 +17,13 @@ function Move({ n }) {
   return <span className={n > 0 ? "text-green-400" : "text-red-400"}>{n > 0 ? `▲${n}` : `▼${-n}`}</span>;
 }
 
-// remaining strength of schedule: a small bar + the number, colored by rank (1 = hardest of 32)
+// strength of schedule: average opponent rating over the whole season, colored by rank (1 = hardest of 32)
 function Sos({ info, rank }) {
-  if (!info || !info.left) return <span className="font-mono text-[10px] text-gray-700">done</span>;
+  if (!info || !rank) return <span className="font-mono text-[10px] text-gray-700">–</span>;
   const tone = rank <= 8 ? "bg-red-500" : rank >= 25 ? "bg-green-500" : "bg-gold/70";
   const text = rank <= 8 ? "text-red-400" : rank >= 25 ? "text-green-400" : "text-gray-400";
   return (
-    <div className="flex items-center gap-2" title={`Remaining opponents' win %: ${info.sos.toFixed(3)} · hardest-schedule rank #${rank} of 32 · ${info.left} games left`}>
+    <div className="flex items-center gap-2" title={`Average opponent rating: ${info.sos.toFixed(3)} · hardest-schedule rank #${rank} of 32 · ${info.games} games played`}>
       <div className="hidden h-1.5 w-12 overflow-hidden rounded-full bg-white/10 sm:block">
         <div className={`h-full ${tone}`} style={{ width: `${Math.round(info.sos * 100)}%` }} />
       </div>
@@ -38,7 +39,13 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
       <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
       <div className="flex items-center justify-between px-4 pb-2 pt-4">
         <h2 className="text-2xl font-extrabold uppercase tracking-wide text-white">{title}</h2>
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Rec · SOS · Move</span>
+        {/* same column widths as the rows below, so the labels sit over their values */}
+        <div className="flex gap-3 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500">
+          <span className="w-14 text-right">Rec</span>
+          {/* SOS column = number (w-9), plus the bar (w-12 + gap-2) on wider screens */}
+          <span className="w-9 text-right sm:w-[5.75rem]">SOS</span>
+          <span className="w-8 text-right">Move</span>
+        </div>
       </div>
       {rows.map((t) => (
         <div key={t.id}>
@@ -81,8 +88,10 @@ export default function PlayoffsPage() {
   const meta = useMemo(() => (data?.teams ? buildMeta(data.teams) : null), [data]);
   const baseline = useMemo(() => (meta ? computeSeeds(data.games, {}, meta) : null), [data, meta]);
   const current = useMemo(() => (meta ? addMovement(computeSeeds(data.games, picks, meta), baseline) : null), [data, meta, baseline, picks]);
-  // remaining strength of schedule, recomputed whenever picks change
-  const sos = useMemo(() => (meta ? computeRemainingSOS(data.games, picks, meta) : null), [data, meta, picks]);
+
+  // season-long SOS from team ratings; it uses real results + futures odds, so picks don't change it
+  const { data: futures } = useSWR("/api/futures", fetcher);
+  const sos = useMemo(() => (meta ? computeSOS(data.games, meta, futures?.teams) : null), [data, meta, futures]);
 
   if (error || data?.error) return <p>Failed to load playoff picture.</p>;
   if (isLoading || !current) return <Skeleton variant="grid" hero count={2} rows={16} />;
@@ -95,7 +104,7 @@ export default function PlayoffsPage() {
 
   // rank all 32 teams by remaining SOS: rank 1 = hardest schedule
   const byHardest = Object.keys(sos)
-    .filter((id) => sos[id].left > 0)
+    .filter((id) => sos[id].games > 0) // skip teams with no games played yet
     .sort((a, b) => sos[b].sos - sos[a].sos);
   const sosRank = {};
   byHardest.forEach((id, i) => (sosRank[id] = i + 1));
@@ -108,8 +117,8 @@ export default function PlayoffsPage() {
   const hardest = byHardest[0];
   const easiest = byHardest[byHardest.length - 1];
   const tiles = [
-    hardest && { label: "Toughest schedule left", value: sos[hardest].sos.toFixed(3), sub: `${meta[hardest].abbr} · ${sos[hardest].left} games`, logo: meta[hardest].logo },
-    easiest && { label: "Easiest schedule left", value: sos[easiest].sos.toFixed(3), sub: `${meta[easiest].abbr} · ${sos[easiest].left} games`, logo: meta[easiest].logo },
+    hardest && { label: "Toughest schedule so far", value: sos[hardest].sos.toFixed(3), sub: `${meta[hardest].abbr} · ${sos[hardest].games} played`, logo: meta[hardest].logo },
+    easiest && { label: "Easiest schedule so far", value: sos[easiest].sos.toFixed(3), sub: `${meta[easiest].abbr} · ${sos[easiest].games} played`, logo: meta[easiest].logo },
     {
       label: "Biggest seed mover",
       value: mover && mover.move ? (mover.move > 0 ? `▲${mover.move}` : `▼${-mover.move}`) : "—",
@@ -189,7 +198,9 @@ export default function PlayoffsPage() {
         <SeedTable title="AFC" rows={current.AFC} meta={meta} sos={sos} sosRank={sosRank} />
         <SeedTable title="NFC" rows={current.NFC} meta={meta} sos={sos} sosRank={sosRank} />
       </div>
-      <p className="-mt-6 mb-8 text-center font-mono text-[10px] text-gray-600">SOS = combined win % of a team&apos;s remaining opponents. Red = among the 8 hardest, green = among the 8 easiest.</p>
+      <p className="-mt-6 mb-8 text-center font-mono text-[10px] text-gray-600">
+        SOS = average strength of every opponent on a team&apos;s schedule (played and remaining), with road games counted as harder. Red = among the 8 hardest, green = among the 8 easiest.
+      </p>
 
       {/* week tabs */}
       <h2 className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-gray-400">Pick the winners</h2>

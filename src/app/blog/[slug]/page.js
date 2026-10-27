@@ -6,8 +6,11 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { TEAM_LOGOS, TEAM_IDS } from "@/lib/divisions";
 import TeamLogo from "@/components/TeamLogo";
 
-// rank badge: the top 3 get a gold treatment, #1 glows
-const badge = (i) => (i === 0 ? "bg-gold text-black shadow-[0_0_18px_rgba(212,175,55,0.7)]" : i < 3 ? "border border-gold/50 bg-gold/10 text-gold" : "border border-white/15 bg-white/5 text-gray-300");
+// "2026-10-26" -> "Oct 26, 2026" (built from parts so the timezone can't shift the day)
+function formatDate(str) {
+  const [y, m, d] = String(str).split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
 
 // finds the previous post of the same kind and returns { team or playerId: its old rank }
 function getPrevRanks(slug, field, keyName, date) {
@@ -26,8 +29,9 @@ function Move({ prev, now }) {
   if (prev === undefined) return <span className="font-mono text-xs text-gray-500">NEW</span>;
   const n = prev - now;
   if (!n) return <span className="font-mono text-xs text-gray-500">–</span>;
-  return <span className={`font-mono text-xs font-bold ${n > 0 ? "text-green-400" : "text-red-400"}`}>{n > 0 ? `▲${n}` : `▼${-n}`}</span>;
+  return <span className={`font-mono text-xs ${n > 0 ? "text-green-400" : "text-red-400"}`}>{n > 0 ? `▲${n}` : `▼${-n}`}</span>;
 }
+
 export default async function PostPage({ params }) {
   // Next.js 15+ requires awaiting params before using it
   const { slug } = await params;
@@ -40,30 +44,33 @@ export default async function PostPage({ params }) {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+      <Link href="/blog" className="text-sm text-gray-500 hover:text-white">
+        ← Blog
+      </Link>
+
       {/* header */}
-      <h1 className="page-title">{data.title}</h1>
-      <p className="mb-6 font-mono text-[11px] uppercase tracking-[0.3em] text-gold/80">
-        {data.ranking ? "Power rankings" : data.mvpRanking ? "MVP race" : "Article"} · {data.date}
+      <h1 className="page-title mt-4">{data.title}</h1>
+      <p className="mb-6 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500">
+        {data.ranking ? "Power Rankings" : data.mvpRanking ? "MVP Race" : "Article"} · {formatDate(data.date)}
       </p>
 
-      {/* team power rankings */}
+      {/* team power rankings: plain numbered list with dividers */}
       {data.ranking && (
-        <ol className="my-6 space-y-3">
+        <ol className="my-6 divide-y divide-white/10 border-y border-white/10">
           {data.ranking.map((item, i) => {
             const fullName = Object.keys(TEAM_LOGOS).find((name) => name.includes(item.team));
             return (
-              <li key={item.team} className="card card-hover relative flex gap-4 overflow-hidden p-4">
-                <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-mono text-xl font-extrabold tabular-nums ${badge(i)}`}>{i + 1}</span>
+              <li key={item.team} className="flex gap-4 py-5">
+                <span className="w-6 shrink-0 pt-1 text-right font-mono text-lg tabular-nums text-gray-500">{i + 1}</span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
-                    {fullName && <TeamLogo src={TEAM_LOGOS[fullName]} alt={item.team} size={40} className="h-10 w-10 drop-shadow-lg" />}
+                    {fullName && <TeamLogo src={TEAM_LOGOS[fullName]} alt={item.team} size={32} className="h-8 w-8" />}
                     {fullName ? (
-                      <Link href={`/teams/${TEAM_IDS[fullName]}`} className="text-xl font-bold text-gray-100 hover:text-gold">
+                      <Link href={`/teams/${TEAM_IDS[fullName]}`} className="text-lg font-semibold text-gray-100 hover:underline">
                         {item.team}
                       </Link>
                     ) : (
-                      <span className="text-xl font-bold text-gray-100">{item.team}</span>
+                      <span className="text-lg font-semibold text-gray-100">{item.team}</span>
                     )}
                     {prevTeams && <Move prev={prevTeams[item.team]} now={i} />}
                   </div>
@@ -77,20 +84,19 @@ export default async function PostPage({ params }) {
 
       {/* MVP rankings */}
       {data.mvpRanking && (
-        <ol className="my-6 space-y-3">
+        <ol className="my-6 divide-y divide-white/10 border-y border-white/10">
           {data.mvpRanking.map((item, i) => (
-            <li key={item.playerId} className="card card-hover relative flex gap-4 overflow-hidden p-4">
-              <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-              <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-mono text-xl font-extrabold tabular-nums ${badge(i)}`}>{i + 1}</span>
+            <li key={item.playerId} className="flex gap-4 py-5">
+              <span className="w-6 shrink-0 pt-1 text-right font-mono text-lg tabular-nums text-gray-500">{i + 1}</span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3">
                   <TeamLogo
                     src={`https://a.espncdn.com/i/headshots/nfl/players/full/${item.playerId}.png`}
                     alt={item.player}
-                    size={56}
-                    className="h-14 w-14 rounded-full bg-white/5 object-cover object-top ring-2 ring-gold/60"
+                    size={48}
+                    className="h-12 w-12 rounded-full bg-white/5 object-cover object-top"
                   />
-                  <Link href={`/players/${item.playerId}`} className="text-xl font-bold text-gray-100 hover:text-gold">
+                  <Link href={`/players/${item.playerId}`} className="text-lg font-semibold text-gray-100 hover:underline">
                     {item.player}
                   </Link>
                   {prevPlayers && <Move prev={prevPlayers[item.playerId]} now={i} />}
@@ -103,7 +109,7 @@ export default async function PostPage({ params }) {
       )}
 
       {/* the written article */}
-      <article className="card prose prose-invert mt-8 max-w-none p-5 sm:p-8">
+      <article className="prose prose-invert mt-8 max-w-none">
         <MDXRemote source={content} />
       </article>
     </main>
