@@ -108,6 +108,39 @@ export default async function PostPage({ params }) {
         </ol>
       )}
 
+      {/* honorable mentions: unranked, only shown if the post has the field */}
+      {data.honorableMentions?.length > 0 && (
+        <section className="my-6">
+          <h2 className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500 sm:text-[11px]">Honorable mention</h2>
+          <ul className="divide-y divide-white/10 border-y border-white/10">
+            {data.honorableMentions.map((item) => (
+              <li key={item.playerId || item.player} className="flex items-start gap-3 py-3 sm:py-4">
+                {/* headshot only if we have an id */}
+                {item.playerId && (
+                  <TeamLogo
+                    src={`https://a.espncdn.com/i/headshots/nfl/players/full/${item.playerId}.png`}
+                    alt={item.player}
+                    size={40}
+                    className="h-8 w-8 rounded-full bg-white/5 object-cover object-top sm:h-10 sm:w-10"
+                  />
+                )}
+                <div className="min-w-0 flex-1">
+                  {item.playerId ? (
+                    <Link href={`/players/${item.playerId}`} className="text-base font-semibold text-gray-100 hover:underline sm:text-lg">
+                      {item.player}
+                    </Link>
+                  ) : (
+                    <span className="text-base font-semibold text-gray-100 sm:text-lg">{item.player}</span>
+                  )}
+                  {/* the reason is optional */}
+                  {item.reason && <p className="mt-1 text-[13px] leading-relaxed text-gray-400 sm:text-sm">{item.reason}</p>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {/* the written article */}
       <article className="prose prose-invert mt-8 max-w-none">
         <MDXRemote source={content} />

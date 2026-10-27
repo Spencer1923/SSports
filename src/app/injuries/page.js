@@ -40,50 +40,49 @@ export default function InjuriesPage() {
   });
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
       <h1 className="page-title">Injury Report</h1>
       {/* search + one logo per team: click a logo to show only that team, click again to show all */}
-      <div className="mb-6 space-y-3">
+      <div className="mb-4 space-y-2 sm:mb-6 sm:space-y-3">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search a team or player..."
           className="w-full sm:w-80 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-base sm:text-sm text-gray-200 placeholder-gray-500 focus:border-gold/60"
         />
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1 sm:gap-2">
           {withInjuries.map((t) => (
             <button
               key={t.id}
               onClick={() => setSelected(selected === t.id ? null : t.id)}
               title={t.displayName}
-              className={`rounded-lg border p-1.5 cursor-pointer transition ${
+              className={`rounded-lg border p-1 sm:p-1.5 cursor-pointer transition ${
                 selected === t.id ? "border-gold bg-gold/10" : selected ? "border-white/10 opacity-40 hover:opacity-100" : "border-white/10 hover:border-white/30"
               }`}>
-              <TeamLogo src={TEAM_LOGOS[t.displayName]} alt={t.displayName} size={28} className="w-7 h-7" />
+              <TeamLogo src={TEAM_LOGOS[t.displayName]} alt={t.displayName} size={28} className="w-5 h-5 sm:w-7 sm:h-7" />
             </button>
           ))}
         </div>
       </div>
 
       {shown.length === 0 && <p className="text-sm text-gray-500">No injuries match your search.</p>}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         {shown.map((teamEntry) => (
           <div key={teamEntry.id} className="card overflow-hidden divide-y divide-white/5">
-            <div className="flex items-center gap-2 bg-white/5 px-3 py-2">
-              <TeamLogo src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} size={24} className="w-6 h-6" />
-              <Link href={`/teams/${teamEntry.id}`} className="font-semibold text-gray-200 hover:text-gold">
-                {teamEntry.displayName}
+            <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 sm:py-2">
+              <TeamLogo src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} size={24} className="w-5 h-5 sm:w-6 sm:h-6" />
+              <Link href={`/teams/${teamEntry.id}`} className="text-sm font-semibold text-gray-200 hover:text-gold sm:text-base">
                 {teamEntry.displayName}
               </Link>
-              <span className="ml-auto text-xs text-gray-500">{teamEntry.injuries.length} listed</span>
+              <span className="ml-auto text-[10px] text-gray-500 sm:text-xs">{teamEntry.injuries.length} listed</span>
             </div>
             {teamEntry.injuries.map((injury) => (
-              <div key={injury.id} className="flex justify-between items-center px-3 py-2 text-sm hover:bg-white/5 transition-colors">
+              <div key={injury.id} className="flex justify-between items-center px-3 py-1 text-xs sm:py-2 sm:text-sm hover:bg-white/5 transition-colors">
                 <Link href={`/players/${playerId(injury.athlete)}`} className="text-gray-200 hover:text-gold">
                   {injury.athlete?.displayName}
                 </Link>
-                <span className="flex items-center gap-2">
-                  <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${statusColor(injury.status)}`}>{injury.status}</span>
+                <span className="flex items-center gap-1.5 sm:gap-2">
+                  <span className={`text-[9px] sm:text-[10px] font-semibold uppercase px-1.5 sm:px-2 py-0.5 rounded-full ${statusColor(injury.status)}`}>{injury.status}</span>
                   <span className="text-gray-400">{injury.details?.type}</span>
                 </span>
               </div>
