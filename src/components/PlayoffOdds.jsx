@@ -11,7 +11,7 @@ const pct = (x) => (x >= 0.995 ? "99%+" : x < 0.005 ? "<1%" : `${Math.round(x * 
 // one cell: the number, with a bar behind it
 function Cell({ v }) {
   return (
-    <div className="relative w-16 overflow-hidden rounded bg-white/5 px-2 py-1 text-right font-mono text-xs tabular-nums text-white">
+    <div className="relative w-12 overflow-hidden rounded bg-white/5 px-1.5 py-0.5 text-right font-mono text-[11px] tabular-nums text-white sm:w-16 sm:px-2 sm:py-1 sm:text-xs">
       <span className="absolute inset-y-0 left-0 bg-gold/25" style={{ width: `${v * 100}%` }} />
       <span className="relative">{pct(v)}</span>
     </div>
@@ -91,13 +91,13 @@ export default function PlayoffOdds({ games, meta }) {
                       <div className="flex items-center justify-between px-4 pb-2 pt-4">
                         <h3 className="text-2xl font-extrabold uppercase tracking-wide text-white">{conf}</h3>
                         <div className="flex gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-gray-500">
-                          <span className="w-16 text-right">Playoffs</span>
-                          <span className="w-16 text-right">Division</span>
-                          <span className="w-16 text-right">Bye</span>
+                          <span className="w-12 text-right sm:w-16">Playoffs</span>
+                          <span className="w-12 text-right sm:w-16">Division</span>
+                          <span className="w-12 text-right sm:w-16">Bye</span>
                         </div>
                       </div>
                       {ids.map((id) => (
-                        <Link key={id} href={`/teams/${id}`} className="flex items-center gap-3 px-4 py-1.5 text-sm transition-colors hover:bg-white/5">
+                        <Link key={id} href={`/teams/${id}`} className="flex items-center gap-2 px-3 py-1 text-xs transition-colors hover:bg-white/5 sm:gap-3 sm:px-4 sm:py-1.5 sm:text-sm">
                           <TeamLogo src={meta[id].logo} size={28} className="h-7 w-7" />
                           <span className="flex-1 font-semibold text-gray-200">{meta[id].abbr}</span>
                           <div className="flex gap-2">

@@ -60,17 +60,17 @@ export default async function PostPage({ params }) {
           {data.ranking.map((item, i) => {
             const fullName = Object.keys(TEAM_LOGOS).find((name) => name.includes(item.team));
             return (
-              <li key={item.team} className="flex gap-4 py-5">
+              <li key={item.team} className="flex gap-3 py-3 sm:gap-4 sm:py-5">
                 <span className="w-6 shrink-0 pt-1 text-right font-mono text-lg tabular-nums text-gray-500">{i + 1}</span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
-                    {fullName && <TeamLogo src={TEAM_LOGOS[fullName]} alt={item.team} size={32} className="h-8 w-8" />}
+                    {fullName && <TeamLogo src={TEAM_LOGOS[fullName]} alt={item.team} size={32} className="h-6 w-6 sm:h-8 sm:w-8" />}
                     {fullName ? (
-                      <Link href={`/teams/${TEAM_IDS[fullName]}`} className="text-lg font-semibold text-gray-100 hover:underline">
+                      <Link href={`/teams/${TEAM_IDS[fullName]}`} className="text-base font-semibold sm:text-lg text-gray-100 hover:underline">
                         {item.team}
                       </Link>
                     ) : (
-                      <span className="text-lg font-semibold text-gray-100">{item.team}</span>
+                      <span className="text-base font-semibold sm:text-lg text-gray-100">{item.team}</span>
                     )}
                     {prevTeams && <Move prev={prevTeams[item.team]} now={i} />}
                   </div>
@@ -86,22 +86,22 @@ export default async function PostPage({ params }) {
       {data.mvpRanking && (
         <ol className="my-6 divide-y divide-white/10 border-y border-white/10">
           {data.mvpRanking.map((item, i) => (
-            <li key={item.playerId} className="flex gap-4 py-5">
-              <span className="w-6 shrink-0 pt-1 text-right font-mono text-lg tabular-nums text-gray-500">{i + 1}</span>
+            <li key={item.playerId} className="flex gap-3 py-3 sm:gap-4 sm:py-5">
+              <span className="w-5 shrink-0 pt-0.5 text-right font-mono text-sm sm:w-6 sm:pt-1 sm:text-lg tabular-nums text-gray-500">{i + 1}</span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3">
                   <TeamLogo
                     src={`https://a.espncdn.com/i/headshots/nfl/players/full/${item.playerId}.png`}
                     alt={item.player}
                     size={48}
-                    className="h-12 w-12 rounded-full bg-white/5 object-cover object-top"
+                    className="h-9 w-9 sm:h-12 sm:w-12 rounded-full bg-white/5 object-cover object-top"
                   />
-                  <Link href={`/players/${item.playerId}`} className="text-lg font-semibold text-gray-100 hover:underline">
+                  <Link href={`/players/${item.playerId}`} className="text-base font-semibold sm:text-lg text-gray-100 hover:underline">
                     {item.player}
                   </Link>
                   {prevPlayers && <Move prev={prevPlayers[item.playerId]} now={i} />}
                 </div>
-                <p className="mt-2 text-sm leading-relaxed text-gray-400">{item.reason}</p>
+                <p className="mt-2 text-[13px] leading-relaxed sm:text-sm text-gray-400">{item.reason}</p>
               </div>
             </li>
           ))}

@@ -41,7 +41,7 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
         <h2 className="text-2xl font-extrabold uppercase tracking-wide text-white">{title}</h2>
         {/* same column widths as the rows below, so the labels sit over their values */}
         <div className="flex gap-3 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500">
-          <span className="w-14 text-right">Rec</span>
+          <span className="w-12 sm:w-14 text-right">Rec</span>
           {/* SOS column = number (w-9), plus the bar (w-12 + gap-2) on wider screens */}
           <span className="w-9 text-right sm:w-[5.75rem]">SOS</span>
           <span className="w-8 text-right">Move</span>
@@ -49,7 +49,7 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
       </div>
       {rows.map((t) => (
         <div key={t.id}>
-          <Link href={`/teams/${t.id}`} className={`flex items-center gap-3 px-4 py-1.5 text-sm transition-colors hover:bg-white/5 ${t.inPlayoffs ? "text-gray-200" : "text-gray-600"}`}>
+          <Link href={`/teams/${t.id}`} className={`flex items-center gap-2 px-3 py-1 text-xs transition-colors hover:bg-white/5 sm:gap-3 sm:px-4 sm:py-1.5 sm:text-sm ${t.inPlayoffs ? "text-gray-200" : "text-gray-600"}`}>
             {/* seed badge: seed 1 (the bye) glows gold */}
             <span
               className={`flex h-6 w-6 items-center justify-center rounded-md font-mono text-xs font-bold tabular-nums ${
@@ -62,7 +62,7 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
               {meta[t.id].abbr}
               {t.divWinner && <span className="ml-2 rounded-full border border-gold/40 bg-gold/10 px-1.5 py-0.5 font-mono text-[9px] text-gold">DIV</span>}
             </span>
-            <span className="w-14 text-right font-mono tabular-nums text-gray-400">{t.t ? `${t.w}-${t.l}-${t.t}` : `${t.w}-${t.l}`}</span>
+            <span className="w-12 text-right font-mono text-[11px] tabular-nums text-gray-400 sm:w-14 sm:text-sm">{t.t ? `${t.w}-${t.l}-${t.t}` : `${t.w}-${t.l}`}</span>
             <Sos info={sos[t.id]} rank={sosRank[t.id]} />
             <span className="w-8 text-right font-mono text-xs">
               <Move n={t.move} />
