@@ -37,11 +37,11 @@ export default function BlogPage() {
       <h2 className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500">This week</h2>
       <div className="mb-6 grid gap-2 sm:mb-10 sm:gap-3 md:grid-cols-2">
         {thisWeek.map((post) => (
-          <Link key={post.slug} href={`/blog/${post.slug}`} className="card block p-3 sm:p-5">
+          <Link key={post.slug} href={`/blog/${post.slug}`} className="card card-hover group block p-3 sm:p-5">
             <p className="mb-1 font-mono text-[10px] sm:mb-2 sm:text-[11px] uppercase tracking-[0.2em] text-gray-500">
               {kindOf(post)} · {formatDate(post.date)}
             </p>
-            <h3 className="text-base font-bold leading-snug text-gray-100 hover:text-white sm:text-2xl">{post.title}</h3>
+            <h3 className="text-base font-bold leading-snug text-gray-100 group-hover:text-white sm:text-2xl">{post.title}</h3>
           </Link>
         ))}
       </div>
@@ -52,11 +52,11 @@ export default function BlogPage() {
           <h2 className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500">Earlier</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {earlier.map((post) => (
-              <Link key={post.slug} href={`/blog/${post.slug}`} className="card block p-3">
+              <Link key={post.slug} href={`/blog/${post.slug}`} className="card card-hover group block p-3 sm:p-4">
                 <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">
                   {kindOf(post)} · {formatDate(post.date)}
                 </p>
-                <h3 className="text-sm font-semibold leading-snug text-gray-200 hover:text-white sm:text-base">{post.title}</h3>
+                <h3 className="text-sm font-semibold leading-snug text-gray-200 group-hover:text-white sm:text-base">{post.title}</h3>
               </Link>
             ))}
           </div>
