@@ -7,6 +7,17 @@ const W_PYTH = 0.1;
 const W_SRS = 0.25; // the part that accounts for who a team played
 const ROAD_EDGE = 0.03; // a road game is this much harder, a home game this much easier
 
+// extra difficulty for facing a team from a tough division (added to that opponent's rating).
+// Tier 1 is hardest. Every division not listed gets 0, which is the "easy" tier 8.
+const DIVISION_BONUS = {
+  "NFC West": 0.1, // tier 1
+  "NFC North": 0.075, // tier 2
+  "AFC North": 0.05, // tier 3
+};
+
+// looks up the bonus for a team id (0 if its division isn't listed)
+const divBonus = (meta, teamId) => DIVISION_BONUS[meta[teamId]?.division] ?? 0;
+
 // pulls a win % toward .500 by adding 4 "average" games
 const shrinkPct = (p, games) => (p * games + 4) / (games + 8);
 
@@ -88,19 +99,28 @@ export function computeSOS(games, meta, futures) {
   const out = {};
 
   Object.keys(meta).forEach((id) => {
-    // every game that doesn't involve this team
-    const without = games.filter((g) => g.homeId !== id && g.awayId !== id);
-    const rating = buildRatings(without, meta, futures);
+    // leave-one-out only for teams with a winning record; losing teams use everyone's normal rating
+    const full = buildRatings(games, meta, futures);
+    const rec = games.filter((g) => g.completed && (g.homeId === id || g.awayId === id));
+    const wins = rec.filter((g) => (g.homeId === id ? g.homeScore > g.awayScore : g.awayScore > g.homeScore)).length;
+    const winning = rec.length > 0 && wins / rec.length > 0.5;
+    const rating = winning
+      ? buildRatings(
+          games.filter((g) => g.homeId !== id && g.awayId !== id),
+          meta,
+          futures,
+        )
+      : full;
 
     let sum = 0;
     let count = 0;
     games.forEach((g) => {
       if (!g.completed) return; // played games only
       if (g.homeId === id) {
-        sum += rating[g.awayId] - ROAD_EDGE; // home game: easier
+        sum += rating[g.awayId] + divBonus(meta, g.awayId) - ROAD_EDGE; // home game: easier
         count++;
       } else if (g.awayId === id) {
-        sum += rating[g.homeId] + ROAD_EDGE; // road game: harder
+        sum += rating[g.homeId] + divBonus(meta, g.homeId) + ROAD_EDGE; // road game: harder
         count++;
       }
     });
