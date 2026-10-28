@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Skeleton from "@/components/Skeleton";
 import BackButton from "@/components/BackButton";
 import TeamLogo from "@/components/TeamLogo";
+import MoreStats from "@/components/MoreStats";
 
 // helper: fetches and parses JSON from a URL
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -64,6 +65,10 @@ export default function PlayerPage() {
           ))}
         </div>
       </section>
+
+      {/* collapsed panel, loads the full season line only when opened */}
+      {/* receivers and tight ends already show these stats above, so they skip the panel */}
+      {!["WR", "TE"].includes(player.position?.abbreviation) && <MoreStats playerId={playerId} position={player.position?.abbreviation} />}
     </main>
   );
 }

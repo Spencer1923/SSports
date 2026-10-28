@@ -98,9 +98,11 @@ export function buildRatings(games, meta, futures) {
 export function computeSOS(games, meta, futures) {
   const out = {};
 
+  // rate every team once, using all games. Reused by every team that doesn't need leave-one-out
+  const full = buildRatings(games, meta, futures);
+
   Object.keys(meta).forEach((id) => {
     // leave-one-out only for teams with a winning record; losing teams use everyone's normal rating
-    const full = buildRatings(games, meta, futures);
     const rec = games.filter((g) => g.completed && (g.homeId === id || g.awayId === id));
     const wins = rec.filter((g) => (g.homeId === id ? g.homeScore > g.awayScore : g.awayScore > g.homeScore)).length;
     const winning = rec.length > 0 && wins / rec.length > 0.5;
