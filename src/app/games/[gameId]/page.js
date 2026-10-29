@@ -219,7 +219,7 @@ export default function GamePage() {
       <DriveList drives={data.drives} />
 
       {/* player stats: one grid row per category, so both teams' tables start together */}
-      <section>
+      <section className="flex flex-col md:block">
         {/* team headers, desktop only (on mobile the abbreviation shows inside each category) */}
         <div className="hidden md:grid md:grid-cols-2 gap-8 mb-4">
           {playerStats.map((teamEntry, teamIndex) => (
@@ -232,37 +232,43 @@ export default function GamePage() {
           ))}
         </div>
 
+        {/* on mobile, `contents` removes this wrapper so every card becomes a direct child of the section,
+            letting us sort them by team (order). On desktop it's a normal two-column row. */}
         {categoryNames.map((name) => (
-          <div key={name} className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4 items-start">
-            {playerStats.map((teamEntry) => {
+          <div key={name} className="contents md:grid md:grid-cols-2 md:gap-8 md:mb-4 md:items-start">
+            {playerStats.map((teamEntry, teamIndex) => {
               const category = teamEntry.statistics.find((c) => c.name === name);
-              if (!category) return <div key={teamEntry.team.id} />; // this team has no stats in this category
+              if (!category) return <div key={teamEntry.team.id} className="hidden md:block" />; // keeps the desktop column empty
 
               return (
-                <div key={teamEntry.team.id} className="card overflow-hidden overflow-x-auto divide-y divide-white/5">
+                <div
+                  key={teamEntry.team.id}
+                  // mobile: team 1's cards come first (order-1), then team 2's (order-2); desktop ignores order
+                  className={`card overflow-hidden overflow-x-auto divide-y divide-white/5 mb-3 md:mb-0 md:order-none ${teamIndex === 0 ? "order-1" : "order-2"}`}>
                   <div className="bg-white/5 px-3 py-1">
                     <p className="text-gray-300 text-sm font-semibold capitalize">
                       {category.name}
-                      <span className="md:hidden text-gray-500 text-xs"> · {teamEntry.team.abbreviation}</span>
+                      {/* mobile only: small team logo instead of the abbreviation */}
+                      <TeamLogo src={teamEntry.team.logo} alt={teamEntry.team.abbreviation} size={20} className="ml-2 inline-block h-4 w-4 align-text-bottom md:hidden" />
                     </p>
                   </div>
                   {category.labels && (
-                    <div className="flex gap-3 px-3 py-1 text-xs text-gray-500">
-                      <span className="flex-1" />
+                    <div className="flex min-w-max gap-2 px-3 py-1 text-[10px] text-gray-500 sm:gap-3 sm:text-xs">
+                      <span className="w-28 shrink-0 sm:w-auto sm:flex-1" />
                       {category.labels.map((label, li) => (
-                        <span key={li} className="w-12 text-center">
+                        <span key={li} className="w-9 shrink-0 text-center sm:w-12">
                           {label}
                         </span>
                       ))}
                     </div>
                   )}
                   {category.athletes.map((entry) => (
-                    <div key={entry.athlete.id} className="flex gap-3 px-3 py-2 text-sm hover:bg-white/5 transition-colors">
-                      <Link href={`/players/${entry.athlete.id}`} className="text-gray-200 flex-1 hover:text-gold">
+                    <div key={entry.athlete.id} className="flex min-w-max gap-2 px-3 py-1.5 text-xs hover:bg-white/5 transition-colors sm:gap-3 sm:py-2 sm:text-sm">
+                      <Link href={`/players/${entry.athlete.id}`} className="w-28 shrink-0 truncate text-gray-200 hover:text-gold sm:w-auto sm:flex-1">
                         {entry.athlete.displayName}
                       </Link>
                       {entry.stats.map((stat, i) => (
-                        <span key={i} className="text-gray-400 w-12 text-center tabular-nums">
+                        <span key={i} className="w-9 shrink-0 text-center tabular-nums text-gray-400 sm:w-12">
                           {stat}
                         </span>
                       ))}

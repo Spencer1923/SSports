@@ -59,7 +59,7 @@ export default function InjuriesPage() {
               className={`rounded-lg border p-1 sm:p-1.5 cursor-pointer transition ${
                 selected === t.id ? "border-gold bg-gold/10" : selected ? "border-white/10 opacity-40 hover:opacity-100" : "border-white/10 hover:border-white/30"
               }`}>
-              <TeamLogo src={TEAM_LOGOS[t.displayName]} alt={t.displayName} size={28} className="w-5 h-5 sm:w-7 sm:h-7" />
+              <TeamLogo src={TEAM_LOGOS[t.displayName]} alt={t.displayName} size={32} className="w-7 h-7 sm:w-8 sm:h-8" />
             </button>
           ))}
         </div>
@@ -70,7 +70,7 @@ export default function InjuriesPage() {
         {shown.map((teamEntry) => (
           <div key={teamEntry.id} className="card overflow-hidden divide-y divide-white/5">
             <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 sm:py-2">
-              <TeamLogo src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} size={24} className="w-5 h-5 sm:w-6 sm:h-6" />
+              <TeamLogo src={TEAM_LOGOS[teamEntry.displayName]} alt={teamEntry.displayName} size={28} className="w-7 h-7 sm:w-8 sm:h-8" />
               <Link href={`/teams/${teamEntry.id}`} className="text-sm font-semibold text-gray-200 hover:text-gold sm:text-base">
                 {teamEntry.displayName}
               </Link>

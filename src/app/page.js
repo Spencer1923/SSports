@@ -6,6 +6,7 @@ import Scoreboard from "@/components/Scoreboard";
 import NewsFeed from "@/components/NewsFeed";
 import { Suspense } from "react";
 import Skeleton from "@/components/Skeleton";
+import SiteSearch from "@/components/SiteSearch";
 
 // runs on the server — reads the latest blog posts from disk
 function getLatestPosts() {
@@ -27,7 +28,11 @@ export default function Home() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="page-title">SSports</h1>
+      {/* title on the left, search on the right (stacked on very small screens) */}
+      <div className="mb-6 flex items-end justify-between gap-x-3">
+        <h1 className="page-title !mb-0 flex-1">SSports</h1>
+        <SiteSearch />
+      </div>
 
       {/* two-column hub layout: scores left, news + blog right */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

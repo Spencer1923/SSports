@@ -32,8 +32,8 @@ export default function StandingsPage() {
         <div>
           <h2 className="text-2xl text-gray-300 font-bold mb-4"></h2>
           {AFC_DIVISIONS.map((divisionName) => (
-            <div key={divisionName} className="mb-6">
-              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-2">{divisionName}</h3>
+            <div key={divisionName} className="mb-4 sm:mb-6">
+              <h3 className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-400 sm:mb-2 sm:text-xs">{divisionName}</h3>
               <div className="card overflow-hidden divide-y divide-white/5">
                 {allTeams
                   .filter((entry) => DIVISIONS[divisionName].includes(entry.team.displayName))
@@ -48,17 +48,17 @@ export default function StandingsPage() {
                         key={entry.team.id}
                         href={`/teams/${entry.team.id}`}
                         {...prefetchProps(`/api/teams/${entry.team.id}`)}
-                        className="grid grid-cols-[1fr_55px_55px_55px] items-center gap-2 px-3 py-2 transition-colors hover:bg-white/5">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <TeamLogo src={entry.team.logos?.[0]?.href} alt={entry.team.displayName} size={32} className="w-8 h-8" />
-                          <span className="text-gray-200 font-medium sm:whitespace-nowrap">{entry.team.displayName}</span>
+                        className="grid grid-cols-[minmax(0,1fr)_46px_34px_44px] items-center gap-1.5 px-2.5 py-1.5 transition-colors hover:bg-white/5 sm:grid-cols-[1fr_55px_55px_55px] sm:gap-2 sm:px-3 sm:py-2">
+                        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                          <TeamLogo src={entry.team.logos?.[0]?.href} alt={entry.team.displayName} size={32} className="h-6 w-6 sm:h-8 sm:w-8" />
+                          <span className="truncate text-[13px] font-medium text-gray-200 sm:whitespace-nowrap sm:text-base"> {entry.team.displayName}</span>
                         </div>
-                        <div className="contents text-sm tabular-nums">
+                        <div className="contents text-xs tabular-nums sm:text-sm">
                           <span className="text-gray-100 font-bold">
                             {wins}-{losses}
                           </span>
                           <span className={streak?.startsWith("W") ? "text-green-400" : "text-red-400"}>{streak}</span>
-                          <span className="text-gray-400 w-12 text-right">{pointDiff}</span>
+                          <span className="text-center text-gray-400 sm:w-12 sm:text-right">{pointDiff}</span>
                         </div>
                       </Link>
                     );
@@ -72,8 +72,8 @@ export default function StandingsPage() {
         <div>
           <h2 className="text-2xl text-gray-300 font-bold mb-4"></h2>
           {NFC_DIVISIONS.map((divisionName) => (
-            <div key={divisionName} className="mb-6">
-              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-2">{divisionName}</h3>
+            <div key={divisionName} className="mb-4 sm:mb-6">
+              <h3 className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-400 sm:mb-2 sm:text-xs">{divisionName}</h3>
               <div className="card overflow-hidden divide-y divide-white/5">
                 {allTeams
                   .filter((entry) => DIVISIONS[divisionName].includes(entry.team.displayName))
@@ -88,17 +88,17 @@ export default function StandingsPage() {
                         key={entry.team.id}
                         href={`/teams/${entry.team.id}`}
                         {...prefetchProps(`/api/teams/${entry.team.id}`)}
-                        className="grid grid-cols-[1fr_55px_55px_55px] items-center gap-2 px-3 py-2 transition-colors hover:bg-white/5">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <img src={entry.team.logos?.[0]?.href} alt={entry.team.displayName} className="w-8 h-8" />
-                          <span className="text-gray-200 font-medium sm:whitespace-nowrap">{entry.team.displayName}</span>
+                        className="grid grid-cols-[minmax(0,1fr)_46px_34px_44px] items-center gap-1.5 px-2.5 py-1.5 transition-colors hover:bg-white/5 sm:grid-cols-[1fr_55px_55px_55px] sm:gap-2 sm:px-3 sm:py-2">
+                        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                          <TeamLogo src={entry.team.logos?.[0]?.href} alt={entry.team.displayName} size={32} className="h-6 w-6 sm:h-8 sm:w-8" />
+                          <span className="truncate text-[13px] font-medium text-gray-200 sm:whitespace-nowrap sm:text-base">{entry.team.displayName}</span>
                         </div>
-                        <div className="contents text-sm tabular-nums">
+                        <div className="contents text-xs tabular-nums sm:text-sm">
                           <span className="text-gray-100 font-bold">
                             {wins}-{losses}
                           </span>
                           <span className={streak?.startsWith("W") ? "text-green-400" : "text-red-400"}>{streak}</span>
-                          <span className="text-gray-400 w-12 text-right">{pointDiff}</span>
+                          <span className="text-center text-gray-400 sm:w-12 sm:text-right">{pointDiff}</span>
                         </div>
                       </Link>
                     );

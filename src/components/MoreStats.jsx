@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import useSWR from "swr";
+import GameLog from "@/components/GameLog";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -9,29 +10,30 @@ const GROUP_NAMES = { fieldgoals: "Field goals", pats: "Extra points" };
 // positions that don't get the Fumbles and Interceptions rows (abbreviations as ESPN spells them)
 const HIDE_SMALL_GROUPS = ["DE", "DT", "NT", "DL", "EDGE", "LB", "OLB", "ILB", "MLB"];
 
+// receivers and tight ends already show these season stats above, so they only get the game log
+const SKIP_SEASON_STATS = ["WR", "TE"];
+
 export default function MoreStats({ playerId, position }) {
   const [open, setOpen] = useState(false); // collapsed by default
 
   // a null key tells SWR "don't fetch yet", so nothing loads until the panel is opened
-  const { data, error, isLoading } = useSWR(open ? `/api/players/${playerId}/splits` : null, fetcher);
+  const skipSeason = SKIP_SEASON_STATS.includes(position);
+  // WR/TE don't need the season splits, so we don't fetch them
+  const { data, error, isLoading } = useSWR(open && !skipSeason ? `/api/players/${playerId}/splits` : null, fetcher);
 
   // cut the one long row of values into groups, using each category's count.
   // e.g. count 10 -> first 10 labels/values are "Passing", next 5 are "Rushing"
-  const groups = [];
-  if (data?.labels) {
-    // punters have no categories, so treat the whole row as one group
-    const cats = data.categories?.length ? data.categories : [{ name: "Season", count: data.labels.length }];
-    let start = 0;
-    cats.forEach((c) => {
-      groups.push({
-        name: GROUP_NAMES[c.name] || c.name,
-        labels: data.labels.slice(start, start + c.count),
-        values: data.stats.slice(start, start + c.count),
-        titles: (data.fullNames || []).slice(start, start + c.count), // full stat names, shown on hover
-      });
-      start += c.count;
-    });
-  }
+  // punters have no categories, so treat the whole row as one group
+  const cats = data?.labels ? (data.categories?.length ? data.categories : [{ name: "Season", count: data.labels.length }]) : [];
+  const groups = cats.map((c, i) => {
+    const from = cats.slice(0, i).reduce((sum, x) => sum + x.count, 0); // columns used by earlier groups
+    return {
+      name: GROUP_NAMES[c.name] || c.name,
+      labels: data.labels.slice(from, from + c.count),
+      values: data.stats.slice(from, from + c.count),
+      titles: (data.fullNames || []).slice(from, from + c.count), // full stat names, shown on hover
+    };
+  });
 
   // edge rushers, linebackers and DTs: drop the Fumbles and Interceptions rows
   const hideSmall = HIDE_SMALL_GROUPS.includes(position);
@@ -48,9 +50,9 @@ export default function MoreStats({ playerId, position }) {
 
       {open && (
         <div className="mt-3 space-y-3">
-          {isLoading && <div className="card h-24 animate-pulse bg-white/5" />}
-          {(error || data?.error) && <p className="text-sm text-gray-500">Couldn&apos;t load more stats.</p>}
-          {data && !data.error && groups.length === 0 && <p className="text-sm text-gray-500">No extra stats available for this player.</p>}
+          {!skipSeason && isLoading && <div className="card h-24 animate-pulse bg-white/5" />}
+          {!skipSeason && (error || data?.error) && <p className="text-sm text-gray-500">Couldn&apos;t load more stats.</p>}
+          {!skipSeason && data && !data.error && shown.length === 0 && <p className="text-sm text-gray-500">No extra stats available for this player.</p>}
 
           {shown.map((g) => (
             <div key={g.name} className="card p-3 sm:p-4">
@@ -66,6 +68,8 @@ export default function MoreStats({ playerId, position }) {
               </div>
             </div>
           ))}
+          {/* tabs to leave out of the game log: LB/DL lose Fumbles + Interceptions, WR/TE lose Fumbles */}
+          <GameLog playerId={playerId} hideTabs={hideSmall ? ["fumbles", "interceptions"] : skipSeason ? ["fumbles"] : []} />
         </div>
       )}
     </section>

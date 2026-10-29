@@ -67,8 +67,8 @@ export default function PlayerPage() {
       </section>
 
       {/* collapsed panel, loads the full season line only when opened */}
-      {/* receivers and tight ends already show these stats above, so they skip the panel */}
-      {!["WR", "TE"].includes(player.position?.abbreviation) && <MoreStats playerId={playerId} position={player.position?.abbreviation} />}
+      {/* offensive linemen and long snappers have no stats to show, so skip the panel */}
+      {!["OL", "OT", "OG", "G", "T", "C", "LS"].includes(player.position?.abbreviation) && <MoreStats playerId={playerId} position={player.position?.abbreviation} />}
     </main>
   );
 }
