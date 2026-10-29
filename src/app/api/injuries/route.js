@@ -20,7 +20,7 @@ export async function GET() {
         injuries: (team.injuries || []).map((i) => ({
           id: i.id,
           status: i.status,
-          athlete: { id: playerId(i.athlete), displayName: i.athlete?.displayName },
+          athlete: { id: playerId(i.athlete), displayName: i.athlete?.displayName, position: { abbreviation: i.athlete?.position?.abbreviation } },
           details: { type: i.details?.type },
         })),
       })),

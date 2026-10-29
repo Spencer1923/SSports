@@ -57,7 +57,7 @@ export default function GameLog({ playerId, hideTabs = [] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {data.games.map((g) => (
+            {[...data.games].reverse().map((g) => (
               <tr key={g.id} className="text-gray-200">
                 <td className="px-2 py-1 text-left text-gray-500">{g.week}</td>
                 <td className="whitespace-nowrap px-2 py-1 text-left">

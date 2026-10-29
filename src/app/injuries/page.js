@@ -29,7 +29,10 @@ export default function InjuriesPage() {
 
   // data.injuries is a list, one entry per team
   const teams = data.injuries || [];
-  const withInjuries = teams.filter((t) => t.injuries?.length > 0);
+
+  // drop players ESPN lists as "Active" (healthy), so only real injuries show
+  const cleaned = teams.map((t) => ({ ...t, injuries: (t.injuries || []).filter((i) => i.status !== "Active") }));
+  const withInjuries = cleaned.filter((t) => t.injuries.length > 0);
   const q = query.trim().toLowerCase();
 
   // apply the logo pick and the search text (matches team name or any injured player's name)
@@ -78,9 +81,13 @@ export default function InjuriesPage() {
             </div>
             {teamEntry.injuries.map((injury) => (
               <div key={injury.id} className="flex justify-between items-center px-3 py-1 text-xs sm:py-2 sm:text-sm hover:bg-white/5 transition-colors">
-                <Link href={`/players/${playerId(injury.athlete)}`} className="text-gray-200 hover:text-gold">
-                  {injury.athlete?.displayName}
-                </Link>
+                <span className="min-w-0">
+                  <Link href={`/players/${playerId(injury.athlete)}`} className="text-gray-200 hover:text-gold">
+                    {injury.athlete?.displayName}
+                  </Link>
+                  {/* position in dim gray, only if ESPN sent one */}
+                  {injury.athlete?.position?.abbreviation && <span className="ml-1.5 text-[10px] text-gray-500 sm:text-xs">{injury.athlete.position.abbreviation}</span>}
+                </span>
                 <span className="flex items-center gap-1.5 sm:gap-2">
                   <span className={`text-[9px] sm:text-[10px] font-semibold uppercase px-1.5 sm:px-2 py-0.5 rounded-full ${statusColor(injury.status)}`}>{injury.status}</span>
                   <span className="text-gray-400">{injury.details?.type}</span>
