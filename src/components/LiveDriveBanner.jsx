@@ -111,7 +111,7 @@ export default function LiveDriveBanner({ data }) {
       </div>
 
       {/* the field */}
-      <svg viewBox="0 0 120 30" className="w-full h-auto rounded-lg ring-1 ring-white/15" role="img" aria-label="Ball position on the field">
+      <svg viewBox="0 0 120 30" className="-mx-2 w-[calc(100%+1rem)] max-w-none h-auto rounded-none ring-1 ring-white/15 sm:mx-0 sm:w-full sm:rounded-lg" role="img" aria-label="Ball position on the field">
         <defs>
           {/* hash marks: two tiny ticks repeated every yard */}
           <pattern id="ld-hash" width="1" height="30" patternUnits="userSpaceOnUse">
