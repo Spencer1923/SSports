@@ -122,7 +122,7 @@ export default function WinProbability({ plays = [], playSource, home, away }) {
   return (
     <section>
       <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Win Probability</h2>
-      <div className="card relative overflow-hidden p-4">
+      <div className="card relative overflow-hidden p-3 sm:p-4">
         <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
         {/* odds at the active point (final odds when you're not hovering) */}
@@ -132,19 +132,19 @@ export default function WinProbability({ plays = [], playSource, home, away }) {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <TeamLogo src={home?.logo} size={24} className="w-6 h-6" />
-                <span className="text-2xl font-extrabold tabular-nums text-white">{h}%</span>
+                <span className="text-xl sm:text-2xl font-extrabold tabular-nums text-white">{h}%</span>
               </div>
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{hover == null ? (homePct === 100 || homePct === 0 ? "Final" : "Now") : "Hovering"}</span>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-extrabold tabular-nums text-white">{100 - h}%</span>
-                <TeamLogo src={away?.logo} size={24} className="w-6 h-6" /> <img src={away?.logo} alt="" className="w-6 h-6" />
+                <span className="text-xl sm:text-2xl font-extrabold tabular-nums text-white">{100 - h}%</span>
+                <TeamLogo src={away?.logo} size={24} className="w-6 h-6" />
               </div>
             </div>
           );
         })()}
 
         {/* chart wrapper: listens for the pointer; touch-pan-y keeps vertical page scrolling working on phones */}
-        <div className="relative h-40 touch-pan-y cursor-crosshair select-none" onPointerMove={onMove} onPointerDown={onMove} onPointerLeave={() => setHover(null)}>
+        <div className="relative h-32 sm:h-40 touch-pan-y cursor-crosshair select-none" onPointerMove={onMove} onPointerDown={onMove} onPointerLeave={() => setHover(null)}>
           <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="absolute inset-0 h-full w-full rounded-md bg-black/30">
             <defs>
               <clipPath id="wp-top">
@@ -193,7 +193,7 @@ export default function WinProbability({ plays = [], playSource, home, away }) {
         </div>
 
         {/* info panel: the play behind the active point */}
-        <div className={`mt-3 rounded-lg border p-3 ${isBest ? "border-gold/40 bg-gold/5" : "border-white/10 bg-white/[0.03]"}`}>
+        <div className={`mt-3 rounded-lg border p-2.5 sm:p-3 ${isBest ? "border-gold/40 bg-gold/5" : "border-white/10 bg-white/[0.03]"}`}>
           {activePlay ? (
             <>
               <div className="mb-1 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-gray-500">
@@ -213,7 +213,7 @@ export default function WinProbability({ plays = [], playSource, home, away }) {
                 </span>
                 {activePlay.scoringPlay && <span className="text-gold">Scoring play</span>}
               </div>
-              <p className="text-sm text-gray-200">{activePlay.text}</p>
+              <p className="text-xs text-gray-200 sm:text-sm">{activePlay.text}</p>
             </>
           ) : (
             <p className="text-sm text-gray-500">Play details unavailable for this point.</p>

@@ -35,7 +35,6 @@ export default function LiveDriveBanner({ data }) {
   const plays = drive?.plays || [];
   const last = plays[plays.length - 1];
   if (state !== "in" || !drive || !last) return null;
-  
 
   // ---- who is home / away (end-zone colors + which way the offense is moving) ----
   const comps = data.header?.competitions?.[0]?.competitors || [];
@@ -93,7 +92,7 @@ export default function LiveDriveBanner({ data }) {
 
   return (
     <div
-      className="card p-4 mb-8"
+      className="card p-2 mb-5 sm:p-4 sm:mb-8"
       // inline styles because .card is unlayered CSS; the border and glow turn crimson inside the 20
       style={{
         // gold pulse wins over the red zone glow while it's showing
@@ -102,13 +101,13 @@ export default function LiveDriveBanner({ data }) {
         transition: "box-shadow 0.5s, border-color 0.5s",
       }}>
       {/* top row: live tag, team with the ball, down & distance */}
-      <div className="flex items-center gap-3 mb-3">
-        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-red-400">
+      <div className="flex items-center gap-2 mb-2 sm:gap-3 sm:mb-3">
+        <span className="flex items-center gap-1.5 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest text-red-400">
           <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" /> Live
         </span>
         <TeamLogo src={drive.team?.logos?.[0]?.href || drive.team?.logo} size={28} className="w-7 h-7" />
-        <p className="text-sm font-bold text-white flex-1 min-w-0 truncate">{drive.team?.displayName} ball</p>
-        <p className="text-2xl font-extrabold tabular-nums text-white">{situation}</p>
+        <p className="text-xs font-bold text-white flex-1 min-w-0 truncate sm:text-sm">{drive.team?.displayName} ball</p>
+        <p className="text-xs font-bold tabular-nums text-white sm:text-2xl sm:font-extrabold">{situation}</p>
       </div>
 
       {/* the field */}
@@ -225,20 +224,20 @@ export default function LiveDriveBanner({ data }) {
       )}
 
       {/* info tiles */}
-      <div className="grid grid-cols-3 gap-2 mt-3 text-center">
+      <div className="grid grid-cols-3 gap-1.5 mt-2 text-center sm:gap-2 sm:mt-3">
         {[
           ["Ball on", last.end?.possessionText || "—"],
           ["To goal", `${toGo} yds`],
           ["Drive", driveText],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-lg bg-white/5 py-2 px-1">
-            <p className="text-[10px] uppercase tracking-widest text-gray-500">{label}</p>
-            <p className="text-sm font-bold text-white tabular-nums">{value}</p>
+          <div key={label} className="rounded-lg bg-white/5 py-1 px-1 sm:py-2">
+            <p className="text-[8px] sm:text-[10px] uppercase tracking-widest text-gray-500">{label}</p>
+            <p className="text-[11px] font-bold text-white tabular-nums sm:text-sm">{value}</p>
           </div>
         ))}
       </div>
 
-      <p className="text-sm text-gray-300 mt-3">
+      <p className="text-[11px] text-gray-300 mt-2 sm:text-sm sm:mt-3">
         {/* yellow flag pill, only when the last play was a penalty */}
         {lastWasPenalty && <span className="mr-2 rounded-full border border-yellow-400/50 bg-yellow-400/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-yellow-300">🚩 Flag</span>}
         <span className="text-gray-500">Last play: </span>

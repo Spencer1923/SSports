@@ -146,13 +146,13 @@ export default function GamePage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: `#${teams[0]?.team.color}` }} />
-            <TeamLogo src={teams[0]?.team.logo} alt={teams[0]?.team.displayName} size={32} className="w-8 h-8" />
+            <TeamLogo src={teams[0]?.team.logo} alt={teams[0]?.team.displayName} size={32} className="w-6 h-6 sm:w-8 sm:h-8" />
             <Link href={`/teams/${teams[0]?.team.id}`} className="text-gray-200 font-semibold hover:text-gold">
               {teams[0]?.team.abbreviation}
             </Link>
           </div>
 
-          <span className="text-3xl font-extrabold tabular-nums text-white">
+          <span className="text-xl sm:text-3xl font-extrabold tabular-nums text-white">
             {awayScore} - {homeScore}
           </span>
 
@@ -160,7 +160,7 @@ export default function GamePage() {
             <Link href={`/teams/${teams[1]?.team.id}`} className="text-gray-200 font-semibold hover:text-gold">
               {teams[1]?.team.abbreviation}
             </Link>
-            <TeamLogo src={teams[1]?.team.logo} alt={teams[1]?.team.displayName} size={32} className="w-8 h-8" />
+            <TeamLogo src={teams[1]?.team.logo} alt={teams[1]?.team.displayName} size={32} className="w-6 h-6 sm:w-8 sm:h-8" />
             <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: `#${teams[1]?.team.color}` }} />
           </div>
         </div>
@@ -184,16 +184,16 @@ export default function GamePage() {
             const team2Better = lowerBetter ? val2 <= val1 : val2 >= val1;
 
             return (
-              <div key={`${stat.name}-${i}`} className="mb-4">
+              <div key={`${stat.name}-${i}`} className="mb-2 sm:mb-4">
                 {/* the leading team's number is bright, the trailing one is dim */}
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className={`text-lg font-bold tabular-nums ${team1Better ? "text-white" : "text-gray-500"}`}>{stat.displayValue}</span>
-                  <span className="text-xs uppercase tracking-widest text-gray-400">{stat.label}</span>
-                  <span className={`text-lg font-bold tabular-nums ${team2Better ? "text-white" : "text-gray-500"}`}>{otherStat?.displayValue}</span>
+                  <span className={`text-sm sm:text-lg font-bold tabular-nums ${team1Better ? "text-white" : "text-gray-500"}`}>{stat.displayValue}</span>
+                  <span className="text-[9px] uppercase tracking-wider text-gray-400 sm:text-xs sm:tracking-widest">{stat.label}</span>
+                  <span className={`text-sm sm:text-lg font-bold tabular-nums ${team2Better ? "text-white" : "text-gray-500"}`}>{otherStat?.displayValue}</span>
                 </div>
 
                 {/* two rounded segments with a gap, a glossy top highlight, and a thin ring (replaces the white border) */}
-                <div className="flex h-3 gap-1">
+                <div className="flex h-1.5 gap-1 sm:h-3">
                   <div
                     className="rounded-l-full ring-1 ring-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all duration-700"
                     style={{ width: `${(val1 / total) * 100}%`, backgroundColor: `#${teams[0]?.team.color || "8B0000"}` }}
