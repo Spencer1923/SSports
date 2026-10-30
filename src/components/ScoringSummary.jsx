@@ -19,30 +19,30 @@ export default function ScoringSummary({ plays = [], teams = [] }) {
   });
 
   return (
-    <section className="mb-10">
-      <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-3">Scoring Summary</h2>
+    <section className="mb-6 sm:mb-10">
+      <h2 className="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 sm:text-xs sm:mb-3">Scoring Summary</h2>
       <div className="card divide-y divide-white/5">
         {Object.entries(byQuarter).map(([q, list]) => (
-          <div key={q} className="p-4">
-            <p className="text-gold font-bold text-sm mb-3">{Number(q) > 4 ? "Overtime" : `Q${q}`}</p>
+          <div key={q} className="p-3 sm:p-4">
+            <p className="text-gold font-bold text-[10px] sm:text-xs mb-2 sm:text-sm sm:mb-3">{Number(q) > 4 ? "Overtime" : `Q${q}`}</p>
 
             {/* timeline: vertical line with a dot per score */}
-            <div className="space-y-4 border-l border-white/10 pl-4">
+            <div className="space-y-3 border-l border-white/10 pl-3 sm:space-y-4 sm:pl-4">
               {list.map((p, i) => {
                 const isTD = (p.type?.text || "").toLowerCase().includes("touchdown");
                 return (
-                  <div key={p.id || i} className="relative flex items-start gap-3">
-                    <span className="absolute -left-[21px] top-2 w-2 h-2 rounded-full bg-gold" />
-                    <TeamLogo src={p.team?.logo || logoById[p.team?.id]} size={28} className="w-7 h-7 shrink-0" />
+                  <div key={p.id || i} className="relative flex items-start gap-2 sm:gap-3">
+                    <span className="absolute -left-[17px] top-1.5 sm:-left-[21px] sm:top-2 w-2 h-2 rounded-full bg-gold" />
+                    <TeamLogo src={p.team?.logo || logoById[p.team?.id]} size={28} className="w-5 h-5 sm:w-7 sm:h-7 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 text-xs">
                         <span className={`font-bold ${isTD ? "text-gold" : "text-white"}`}>{p.type?.abbreviation || p.type?.text}</span>
                         <span className="text-gray-500 tabular-nums">{p.clock?.displayValue}</span>
                       </div>
-                      <p className="text-sm text-gray-300">{p.text}</p>
+                      <p className="text-xs text-gray-300 sm:text-sm">{p.text}</p>
                     </div>
                     {/* running score after this play */}
-                    <span className="text-sm font-bold tabular-nums text-gray-100">
+                    <span className="text-xs font-bold sm:text-sm tabular-nums text-gray-100">
                       {p.awayScore} - {p.homeScore}
                     </span>
                   </div>

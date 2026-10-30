@@ -92,7 +92,7 @@ export default function LiveDriveBanner({ data }) {
 
   return (
     <div
-      className="card p-2 mb-5 sm:p-4 sm:mb-8"
+      className="card -mx-4 mb-5 rounded-none border-x-0 px-0 py-2 sm:mx-0 sm:mb-8 sm:rounded-xl sm:border-x sm:p-4"
       // inline styles because .card is unlayered CSS; the border and glow turn crimson inside the 20
       style={{
         // gold pulse wins over the red zone glow while it's showing
@@ -101,7 +101,7 @@ export default function LiveDriveBanner({ data }) {
         transition: "box-shadow 0.5s, border-color 0.5s",
       }}>
       {/* top row: live tag, team with the ball, down & distance */}
-      <div className="flex items-center gap-2 mb-2 sm:gap-3 sm:mb-3">
+      <div className="flex items-center gap-2 mb-2 px-3 sm:px-0 sm:gap-3 sm:mb-3">
         <span className="flex items-center gap-1.5 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest text-red-400">
           <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" /> Live
         </span>
@@ -110,8 +110,8 @@ export default function LiveDriveBanner({ data }) {
         <p className="text-xs font-bold tabular-nums text-white sm:text-2xl sm:font-extrabold">{situation}</p>
       </div>
 
-      {/* the field */}
-      <svg viewBox="0 0 120 30" className="-mx-2 w-[calc(100%+1rem)] max-w-none h-auto rounded-none ring-1 ring-white/15 sm:mx-0 sm:w-full sm:rounded-lg" role="img" aria-label="Ball position on the field">
+      {/* the field, mobile height is h-[120px]*/}
+      <svg viewBox="0 0 120 30" className="h-[120px] w-full ring-1 ring-white/15 sm:h-auto sm:rounded-lg" role="img" aria-label="Ball position on the field">
         <defs>
           {/* hash marks: two tiny ticks repeated every yard */}
           <pattern id="ld-hash" width="1" height="30" patternUnits="userSpaceOnUse">
@@ -224,7 +224,7 @@ export default function LiveDriveBanner({ data }) {
       )}
 
       {/* info tiles */}
-      <div className="grid grid-cols-3 gap-1.5 mt-2 text-center sm:gap-2 sm:mt-3">
+      <div className="grid grid-cols-3 px-3 sm:px-0 gap-1.5 mt-2 text-center sm:gap-2 sm:mt-3">
         {[
           ["Ball on", last.end?.possessionText || "—"],
           ["To goal", `${toGo} yds`],
@@ -237,7 +237,7 @@ export default function LiveDriveBanner({ data }) {
         ))}
       </div>
 
-      <p className="text-[11px] text-gray-300 mt-2 sm:text-sm sm:mt-3">
+      <p className="text-[11px] px-3 sm:px-0text-gray-300 mt-2 sm:text-sm sm:mt-3">
         {/* yellow flag pill, only when the last play was a penalty */}
         {lastWasPenalty && <span className="mr-2 rounded-full border border-yellow-400/50 bg-yellow-400/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-yellow-300">🚩 Flag</span>}
         <span className="text-gray-500">Last play: </span>

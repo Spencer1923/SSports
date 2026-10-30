@@ -37,7 +37,7 @@ export async function GET(request, { params }) {
     const slim = {
       boxscore: data.boxscore,
       header: data.header,
-      pickcenter: data.pickcenter,
+      gameInfo: data.gameInfo, // stadium and city
       winprobability: data.winprobability,
       scoringPlays: data.scoringPlays,
       drives: data.drives && {

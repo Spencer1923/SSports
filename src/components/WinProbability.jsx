@@ -144,7 +144,7 @@ export default function WinProbability({ plays = [], playSource, home, away }) {
         })()}
 
         {/* chart wrapper: listens for the pointer; touch-pan-y keeps vertical page scrolling working on phones */}
-        <div className="relative h-32 sm:h-40 touch-pan-y cursor-crosshair select-none" onPointerMove={onMove} onPointerDown={onMove} onPointerLeave={() => setHover(null)}>
+        <div className="relative h-24 sm:h-40touch-pan-y cursor-crosshair select-none" onPointerMove={onMove} onPointerDown={onMove} onPointerLeave={() => setHover(null)}>
           <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="absolute inset-0 h-full w-full rounded-md bg-black/30">
             <defs>
               <clipPath id="wp-top">
@@ -187,13 +187,13 @@ export default function WinProbability({ plays = [], playSource, home, away }) {
           )}
         </div>
 
-        <div className="flex justify-between text-[10px] uppercase tracking-widest text-gray-500 mt-1">
+        <div className="flex justify-between text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-500 mt-1">
           <span>Kickoff</span>
           <span>Now / Final</span>
         </div>
 
         {/* info panel: the play behind the active point */}
-        <div className={`mt-3 rounded-lg border p-2.5 sm:p-3 ${isBest ? "border-gold/40 bg-gold/5" : "border-white/10 bg-white/[0.03]"}`}>
+        <div className={`mt-2 sm:mt-3 rounded-lg border p-2.5 sm:p-3 ${isBest ? "border-gold/40 bg-gold/5" : "border-white/10 bg-white/[0.03]"}`}>
           {activePlay ? (
             <>
               <div className="mb-1 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-gray-500">

@@ -22,10 +22,10 @@ export default function DriveList({ drives }) {
   if (!all.length) return null;
 
   return (
-    <section className="mb-10">
+    <section className="mb-6 sm:mb-10">
       {/* collapsed header: title, drive count, one colored square per drive */}
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="card w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer hover:bg-white/5">
-        <span className="text-xs uppercase tracking-[0.2em] text-gray-400">Drives</span>
+      <button onClick={() => setOpen(!open)} aria-expanded={open} className="card w-full flex items-center gap-2 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3 text-left cursor-pointer hover:bg-white/5">
+        <span className="text-[10px] uppercase tracking-[0.2em] sm:text-xs text-gray-400">Drives</span>
         <span className="text-xs text-gray-500 tabular-nums">{all.length}</span>
         <span className="flex flex-wrap gap-1 flex-1">
           {all.map((d, i) => (
@@ -48,24 +48,24 @@ export default function DriveList({ drives }) {
                 <button
                   onClick={() => setOpenId(isOpen ? null : id)}
                   aria-expanded={isOpen}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left border-l-4 ${style.bar} hover:bg-white/5 transition-colors cursor-pointer`}>
-                  <TeamLogo src={drive.team?.logos?.[0]?.href || drive.team?.logo} size={28} className="w-7 h-7 shrink-0" />
+                  className={`w-full flex items-center gap-2 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3 text-left border-l-4 ${style.bar} hover:bg-white/5 transition-colors cursor-pointer`}>
+                  <TeamLogo src={drive.team?.logos?.[0]?.href || drive.team?.logo} size={28} className="w-5 h-5 shrink-0 sm:w-7 sm:h-7" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-100 truncate">{drive.team?.shortDisplayName || drive.team?.displayName}</p>
-                    <p className="text-xs text-gray-500 tabular-nums">
+                    <p className="text-xs font-semibold sm:text-sm text-gray-100 truncate">{drive.team?.shortDisplayName || drive.team?.displayName}</p>
+                    <p className="text-[10px] text-gray-500 sm:text-xs tabular-nums">
                       {drive.offensivePlays} plays · {drive.yards} yds · {drive.timeElapsed?.displayValue}
                     </p>
                   </div>
-                  <span className={`text-[11px] font-bold uppercase px-2.5 py-1 rounded-full ${style.pill}`}>{drive.shortDisplayResult || drive.displayResult || drive.result || "Live"}</span>
+                  <span className={`text-[9px] font-bold uppercase px-2 py-0.5 sm:text-[11px] sm:px-2.5 sm:py-1 rounded-full ${style.pill}`}>{drive.shortDisplayResult || drive.displayResult || drive.result || "Live"}</span>
                   <span className={`text-gray-500 transition-transform ${isOpen ? "rotate-90" : ""}`}>›</span>
                 </button>
 
                 {/* expanded: every play in the drive */}
                 {isOpen && (
-                  <div className="bg-black/30 px-4 py-3 space-y-2">
+                  <div className="bg-black/30 px-3 py-2 space-y-1.5 sm:px-4 sm:py-3 sm:space-y-2">
                     {(drive.plays || []).map((play, pi) => (
-                      <div key={play.id || pi} className="flex gap-3 text-sm">
-                        <span className="w-28 shrink-0 text-xs text-gray-500 tabular-nums pt-0.5">{play.start?.downDistanceText || play.type?.text}</span>
+                      <div key={play.id || pi} className="flex gap-2 text-xs sm:gap-3 sm:text-sm">
+                        <span className="w-20 shrink-0 text-[10px] sm:w-28 sm:text-xs text-gray-500 tabular-nums pt-0.5">{play.start?.downDistanceText || play.type?.text}</span>
                         <span className="text-gray-300">{play.text}</span>
                       </div>
                     ))}

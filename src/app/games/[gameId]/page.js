@@ -208,6 +208,14 @@ export default function GamePage() {
           })}
       </section>
 
+      {/* stadium and city: small and dim, above the betting lines */}
+      {(() => {
+        const venue = data.gameInfo?.venue || data.header?.competitions?.[0]?.venue; // ESPN's location varies, so we check both
+        const where = [venue?.fullName, venue?.address?.city, venue?.address?.state].filter(Boolean).join(", ");
+        if (!where) return null;
+        return <p className="mb-3 text-center text-[10px] text-gray-500 sm:text-xs">{where}</p>;
+      })()}
+
       {/* betting lines + win probability side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
         <BettingLines pickcenter={data.pickcenter} home={homeTeam} away={awayTeam} />

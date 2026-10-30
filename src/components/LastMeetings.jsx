@@ -18,7 +18,7 @@ export default function LastMeetings({ team, opp }) {
     <section className="mb-10">
       <button onClick={() => setOpen(!open)} aria-expanded={open} className="card flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left hover:bg-white/5">
         <span className="font-mono text-xs uppercase tracking-[0.25em] text-gray-400">Last meetings</span>
-        <span className="flex-1 text-xs text-gray-500">{open ? `${team?.abbreviation} vs ${opp?.abbreviation}, last 6 seasons` : "Tap to see head-to-head history"}</span>
+        <span className="flex-1 text-xs text-gray-500">{open ? `${team?.abbreviation} vs ${opp?.abbreviation}, last 6 seasons` : "Head-to-head history"}</span>
         <span className={`text-gray-500 transition-transform ${open ? "rotate-90" : ""}`}>›</span>
       </button>
 
