@@ -63,7 +63,7 @@ export default function TeamStatsPage() {
   if (isLoading) return <Skeleton variant="grid" count={6} rows={10} />;
 
   const teams = data.teams || [];
-  
+
   const sortBy = (key) => [...teams].sort((a, b) => (b.stats?.[key] || 0) - (a.stats?.[key] || 0));
   // lowest first; a team with 0 (no games yet) goes to the bottom instead of the top
   const sortAsc = (key) => [...teams].sort((a, b) => (a.stats?.[key] || Infinity) - (b.stats?.[key] || Infinity));
@@ -88,14 +88,14 @@ export default function TeamStatsPage() {
       <h1 className="page-title">Team Stats</h1>
 
       {/* league leaders */}
-      <section className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <section className="mb-5 grid grid-cols-2 gap-2 sm:mb-8 sm:gap-3 lg:grid-cols-4">
         {tiles.map((t) => (
-          <Link key={t.label} href={`/teams/${t.team?.teamId}`} className="relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-gold/40">
+          <Link key={t.label} href={`/teams/${t.team?.teamId}`} className="relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-2.5 transition hover:border-gold/40 sm:p-4">
             <span className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gold/10 blur-2xl" />
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{t.label}</p>
-            <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-white">{t.value}</p>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400">
-              <TeamLogo src={t.team?.logo} size={16} className="h-4 w-4" />
+            <p className="truncate font-mono text-[8px] uppercase tracking-[0.1em] text-gray-500 sm:text-[10px] sm:tracking-[0.2em]">{t.label}</p>
+            <p className="mt-1 font-mono text-xl font-bold tabular-nums text-white sm:mt-2 sm:text-3xl">{t.value}</p>
+            <div className="mt-1 flex items-center gap-1.5 text-[10px] text-gray-400 sm:mt-2 sm:text-xs">
+              <TeamLogo src={t.team?.logo} size={16} className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span className="truncate">{t.team?.teamName}</span>
             </div>
           </Link>
