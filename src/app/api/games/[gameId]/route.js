@@ -40,6 +40,7 @@ export async function GET(request, { params }) {
       gameInfo: data.gameInfo, // stadium and city
       winprobability: data.winprobability,
       scoringPlays: data.scoringPlays,
+      pickcenter: data.pickcenter,
       drives: data.drives && {
         previous: (data.drives.previous || []).map(slimDrive),
         current: data.drives.current ? slimDrive(data.drives.current) : undefined,
