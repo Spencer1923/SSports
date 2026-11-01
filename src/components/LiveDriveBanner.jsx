@@ -197,15 +197,29 @@ export default function LiveDriveBanner({ data }) {
           <line x1="0" x2="0" y1="0" y2="30" stroke="#004cff" strokeOpacity="0.8" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
 
           {/* arrow showing which way the offense is moving */}
-          <polygon points={`${dir * 3.2},12.8 ${dir * 3.2},17.2 ${dir * 5.6},15`} fill="#D4AF37" />
+          <polygon points={`${dir * 2.8},13.8 ${dir * 2.8},16.2 ${dir * 4.3},15`} fill="#D4AF37" />
 
           {/* the ball, with a pulsing ring */}
           <circle cx="0" cy="15" r="2" fill="none" stroke="#D4AF37" strokeWidth="1" vectorEffect="non-scaling-stroke">
             <animate attributeName="r" values="2;5.5" dur="1.4s" repeatCount="indefinite" />
             <animate attributeName="opacity" values="0.8;0" dur="1.4s" repeatCount="indefinite" />
           </circle>
-          <ellipse cx="0" cy="15" rx="2.1" ry="1.3" fill="#8a4b1f" stroke="white" strokeWidth="0.25" />
-          <line x1="-0.8" x2="0.8" y1="15" y2="15" stroke="white" strokeWidth="0.25" />
+          <ellipse cx="0" cy="15" rx="2.1" ry="1.3" fill="#8a4b1f" stroke="white" strokeWidth="0.15" />
+          {/* laces: a center seam, with stitches that get shorter toward the ends to follow the ball's curve */}
+          <line x1="-0.8" x2="0.8" y1="15" y2="15" stroke="white" strokeWidth="0.16" strokeLinecap="round" />
+          {[
+            [-0.64, 0.26], // [x position, half-height]: outer stitches are shortest
+            [-0.32, 0.4],
+            [0, 0.46],
+            [0.32, 0.4],
+            [0.64, 0.26],
+          ].map(([x, h]) => (
+            <line key={x} x1={x} x2={x} y1={15 - h} y2={15 + h} stroke="white" strokeWidth="0.14" strokeLinecap="round" />
+          ))}
+          {/* thin stripes near each tip, like a real football */}
+          {[-1.5, 1.5].map((x) => (
+            <line key={x} x1={x} x2={x} y1="14.3" y2="15.7" stroke="white" strokeOpacity="0.8" strokeWidth="0.18" strokeLinecap="round" />
+          ))}
         </g>
       </svg>
 
