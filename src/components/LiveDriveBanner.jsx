@@ -204,7 +204,10 @@ export default function LiveDriveBanner({ data }) {
             <animate attributeName="r" values="2;5.5" dur="1.4s" repeatCount="indefinite" />
             <animate attributeName="opacity" values="0.8;0" dur="1.4s" repeatCount="indefinite" />
           </circle>
-          <ellipse cx="0" cy="15" rx="2.1" ry="1.3" fill="#8a4b1f" stroke="white" strokeWidth="0.15" />
+
+          {/* football body: full rounded sides with softly pointed tips at x = ±2.2 */}
+          <path d="M -2.2 15 C -1.6 13.3 1.6 13.3 2.2 15 C 1.6 16.7 -1.6 16.7 -2.2 15 Z" fill="#8a4b1f" stroke="white" strokeWidth="0.15" strokeLinejoin="round" />
+
           {/* laces: a center seam, with stitches that get shorter toward the ends to follow the ball's curve */}
           <line x1="-0.8" x2="0.8" y1="15" y2="15" stroke="white" strokeWidth="0.16" strokeLinecap="round" />
           {[
