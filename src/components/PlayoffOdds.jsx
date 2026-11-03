@@ -90,10 +90,16 @@ export default function PlayoffOdds({ games, meta }) {
                       <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
                       <div className="flex items-center justify-between px-4 pb-2 pt-4">
                         <h3 className="text-2xl font-extrabold uppercase tracking-wide text-white">{conf}</h3>
-                        <div className="flex gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-gray-500">
-                          <span className="w-12 text-right sm:w-16">Playoffs</span>
-                          <span className="w-12 text-right sm:w-16">Division</span>
-                          <span className="w-12 text-right sm:w-16">Bye</span>
+                        <div className="flex gap-2 font-mono text-[8px] uppercase tracking-normal text-gray-500 sm:text-[10px] sm:tracking-[0.15em]">
+                          <span className="w-12 text-right sm:w-16">
+                            <span className="sm:hidden">Playoff</span>
+                            <span className="hidden sm:inline">Playoffs</span>
+                          </span>
+                          <span className="w-12 text-right -translate-x-3 sm:translate-x-0 sm:w-16">
+                            <span className="sm:hidden">Div</span>
+                            <span className="hidden sm:inline">Division</span>
+                          </span>
+                          <span className="w-12 text-right -translate-x-3 sm:translate-x-[-20px] sm:w-16">Bye</span>
                         </div>
                       </div>
                       {ids.map((id) => (
@@ -112,8 +118,8 @@ export default function PlayoffOdds({ games, meta }) {
                 })}
               </div>
               <p className="mt-2 text-[11px] leading-snug text-gray-600">
-                {lineCount} near-term games use betting-market win chances; later games use team ratings (sportsbook futures, record, point differential and opponent strength). Later games use team records. Based on real
-                results, not your picks.
+                {lineCount} near-term games use betting-market win chances; later games use team ratings (sportsbook futures, record, point differential and opponent strength). Later games use team
+                records. Based on real results, not your picks.
               </p>
             </>
           )}

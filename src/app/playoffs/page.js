@@ -62,7 +62,7 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
               {meta[t.id].abbr}
               {t.divWinner && <span className="ml-2 rounded-full border border-gold/40 bg-gold/10 px-1.5 py-0.5 font-mono text-[9px] text-gold">DIV</span>}
             </span>
-            <span className="w-12 text-right font-mono text-[11px] tabular-nums text-gray-400 sm:w-14 sm:text-sm">{t.t ? `${t.w}-${t.l}-${t.t}` : `${t.w}-${t.l}`}</span>
+            <span className="w-12 text-right mr-3 font-mono text-[11px] tabular-nums text-gray-400 sm:w-14 sm:text-sm">{t.t ? `${t.w}-${t.l}-${t.t}` : `${t.w}-${t.l}`}</span>
             <Sos info={sos[t.id]} rank={sosRank[t.id]} />
             <span className="w-8 text-right font-mono text-xs">
               <Move n={t.move} />
