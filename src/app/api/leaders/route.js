@@ -61,7 +61,7 @@ export async function GET() {
           // top 5, resolving athlete + team links; a failed lookup drops only that row
           const leaders = (
             await Promise.all(
-              candidates.slice(0, 5).map(async (leader) => {
+              candidates.slice(0, 25).map(async (leader) => {
                 const [athlete, team] = await Promise.all([getJson(leader.athlete?.$ref), getJson(leader.team?.$ref)]);
                 if (!athlete) return null;
                 return {

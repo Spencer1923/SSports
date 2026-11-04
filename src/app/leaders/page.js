@@ -3,11 +3,39 @@ import useSWR from "swr";
 import Link from "next/link";
 import Skeleton from "@/components/Skeleton";
 import TeamLogo from "@/components/TeamLogo";
+import { useState } from "react";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 // display order for the categories
 const ORDER = ["passingYards", "passingTouchdowns", "quarterbackRating", "receivingYards", "receivingTouchdowns", "rushingYards", "rushingTouchdowns", "interceptions", "sacks"];
+
+// #2 and below: shows the first 4 (so 5 total with the big card), "Show more" reveals the rest
+function MoreRows({ rest }) {
+  const [all, setAll] = useState(false);
+  const rows = all ? rest : rest.slice(0, 4);
+  return (
+    <>
+      <div className="space-y-2">
+        {rows.map((leader, index) => (
+          <Link key={leader.athleteId} href={`/players/${leader.athleteId}`} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded text-gray-300 transition-colors">
+            <span className="text-gray-400 w-5">{index + 2}</span>
+            <TeamLogo src={leader.teamLogo} size={24} className="w-6 h-6" />
+            <span>{leader.athleteName}</span>
+            <span className="text-gray-400 ml-auto tabular-nums">{leader.displayValue}</span>
+          </Link>
+        ))}
+      </div>
+      {rest.length > 4 && (
+        <button
+          onClick={() => setAll(!all)}
+          className="mt-2 w-full cursor-pointer rounded border border-white/10 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-gold transition hover:bg-white/5">
+          {all ? "Show less ▴" : `Show more ▾`}
+        </button>
+      )}
+    </>
+  );
+}
 
 export default function LeadersPage() {
   const { data, error, isLoading } = useSWR("/api/leaders", fetcher, {
@@ -41,17 +69,7 @@ export default function LeadersPage() {
                 </Link>
               )}
 
-              {/* #2-5: smaller rows with team logo */}
-              <div className="space-y-2">
-                {rest.map((leader, index) => (
-                  <Link key={leader.athleteId} href={`/players/${leader.athleteId}`} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded text-gray-300 transition-colors">
-                    <span className="text-gray-400 w-4">{index + 2}</span>
-                    <TeamLogo src={leader.teamLogo} size={24} className="w-6 h-6" />
-                    <span>{leader.athleteName}</span>
-                    <span className="text-gray-400 ml-auto tabular-nums">{leader.displayValue}</span>
-                  </Link>
-                ))}
-              </div>
+              <MoreRows rest={rest} />
             </div>
           );
         })}
