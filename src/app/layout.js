@@ -43,6 +43,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
+      <head>
+        <meta name="google-site-verification" content="MxqQo_I354HviOaO2gJHTOzCGOPBMYgXHhYT23KmmrU" />
+      </head>
       <body className={`${oswald.variable} ${inter.variable}`}>
         <Navbar /> {/* shows on every page */}
         <ScrollToTop />
