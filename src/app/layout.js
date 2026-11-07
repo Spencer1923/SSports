@@ -13,13 +13,15 @@ export const metadata = {
     default: "SSports — NFL Scores, Standings & Analysis",
     template: "%s | SSports",
   },
-  metadataBase: new URL("https://s-sports.netlify.app/"),
+  metadataBase: new URL("https://s-sports.netlify.app"),
   description: "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
   openGraph: {
     title: "SSports",
     description: "Live NFL scores, standings, league leaders, injury reports, and weekly power rankings.",
     images: [{ url: "/logo-medium.png", width: 256, height: 199, alt: "SSports" }],
     type: "website",
+    siteName: "SSports",
+    url: "/",
   },
   icons: {
     icon: [

@@ -32,6 +32,25 @@ function Move({ prev, now }) {
   return <span className={`font-mono text-xs ${n > 0 ? "text-green-400" : "text-red-400"}`}>{n > 0 ? `▲${n}` : `▼${-n}`}</span>;
 }
 
+// builds each post's own title, description and share preview from its frontmatter
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const filePath = path.join(process.cwd(), "src/content/posts", `${slug}.mdx`);
+  if (!fs.existsSync(filePath)) return {};
+  const { data } = matter(fs.readFileSync(filePath, "utf8"));
+
+  // your posts have no description field, so build one from the top of the ranking
+  const top = (data.ranking || data.mvpRanking || []).slice(0, 3).map((i) => i.team || i.player);
+  const description = data.description || (top.length ? `${data.title}: ${top.join(", ")} lead this week's rankings. Full list and analysis from SSports.` : `${data.title} from SSports.`);
+
+  return {
+    title: data.title, // template adds " | SSports"
+    description,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: { title: data.title, description, type: "article", publishedTime: data.date, url: `/blog/${slug}` },
+  };
+}
+
 export default async function PostPage({ params }) {
   // Next.js 15+ requires awaiting params before using it
   const { slug } = await params;
