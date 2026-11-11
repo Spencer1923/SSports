@@ -41,7 +41,7 @@ function SeedTable({ title, rows, meta, sos, sosRank }) {
         <h2 className="text-2xl font-extrabold uppercase tracking-wide text-white">{title}</h2>
         {/* same column widths as the rows below, so the labels sit over their values */}
         <div className="flex gap-3 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500">
-          <span className="w-12 sm:w-14 text-right">Rec</span>
+          <span className="w-12 sm:w-14 text-center">Rec</span>
           {/* SOS column = number (w-9), plus the bar (w-12 + gap-2) on wider screens */}
           <span className="w-9 text-right sm:w-[5.75rem]">SOS</span>
           <span className="w-8 text-right">Move</span>
