@@ -39,7 +39,8 @@ function MoreRows({ rest }) {
 
 export default function LeadersPage() {
   const { data, error, isLoading } = useSWR("/api/leaders", fetcher, {
-    refreshInterval: 3600000, // leaders don't change fast, refresh hourly
+    refreshInterval: 300000, // every 5 minutes
+    revalidateOnFocus: true, // and when you switch back to the tab
   });
 
   if (error || data?.error) return <p className="p-6">Failed to load leaders: {data?.error}</p>;

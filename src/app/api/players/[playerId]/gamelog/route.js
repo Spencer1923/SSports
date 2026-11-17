@@ -4,7 +4,7 @@ export async function GET(request, { params }) {
   const { playerId } = await params; // folder is [playerId]
   try {
     // game logs change when games finish: cache for 1 hour
-    const res = await espnFetch(`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${playerId}/gamelog`, 3600);
+    const res = await espnFetch(`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${playerId}/gamelog`, 300);
     if (!res.ok) return Response.json({ error: `ESPN gamelog returned ${res.status}` }, { status: 502 });
     const data = await res.json();
 
@@ -33,7 +33,7 @@ export async function GET(request, { params }) {
         games,
         totals: cat?.totals || [],
       },
-      3600,
+      300, 0
     );
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });

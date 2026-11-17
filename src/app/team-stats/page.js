@@ -57,7 +57,10 @@ function Leaderboard({ title, list, statKey, unit, dec = 0, asc = false }) {
 }
 
 export default function TeamStatsPage() {
-  const { data, error, isLoading } = useSWR("/api/team-stats", fetcher, { refreshInterval: 3600000 });
+  const { data, error, isLoading } = useSWR("/api/team-stats", fetcher, {
+    rrefreshInterval: 300000, // every 5 minutes
+    revalidateOnFocus: true, // and when you switch back to the tab
+  });
 
   if (error || data?.error) return <p className="p-6">Failed to load team stats.</p>;
   if (isLoading) return <Skeleton variant="grid" count={6} rows={10} />;

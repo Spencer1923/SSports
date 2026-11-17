@@ -19,7 +19,7 @@ export async function GET() {
   try {
     const raw = await getJson(
       "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/types/2/leaders?lang=en&region=us",
-      600, // the leaderboard itself: 10 minutes
+      300, // the leaderboard itself: 10 minutes
     );
     if (!raw?.categories) {
       return Response.json({ error: "Leaders feed unavailable" }, { status: 502 });
@@ -80,7 +80,7 @@ export async function GET() {
     );
 
     // skip any category that ended up with nobody in it
-    return cachedJson({ categories: categories.filter((c) => c.leaders.length > 0) }, 600);
+    return cachedJson({ categories: categories.filter((c) => c.leaders.length > 0) }, 300, 0);
   } catch (err) {
     console.error("leaders route failed:", err); // prints the real error in your terminal
     return Response.json({ error: err.message }, { status: 500 });

@@ -8,7 +8,7 @@ async function getPointsAllowed() {
   await Promise.all(
     weeks.map(async (week) => {
       // cached 10 minutes, so this is cheap after the first load
-      const res = await espnFetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2`, 600);
+      const res = await espnFetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2`, 300);
       if (!res.ok) return; // skip a week that fails
 
       const data = await res.json();
@@ -49,7 +49,7 @@ export async function GET() {
     const statsPerTeam = await Promise.all(
       teams.map(async ({ team }) => {
         // season stats only change when games finish: 10 minutes is plenty
-        const statsRes = await espnFetch(`https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/types/2/teams/${team.id}/statistics`, 600);
+        const statsRes = await espnFetch(`https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2026/types/2/teams/${team.id}/statistics`, 300);
         if (!statsRes.ok) return null;
         const statsData = await statsRes.json();
 
@@ -75,7 +75,7 @@ export async function GET() {
       }),
     );
 
-    return cachedJson({ teams: statsPerTeam.filter(Boolean) }, 600);
+    return cachedJson({ teams: statsPerTeam.filter(Boolean) }, 300, 0);
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
